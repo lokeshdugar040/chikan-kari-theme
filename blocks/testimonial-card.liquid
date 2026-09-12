@@ -1,7 +1,7 @@
-{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign card_id = block.id | replace: '_', '' | downcase %}
 
 <div
-  class="testimonial-card testimonial-card--{{ ai_gen_id }} group-block spacing-style"
+  class="testimonial-card testimonial-card--{{ card_id }} group-block spacing-style"
   style="{% render 'spacing-style', settings: block.settings %}"
   {{ block.shopify_attributes }}
 >

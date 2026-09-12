@@ -17,66 +17,73 @@
 </div>
 
 <style>
+/* Mobile-first: stacked input + button; inline row from 480px */
 .askus-delivery-checker{
-  margin-top:15px;
-  padding:15px;
+  margin-top:var(--space-4, 1rem);
+  padding:var(--space-4, 1rem);
   border:1px solid rgba(0,0,0,.08);
-  border-radius:12px;
+  border-radius:var(--space-3, 0.75rem);
   background:#fff;
 }
 
 .askus-delivery-checker h4{
-  margin:0 0 12px;
-  font-size:16px;
+  margin:0 0 var(--space-3, 0.75rem);
+  font-size:var(--text-base, 1rem);
 }
 
 .askus-pincode-wrapper{
   display:flex;
-  gap:10px;
+  flex-direction:column;
+  gap:var(--space-2, 0.5rem);
 }
 
 .askus-pincode-wrapper input{
-  flex:1;
-  min-height:46px;
-  padding:0 15px;
+  flex:1 1 auto;
+  min-width:0;
+  min-height:var(--touch-target, 44px);
+  padding:0 var(--space-4, 1rem);
+  font-size:max(1rem, var(--text-base, 1rem)); /* ≥16px: no iOS zoom */
   border:1px solid #ddd;
-  border-radius:8px;
+  border-radius:var(--space-2, 0.5rem);
   outline:none;
 }
 
 .askus-pincode-wrapper button{
-  min-width:120px;
+  width:100%;
+  min-height:var(--touch-target, 44px);
   border:none;
-  border-radius:8px;
+  border-radius:var(--space-2, 0.5rem);
   cursor:pointer;
   font-weight:600;
-  padding:0 18px;
+  font-size:var(--text-sm, 0.875rem);
+  padding:0 var(--space-5, 1.25rem);
   background:#000;
   color:#fff;
 }
 
+.askus-pincode-wrapper button:focus-visible,
+.askus-pincode-wrapper input:focus-visible{
+  outline:2px solid currentcolor;
+  outline-offset:2px;
+}
+
 #askus-delivery-result{
-  margin-top:12px;
-  font-size:14px;
+  margin-top:var(--space-3, 0.75rem);
+  font-size:var(--text-sm, 0.875rem);
   line-height:1.6;
 }
 
-.askus-success{
-  color:#0f8a3d;
-}
+.askus-success{ color:#0f8a3d; }
+.askus-error{ color:#d93025; }
 
-.askus-error{
-  color:#d93025;
-}
-
-@media(max-width:749px){
+@media screen and (min-width: 480px){
   .askus-pincode-wrapper{
-    flex-direction:column;
+    flex-direction:row;
   }
-
   .askus-pincode-wrapper button{
-    width:100%;
-    min-height:46px;
+    width:auto;
+    flex:0 0 auto;
+    min-width:7.5rem;
   }
 }
 </style>

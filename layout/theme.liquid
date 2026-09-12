@@ -36,42 +36,42 @@
     {% endif %}
 
     {{ content_for_header }}
-  <script src="https://unpkg.com/spf-analytics@1.0.0/index.js" defer></script>
-</head>
-  <script>
-  window.ThemeLoader = {
-    loadModule(src) {
-      const s = document.createElement('script');
-      s.type = 'module';
-      s.src = src;
-      document.body.appendChild(s);
-    },
-    idle(callback) {
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(callback, { timeout: 1500 });
-      } else {
-        setTimeout(callback, 300);
-      }
-    },
-    afterInteraction(callback) {
-      let done = false;
-      const opts = { passive: true, once: true };
-      const run = () => {
-        if (done) return;
-        done = true;
-        window.removeEventListener('pointerdown', run, opts);
-        window.removeEventListener('touchstart', run, opts);
-        window.removeEventListener('scroll', run, opts);
-        window.removeEventListener('keydown', run, opts);
-        callback();
+    <script src="https://unpkg.com/spf-analytics@1.0.0/index.js" defer></script>
+    <script>
+      window.ThemeLoader = {
+        loadModule(src) {
+          const s = document.createElement('script');
+          s.type = 'module';
+          s.src = src;
+          document.body.appendChild(s);
+        },
+        idle(callback) {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(callback, { timeout: 1500 });
+          } else {
+            setTimeout(callback, 300);
+          }
+        },
+        afterInteraction(callback) {
+          let done = false;
+          const opts = { passive: true, once: true };
+          const run = () => {
+            if (done) return;
+            done = true;
+            window.removeEventListener('pointerdown', run, opts);
+            window.removeEventListener('touchstart', run, opts);
+            window.removeEventListener('scroll', run, opts);
+            window.removeEventListener('keydown', run, opts);
+            callback();
+          };
+          window.addEventListener('pointerdown', run, opts);
+          window.addEventListener('touchstart', run, opts);
+          window.addEventListener('scroll', run, opts);
+          window.addEventListener('keydown', run, opts);
+        }
       };
-      window.addEventListener('pointerdown', run, opts);
-      window.addEventListener('touchstart', run, opts);
-      window.addEventListener('scroll', run, opts);
-      window.addEventListener('keydown', run, opts);
-    }
-  };
-</script>
+    </script>
+  </head>
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">

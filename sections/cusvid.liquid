@@ -222,14 +222,18 @@
 
   <style>
     #{{ section_dom_id }} {
-      --vss-gap: {{ section.settings.card_gap }}px;
+      /* Mobile-first. Desktop values are applied at 750px+ below.
+         Editor padding values scale down to 75% on phones via clamp. */
+      --vss-gap: clamp(0.5rem, {{ section.settings.card_gap | times: 0.6 | round: 0 }}px + 0.5vw, {{ section.settings.card_gap }}px);
       --vss-radius: {{ section.settings.card_radius }}px;
-      --vss-arrow-size: 46px;
+      --vss-arrow-size: var(--touch-target, 44px);
       --vss-mobile-card: {{ section.settings.mobile_card_width }};
-      --vss-padding-top: {{ section.settings.padding_top }}px;
-      --vss-padding-bottom: {{ section.settings.padding_bottom }}px;
-      --vss-edge-space: {{ section.settings.side_padding_desktop }}px;
-      --vss-edge-space-mobile: {{ section.settings.side_padding_mobile }}px;
+      --vss-padding-top-desktop: {{ section.settings.padding_top }}px;
+      --vss-padding-bottom-desktop: {{ section.settings.padding_bottom }}px;
+      --vss-padding-top: clamp({{ section.settings.padding_top | times: 0.75 | round: 0 }}px, {{ section.settings.padding_top | times: 0.75 | round: 0 }}px + 1vw, var(--vss-padding-top-desktop));
+      --vss-padding-bottom: clamp({{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px, {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px + 1vw, var(--vss-padding-bottom-desktop));
+      --vss-edge-space-desktop: {{ section.settings.side_padding_desktop }}px;
+      --vss-edge-space: {{ section.settings.side_padding_mobile }}px;
       --vss-card-bg: rgba(var(--color-foreground), 0.04);
       --vss-media-bg: transparent;
       --vss-bottom-bg: rgb(var(--color-background));
@@ -238,6 +242,7 @@
       padding-left: var(--vss-edge-space);
       padding-right: var(--vss-edge-space);
       width: 100%;
+      min-width: 0;
     }
 
     #{{ section_dom_id }} > div {
@@ -249,12 +254,12 @@
       width: 100%;
       max-width: 100%;
       display: grid;
-      gap: 24px;
+      gap: var(--space-fluid-md, clamp(1rem, 0.75rem + 1.25vw, 2rem));
     }
 
     #{{ section_dom_id }} .video-sequence-slider__intro {
       display: grid;
-      gap: 16px;
+      gap: var(--space-4, 1rem);
       width: 100%;
       max-width: 100%;
     }
@@ -291,11 +296,11 @@
 
         {% if block.settings.max_width == 'narrow' %}
           #{{ section_dom_id }} .text-block-max-{{ block.id }} {
-            max-width: 48rem;
+            max-width: min(100%, 48rem);
           }
         {% elsif block.settings.max_width == 'normal' %}
           #{{ section_dom_id }} .text-block-max-{{ block.id }} {
-            max-width: 72rem;
+            max-width: min(100%, 72rem);
           }
         {% else %}
           #{{ section_dom_id }} .text-block-max-{{ block.id }} {
@@ -345,15 +350,16 @@
         }
 
         #{{ section_dom_id }} [data-block-id="{{ block.id }}"] .video-sequence-slider__title {
-          font-size: {{ block.settings.title_font_size }}px;
+          /* editor value is the ceiling; scales down ~15% on phones */
+          font-size: clamp({{ block.settings.title_font_size | times: 0.85 | round: 0 }}px, {{ block.settings.title_font_size | times: 0.85 | round: 0 }}px + 0.4vw, {{ block.settings.title_font_size }}px);
         }
 
         #{{ section_dom_id }} [data-block-id="{{ block.id }}"] .video-sequence-slider__product-title-link {
-          font-size: {{ block.settings.product_title_size }}px;
+          font-size: clamp({{ block.settings.product_title_size | times: 0.9 | round: 0 }}px, {{ block.settings.product_title_size | times: 0.9 | round: 0 }}px + 0.25vw, {{ block.settings.product_title_size }}px);
         }
 
         #{{ section_dom_id }} [data-block-id="{{ block.id }}"] .video-sequence-slider__product-price {
-          font-size: {{ block.settings.product_price_size }}px;
+          font-size: clamp({{ block.settings.product_price_size | times: 0.9 | round: 0 }}px, {{ block.settings.product_price_size | times: 0.9 | round: 0 }}px + 0.25vw, {{ block.settings.product_price_size }}px);
         }
       {% endif %}
     {% endfor %}
@@ -459,15 +465,15 @@
     #{{ section_dom_id }} .video-sequence-slider__bottom {
       background: var(--vss-bottom-bg);
       border-top: 1px solid rgba(var(--color-foreground), 0.08);
-      padding-top: 16px;
+      padding-top: var(--space-4, 1rem);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: var(--space-4, 1rem);
     }
 
     #{{ section_dom_id }} .video-sequence-slider__content {
       display: grid;
-      gap: 8px;
+      gap: var(--space-2, 0.5rem);
     }
 
     #{{ section_dom_id }} .video-sequence-slider__title {
@@ -489,12 +495,12 @@
 
     #{{ section_dom_id }} .video-sequence-slider__product {
       display: grid;
-      gap: 12px;
+      gap: var(--space-3, 0.75rem);
     }
 
     #{{ section_dom_id }} .video-sequence-slider__product-meta {
       display: grid;
-      gap: 6px;
+      gap: var(--space-1, 0.25rem);
     }
 
     #{{ section_dom_id }} .video-sequence-slider__product-title-link {
@@ -519,13 +525,14 @@
 
     #{{ section_dom_id }} .video-sequence-slider__atc {
       width: 100%;
+      min-height: var(--touch-target, 44px);
       justify-content: center;
     }
 
     #{{ section_dom_id }} .video-sequence-slider__arrow {
       display: none;
       position: absolute;
-      top: calc(50% - 23px);
+      top: calc(50% - var(--vss-arrow-size) / 2);
       z-index: 5;
       width: var(--vss-arrow-size);
       height: var(--vss-arrow-size);
@@ -546,19 +553,19 @@
     }
 
     #{{ section_dom_id }}.video-sequence-slider--full-width .video-sequence-slider__arrow--prev {
-      left: max(8px, calc(var(--vss-edge-space) - 12px));
+      left: max(var(--space-2, 0.5rem), calc(var(--vss-edge-space) - var(--space-3, 0.75rem)));
     }
 
     #{{ section_dom_id }}.video-sequence-slider--full-width .video-sequence-slider__arrow--next {
-      right: max(8px, calc(var(--vss-edge-space) - 12px));
+      right: max(var(--space-2, 0.5rem), calc(var(--vss-edge-space) - var(--space-3, 0.75rem)));
     }
 
     #{{ section_dom_id }}.video-sequence-slider--page-width .video-sequence-slider__arrow--prev {
-      left: 8px;
+      left: var(--space-2, 0.5rem);
     }
 
     #{{ section_dom_id }}.video-sequence-slider--page-width .video-sequence-slider__arrow--next {
-      right: 8px;
+      right: var(--space-2, 0.5rem);
     }
 
     #{{ section_dom_id }} .video-sequence-slider__arrow[disabled] {
@@ -569,11 +576,28 @@
     }
 
     #{{ section_dom_id }} .video-sequence-slider__arrow span {
-      font-size: 28px;
+      font-size: 1.5rem;
       line-height: 1;
     }
 
+    #{{ section_dom_id }} .video-sequence-slider__arrow:focus-visible {
+      outline: 2px solid currentcolor;
+      outline-offset: 2px;
+    }
+
+    /* Large phones: peek 2 cards */
+    @media screen and (min-width: 480px) {
+      #{{ section_dom_id }} .video-sequence-slider__track {
+        grid-auto-columns: calc((100% - var(--vss-gap)) / 2 - 4%);
+      }
+    }
+
+    /* Tablet and up: 3 cards, arrows visible, desktop side spacing */
     @media screen and (min-width: 750px) {
+      #{{ section_dom_id }} {
+        --vss-edge-space: var(--vss-edge-space-desktop);
+      }
+
       #{{ section_dom_id }} .video-sequence-slider__track {
         grid-auto-columns: calc((100% - (var(--vss-gap) * 2)) / 3);
       }
@@ -583,16 +607,14 @@
       }
     }
 
-    @media screen and (max-width: 749px) {
-      #{{ section_dom_id }} {
-        padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
-        padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
-        padding-left: var(--vss-edge-space-mobile);
-        padding-right: var(--vss-edge-space-mobile);
+    @media (prefers-reduced-motion: reduce) {
+      #{{ section_dom_id }} .video-sequence-slider__viewport {
+        scroll-behavior: auto;
       }
-
-      #{{ section_dom_id }} .video-sequence-slider__inner {
-        gap: 20px;
+      #{{ section_dom_id }} .video-sequence-slider__arrow,
+      #{{ section_dom_id }} .video-sequence-slider__arrow:hover {
+        transition: none;
+        transform: none;
       }
     }
   </style>
@@ -873,7 +895,7 @@
 
 {% schema %}
 {
-  "name": "Video sequence",
+  "name": "Video showcase",
   "tag": "section",
   "class": "section-wrapper",
   "max_blocks": 20,
@@ -1412,7 +1434,7 @@
   ],
   "presets": [
     {
-      "name": "Video sequence",
+      "name": "Video showcase",
       "settings": {
         "section_width": "full-width",
         "text_alignment": "center"

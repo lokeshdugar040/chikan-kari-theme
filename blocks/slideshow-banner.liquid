@@ -1,8 +1,9 @@
 {% doc %}
-  @prompt
-    make an slideshow clickable banner of multiple size medium small large adapt to first img and full size banner differ img option to put in mobile view and dekstop
+  Slideshow banner
+  Up to five clickable slides with separate desktop / mobile images.
+  Height presets interpolate fluidly between the mobile and desktop values.
 {% enddoc %}
-{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign banner_id = block.id | replace: '_', '' | downcase %}
 
 {% liquid
   assign first_desktop_image = blank
@@ -25,20 +26,47 @@
 %}
 
 {% style %}
-  .ai-slideshow-banner-{{ ai_gen_id }} {
+  {%- comment -%}
+    Mobile-first, fluid banner.
+    • Heights: fixed presets become a clamp() that scales from the phone value
+      to the desktop value across the viewport range – no jumps at breakpoints.
+    • Nav buttons never shrink below the 44px touch target.
+  {%- endcomment -%}
+  {%- liquid
+    case block.settings.image_size
+      when 'small'
+        assign h_mobile = 200
+        assign h_desktop = 300
+      when 'medium'
+        assign h_mobile = 350
+        assign h_desktop = 500
+      when 'large'
+        assign h_mobile = 500
+        assign h_desktop = 700
+      else
+        assign h_mobile = block.settings.mobile_height
+        assign h_desktop = block.settings.desktop_height
+    endcase
+    assign nav_size = block.settings.nav_button_size | at_least: 44
+  -%}
+
+  .slideshow-banner-{{ banner_id }} {
     --slide-bg-color: {{ block.settings.banner_background }};
+    --ai-nav-size: {{ nav_size }}px;
+    --ai-nav-offset: clamp(0.5rem, {{ block.settings.nav_button_offset | times: 0.5 }}px + 1vw, {{ block.settings.nav_button_offset }}px);
+    --ai-dots-offset: clamp(0.5rem, {{ block.settings.dots_offset | times: 0.5 }}px + 1vw, {{ block.settings.dots_offset }}px);
+    --ai-dot-size: clamp({{ block.settings.dot_size | times: 0.8 | round: 0 }}px, {{ block.settings.dot_size | times: 0.8 | round: 0 }}px + 0.25vw, {{ block.settings.dot_size }}px);
     position: relative;
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
     overflow: hidden;
     display: block;
     padding: 0;
     box-sizing: border-box;
   }
 
-  .ai-slideshow-container-{{ ai_gen_id }} {
+  .slideshow-banner__container-{{ banner_id }} {
     position: relative;
     width: 100%;
     background: var(--slide-bg-color);
@@ -47,35 +75,31 @@
   }
 
   {% if block.settings.image_size == 'adapt' %}
-    .ai-slideshow-container-{{ ai_gen_id }} {
-      aspect-ratio: {% if first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}2 / 1{% endif %};
-      min-height: 220px;
+    /* Adapt: follow the first mobile image's ratio on phones, desktop image's ratio from tablet up */
+    .slideshow-banner__container-{{ banner_id }} {
+      aspect-ratio: {% if first_mobile_image != blank %}{{ first_mobile_image.aspect_ratio }}{% elsif first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}1 / 1{% endif %};
+      min-height: clamp(11.25rem, 40vw, 13.75rem);
     }
-  {% elsif block.settings.image_size == 'small' %}
-    .ai-slideshow-container-{{ ai_gen_id }} {
-      height: 300px;
-    }
-  {% elsif block.settings.image_size == 'medium' %}
-    .ai-slideshow-container-{{ ai_gen_id }} {
-      height: 500px;
-    }
-  {% elsif block.settings.image_size == 'large' %}
-    .ai-slideshow-container-{{ ai_gen_id }} {
-      height: 700px;
+
+    @media screen and (min-width: 750px) {
+      .slideshow-banner__container-{{ banner_id }} {
+        aspect-ratio: {% if first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}2 / 1{% endif %};
+      }
     }
   {% else %}
-    .ai-slideshow-container-{{ ai_gen_id }} {
-      height: {{ block.settings.desktop_height }}px;
+    /* Fixed presets / custom: fluid between phone and desktop values, capped at the desktop value */
+    .slideshow-banner__container-{{ banner_id }} {
+      height: clamp({{ h_mobile }}px, {{ h_mobile }}px + ({{ h_desktop | minus: h_mobile }} / 1040) * (100vw - 360px), {{ h_desktop }}px);
     }
   {% endif %}
 
-  .ai-slideshow-slides-{{ ai_gen_id }} {
+  .slideshow-banner__slides-{{ banner_id }} {
     position: relative;
     width: 100%;
     height: 100%;
   }
 
-  .ai-slideshow-slide-{{ ai_gen_id }} {
+  .slideshow-banner__slide-{{ banner_id }} {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -85,12 +109,12 @@
     pointer-events: none;
   }
 
-  .ai-slideshow-slide-{{ ai_gen_id }}.active {
+  .slideshow-banner__slide-{{ banner_id }}.active {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .ai-slideshow-link-{{ ai_gen_id }} {
+  .slideshow-banner__link-{{ banner_id }} {
     display: block;
     width: 100%;
     height: 100%;
@@ -99,13 +123,18 @@
     background: var(--slide-bg-color);
   }
 
-  .ai-slideshow-picture-{{ ai_gen_id }} {
+  .slideshow-banner__link-{{ banner_id }}:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: -4px;
+  }
+
+  .slideshow-banner__picture-{{ banner_id }} {
     display: block;
     width: 100%;
     height: 100%;
   }
 
-  .ai-slideshow-image-{{ ai_gen_id }} {
+  .slideshow-banner__image-{{ banner_id }} {
     width: 100%;
     height: 100%;
     display: block;
@@ -114,7 +143,7 @@
     background: var(--slide-bg-color);
   }
 
-  .ai-slideshow-placeholder-{{ ai_gen_id }} {
+  .slideshow-banner__placeholder-{{ banner_id }} {
     width: 100%;
     height: 100%;
     background-color: #f4f4f4;
@@ -124,33 +153,33 @@
     position: relative;
   }
 
-  .ai-slideshow-placeholder-{{ ai_gen_id }} svg {
+  .slideshow-banner__placeholder-{{ banner_id }} svg {
     width: 100%;
     height: 100%;
-    max-width: 500px;
-    max-height: 500px;
+    max-width: min(100%, 31.25rem);
+    max-height: min(100%, 31.25rem);
   }
 
-  .ai-slideshow-empty-state-{{ ai_gen_id }} {
+  .slideshow-banner__empty-state-{{ banner_id }} {
     position: absolute;
-    bottom: 20px;
+    bottom: var(--space-5, 1.25rem);
     left: 50%;
     transform: translateX(-50%);
-    padding: 12px 20px;
-    font-size: 14px;
+    padding: var(--space-3, 0.75rem) var(--space-5, 1.25rem);
+    font-size: var(--text-sm, 0.875rem);
     color: #666;
     text-align: center;
     pointer-events: none;
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }} {
+  .slideshow-banner__nav-{{ banner_id }} {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
     background-color: {{ block.settings.nav_button_color }};
     border: none;
-    width: {{ block.settings.nav_button_size }}px;
-    height: {{ block.settings.nav_button_size }}px;
+    width: var(--ai-nav-size);
+    height: var(--ai-nav-size);
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -161,146 +190,92 @@
     opacity: {{ block.settings.nav_button_opacity | divided_by: 100.0 }};
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }}:hover {
+  .slideshow-banner__nav-{{ banner_id }}:hover,
+  .slideshow-banner__nav-{{ banner_id }}:focus-visible {
     background-color: {{ block.settings.nav_button_hover_color }};
     opacity: 1;
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }} svg {
-    width: calc({{ block.settings.nav_button_size }}px * 0.5);
-    height: calc({{ block.settings.nav_button_size }}px * 0.5);
+  .slideshow-banner__nav-{{ banner_id }}:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  .slideshow-banner__nav-{{ banner_id }} svg {
+    width: calc(var(--ai-nav-size) * 0.5);
+    height: calc(var(--ai-nav-size) * 0.5);
     fill: {{ block.settings.nav_icon_color }};
   }
 
-  .ai-slideshow-nav-prev-{{ ai_gen_id }} {
-    left: {{ block.settings.nav_button_offset }}px;
+  .slideshow-banner__nav-prev-{{ banner_id }} {
+    left: var(--ai-nav-offset);
   }
 
-  .ai-slideshow-nav-next-{{ ai_gen_id }} {
-    right: {{ block.settings.nav_button_offset }}px;
+  .slideshow-banner__nav-next-{{ banner_id }} {
+    right: var(--ai-nav-offset);
   }
 
-  .ai-slideshow-dots-{{ ai_gen_id }} {
+  .slideshow-banner__dots-{{ banner_id }} {
     position: absolute;
-    bottom: {{ block.settings.dots_offset }}px;
+    bottom: var(--ai-dots-offset);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 10px;
+    gap: var(--space-2, 0.5rem);
     z-index: 10;
   }
 
-  .ai-slideshow-dot-{{ ai_gen_id }} {
-    width: {{ block.settings.dot_size }}px;
-    height: {{ block.settings.dot_size }}px;
+  /* Dots: visual size from settings, but the tap area is padded up to 44px */
+  .slideshow-banner__dot-{{ banner_id }} {
+    position: relative;
+    width: var(--ai-dot-size);
+    height: var(--ai-dot-size);
     border-radius: 50%;
     background-color: {{ block.settings.dot_color }};
     border: none;
+    padding: 0;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
     opacity: {{ block.settings.dot_opacity | divided_by: 100.0 }};
   }
 
-  .ai-slideshow-dot-{{ ai_gen_id }}.active {
+  .slideshow-banner__dot-{{ banner_id }}::before {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(var(--ai-dot-size), 1.75rem);
+    height: max(var(--ai-dot-size), 2.75rem);
+    transform: translate(-50%, -50%);
+  }
+
+  .slideshow-banner__dot-{{ banner_id }}.active {
     background-color: {{ block.settings.dot_active_color }};
     transform: scale(1.2);
     opacity: 1;
   }
 
-  @media screen and (min-width: 750px) and (max-width: 1024px) {
-    {% if block.settings.image_size == 'adapt' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        aspect-ratio: {% if first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}2 / 1{% endif %};
-        min-height: 200px;
-      }
-    {% elsif block.settings.image_size == 'small' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: 260px;
-      }
-    {% elsif block.settings.image_size == 'medium' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: 420px;
-      }
-    {% elsif block.settings.image_size == 'large' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: 560px;
-      }
-    {% else %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: {{ block.settings.tablet_height }}px;
-      }
-    {% endif %}
-
-    .ai-slideshow-nav-{{ ai_gen_id }} {
-      width: calc({{ block.settings.nav_button_size }}px * 0.9);
-      height: calc({{ block.settings.nav_button_size }}px * 0.9);
-    }
-
-    .ai-slideshow-nav-prev-{{ ai_gen_id }} {
-      left: calc({{ block.settings.nav_button_offset }}px * 0.8);
-    }
-
-    .ai-slideshow-nav-next-{{ ai_gen_id }} {
-      right: calc({{ block.settings.nav_button_offset }}px * 0.8);
-    }
+  .slideshow-banner__dot-{{ banner_id }}:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 3px;
   }
 
-  @media screen and (max-width: 749px) {
-    {% if block.settings.image_size == 'adapt' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        aspect-ratio: {% if first_mobile_image != blank %}{{ first_mobile_image.aspect_ratio }}{% elsif first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}1 / 1{% endif %};
-        min-height: 180px;
-      }
-    {% elsif block.settings.image_size == 'small' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: 200px;
-      }
-    {% elsif block.settings.image_size == 'medium' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: 350px;
-      }
-    {% elsif block.settings.image_size == 'large' %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: 500px;
-      }
-    {% else %}
-      .ai-slideshow-container-{{ ai_gen_id }} {
-        height: {{ block.settings.mobile_height }}px;
-      }
-    {% endif %}
-
-    .ai-slideshow-nav-{{ ai_gen_id }} {
-      width: calc({{ block.settings.nav_button_size }}px * 0.8);
-      height: calc({{ block.settings.nav_button_size }}px * 0.8);
-    }
-
-    .ai-slideshow-nav-prev-{{ ai_gen_id }} {
-      left: calc({{ block.settings.nav_button_offset }}px * 0.5);
-    }
-
-    .ai-slideshow-nav-next-{{ ai_gen_id }} {
-      right: calc({{ block.settings.nav_button_offset }}px * 0.5);
-    }
-
-    .ai-slideshow-dots-{{ ai_gen_id }} {
-      bottom: calc({{ block.settings.dots_offset }}px * 0.5);
-    }
-
-    .ai-slideshow-dot-{{ ai_gen_id }} {
-      width: calc({{ block.settings.dot_size }}px * 0.8);
-      height: calc({{ block.settings.dot_size }}px * 0.8);
+  @media (prefers-reduced-motion: reduce) {
+    .slideshow-banner__slide-{{ banner_id }},
+    .slideshow-banner__nav-{{ banner_id }},
+    .slideshow-banner__dot-{{ banner_id }} {
+      transition: none;
     }
   }
 {% endstyle %}
 
-<slideshow-banner-{{ ai_gen_id }}
-  class="ai-slideshow-banner-{{ ai_gen_id }}"
+<slideshow-banner-{{ banner_id }}
+  class="slideshow-banner-{{ banner_id }}"
   data-autoplay="{{ block.settings.autoplay }}"
   data-autoplay-speed="{{ block.settings.autoplay_speed }}"
   {{ block.shopify_attributes }}
 >
-  <div class="ai-slideshow-container-{{ ai_gen_id }}">
-    <div class="ai-slideshow-slides-{{ ai_gen_id }}">
+  <div class="slideshow-banner__container-{{ banner_id }}">
+    <div class="slideshow-banner__slides-{{ banner_id }}">
       {% liquid
         assign has_slides = false
         for i in (1..5)
@@ -329,16 +304,16 @@
 
           {% if desktop_image != blank %}
             <div
-              class="ai-slideshow-slide-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+              class="slideshow-banner__slide-{{ banner_id }} {% if forloop.first %}active{% endif %}"
               data-slide-index="{{ forloop.index0 }}"
             >
               {% if link != blank %}
-                <a href="{{ link }}" class="ai-slideshow-link-{{ ai_gen_id }}">
+                <a href="{{ link }}" class="slideshow-banner__link-{{ banner_id }}">
               {% else %}
-                <div class="ai-slideshow-link-{{ ai_gen_id }}">
+                <div class="slideshow-banner__link-{{ banner_id }}">
               {% endif %}
 
-              <picture class="ai-slideshow-picture-{{ ai_gen_id }}">
+              <picture class="slideshow-banner__picture-{{ banner_id }}">
                 {% if mobile_image != blank %}
                   <source
                     media="(max-width: 749px)"
@@ -377,7 +352,7 @@
                   fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}"
                   width="{{ desktop_image.width }}"
                   height="{{ desktop_image.height }}"
-                  class="ai-slideshow-image-{{ ai_gen_id }}"
+                  class="slideshow-banner__image-{{ banner_id }}"
                 >
               </picture>
 
@@ -390,10 +365,10 @@
           {% endif %}
         {% endfor %}
       {% else %}
-        <div class="ai-slideshow-slide-{{ ai_gen_id }} active">
-          <div class="ai-slideshow-placeholder-{{ ai_gen_id }}">
+        <div class="slideshow-banner__slide-{{ banner_id }} active">
+          <div class="slideshow-banner__placeholder-{{ banner_id }}">
             {{ 'hero-apparel-1' | placeholder_svg_tag }}
-            <div class="ai-slideshow-empty-state-{{ ai_gen_id }}">
+            <div class="slideshow-banner__empty-state-{{ banner_id }}">
               Next, add images for your slideshow
             </div>
           </div>
@@ -415,7 +390,7 @@
 
       {% if slide_count > 1 %}
         <button
-          class="ai-slideshow-nav-{{ ai_gen_id }} ai-slideshow-nav-prev-{{ ai_gen_id }}"
+          class="slideshow-banner__nav-{{ banner_id }} slideshow-banner__nav-prev-{{ banner_id }}"
           aria-label="Previous slide"
           type="button"
         >
@@ -425,7 +400,7 @@
         </button>
 
         <button
-          class="ai-slideshow-nav-{{ ai_gen_id }} ai-slideshow-nav-next-{{ ai_gen_id }}"
+          class="slideshow-banner__nav-{{ banner_id }} slideshow-banner__nav-next-{{ banner_id }}"
           aria-label="Next slide"
           type="button"
         >
@@ -449,7 +424,7 @@
       {% endfor %}
 
       {% if slide_count > 1 %}
-        <div class="ai-slideshow-dots-{{ ai_gen_id }}">
+        <div class="slideshow-banner__dots-{{ banner_id }}">
           {% for i in (1..5) %}
             {% liquid
               assign desktop_image_key = 'slide_' | append: i | append: '_desktop_image'
@@ -458,7 +433,7 @@
 
             {% if desktop_image != blank %}
               <button
-                class="ai-slideshow-dot-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+                class="slideshow-banner__dot-{{ banner_id }} {% if forloop.first %}active{% endif %}"
                 data-slide-index="{{ forloop.index0 }}"
                 aria-label="Go to slide {{ forloop.index }}"
                 type="button"
@@ -469,11 +444,11 @@
       {% endif %}
     {% endif %}
   </div>
-</slideshow-banner-{{ ai_gen_id }}>
+</slideshow-banner-{{ banner_id }}>
 
 <script>
   (function() {
-    class SlideshowBanner{{ ai_gen_id }} extends HTMLElement {
+    class SlideshowBanner{{ banner_id }} extends HTMLElement {
       constructor() {
         super();
         this.currentSlide = 0;
@@ -481,10 +456,10 @@
       }
 
       connectedCallback() {
-        this.slides = this.querySelectorAll('.ai-slideshow-slide-{{ ai_gen_id }}');
-        this.dots = this.querySelectorAll('.ai-slideshow-dot-{{ ai_gen_id }}');
-        this.prevButton = this.querySelector('.ai-slideshow-nav-prev-{{ ai_gen_id }}');
-        this.nextButton = this.querySelector('.ai-slideshow-nav-next-{{ ai_gen_id }}');
+        this.slides = this.querySelectorAll('.slideshow-banner__slide-{{ banner_id }}');
+        this.dots = this.querySelectorAll('.slideshow-banner__dot-{{ banner_id }}');
+        this.prevButton = this.querySelector('.slideshow-banner__nav-prev-{{ banner_id }}');
+        this.nextButton = this.querySelector('.slideshow-banner__nav-next-{{ banner_id }}');
         this.autoplay = this.dataset.autoplay === 'true';
         this.autoplaySpeed = parseInt(this.dataset.autoplaySpeed, 10) * 1000;
 
@@ -556,7 +531,7 @@
       }
     }
 
-    customElements.define('slideshow-banner-{{ ai_gen_id }}', SlideshowBanner{{ ai_gen_id }});
+    customElements.define('slideshow-banner-{{ banner_id }}', SlideshowBanner{{ banner_id }});
   })();
 </script>
 
@@ -596,6 +571,7 @@
       "type": "range",
       "id": "tablet_height",
       "label": "Tablet / iPad height",
+      "info": "No longer used: height now scales fluidly between the Mobile and Desktop values.",
       "min": 200,
       "max": 900,
       "step": 50,
