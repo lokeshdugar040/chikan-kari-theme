@@ -1,0 +1,51 @@
+{%- doc -%}
+  Renders the <img> element using provided image object
+
+  @param {object} image - image object
+  @param {number} [width] - maximum CDN width to request
+  @param {string} [widths] - widths attribute values
+  @param {string} [sizes] - sizes attribute
+  @param {string} [class] - additional classes
+  @param {string} [text_fallback] - text to display if image is blank
+  @param {boolean} [unset_image_tag] - if true, ignores the image focal point
+  @param {string} [style] - additional styles
+  @param {string} [loading] - loading attribute
+  @param {string} [alt] - override alt text
+
+  @example
+  {% render 'image',
+    image: product.featured_image,
+    width: 1000,
+    widths: '240, 320, 480, 640, 800, 1000',
+    sizes: '(max-width: 749px) 100vw, 50vw',
+    class: 'product-image'
+  %}
+{%- enddoc -%}
+
+{% if image != blank %}
+  {% assign image_class = class | default: '' %}
+  {% assign image_sizes = sizes | default: '(max-width: 749px) 100vw, 50vw' %}
+  {% assign image_widths = widths | default: '240, 320, 480, 640, 800, 1000' %}
+  {% assign image_width = width | default: 1000 %}
+  {% assign image_loading = loading | default: 'lazy' %}
+  {% assign image_alt = alt | default: image.alt %}
+  {% assign style_value = style | default: '' %}
+
+  {% if unset_image_tag %}
+    {% assign style_value = style_value | append: 'object-position: inherit;' %}
+  {% endif %}
+
+  {{
+    image
+    | image_url: width: image_width
+    | image_tag:
+      loading: image_loading,
+      widths: image_widths,
+      sizes: image_sizes,
+      class: image_class,
+      style: style_value,
+      alt: image_alt | escape
+  }}
+{% elsif text_fallback %}
+  {{ text_fallback }}
+{% endif %}

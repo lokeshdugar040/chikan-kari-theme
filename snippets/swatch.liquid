@@ -1,0 +1,215 @@
+{%- doc -%}
+  Renders a swatch from a variant image, swatch image, or swatch color.
+
+  @param {object} swatch - a swatch object
+  @param {object} [variant_image] - an alternate image when there is no swatch value
+  @param {string} [mode] - one of 'unscaled', 'filter', 'pill'
+{%- enddoc -%}
+
+{% liquid
+  assign swatch_value = null
+  assign extra_classes = ''
+  assign swatch_focal_point = 'center center'
+
+  if settings.show_variant_image and variant_image
+    assign swatch_image_width = settings.variant_swatch_width | times: 2
+    assign swatch_image_url = variant_image | image_url: width: swatch_image_width
+    assign swatch_value = 'url(' | append: swatch_image_url | append: ')'
+    assign extra_classes = extra_classes | append: ' swatch--variant-image'
+  elsif swatch.image
+    assign swatch_image_url = swatch.image | image_url: width: 160
+    assign swatch_value = 'url(' | append: swatch_image_url | append: ')'
+    assign swatch_focal_point = swatch.image.presentation.focal_point | default: 'center center'
+    assign extra_classes = extra_classes | append: ' swatch--image'
+  elsif swatch.color
+    assign swatch_value = 'rgb(' | append: swatch.color.rgb | append: ')'
+    assign extra_classes = extra_classes | append: ' swatch--color'
+  endif
+
+  case mode
+    when 'unscaled'
+      assign extra_classes = extra_classes | append: ' swatch--unscaled'
+    when 'filter'
+      assign extra_classes = extra_classes | append: ' swatch--filter'
+    when 'pill'
+      assign extra_classes = extra_classes | append: ' swatch--pill'
+  endcase
+%}
+
+<span
+  class="
+    swatch
+    {{ extra_classes }}
+    {% if swatch_value == null %}swatch--unavailable{% endif %}
+  "
+  style="
+    --swatch-background: {{ swatch_value }};
+    --swatch-focal-point: {{ swatch_focal_point }};
+  "
+  aria-hidden="true"
+></span>
+
+{% stylesheet %}
+
+/* SIMPLE, TIGHT 4:5 SWATCHES — NO EXTRA SPACE, NO CROPPED BORDER */
+
+/* Reset containers */
+product-swatches ul,
+product-swatches li,
+product-swatches label {
+  box-sizing: border-box !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Swatch row */
+product-swatches .variant-option__swatches-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Clickable swatch container — SAME SIZE AS IMAGE */
+product-swatches label:has(.swatch),
+.variant-option__button-label--has-swatch,
+.swatch-input__label {
+  box-sizing: border-box !important;
+  display: block !important;
+
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 50px !important;
+  min-height: 50px !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  outline: none !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+
+  overflow: hidden !important;
+  line-height: 0 !important;
+}
+
+/* Actual swatch image — FILLS LABEL EXACTLY */
+product-swatches .swatch,
+product-swatches .swatch--variant-image,
+product-swatches .swatch--image,
+product-swatches .swatch--color {
+  box-sizing: border-box !important;
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background-color: transparent !important;
+  background-image: var(--swatch-background) !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: top center !important;
+
+  border: 0 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+}
+
+/* Use focal point if available */
+product-swatches .swatch--image {
+  background-position: var(--swatch-focal-point, top center) !important;
+}
+
+/* Remove theme-generated outer layers */
+product-swatches label::before,
+product-swatches label::after,
+product-swatches .swatch::before,
+product-swatches .swatch::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide native input styling */
+product-swatches input[type="radio"],
+product-swatches input[type="checkbox"],
+.variant-option__swatch input,
+.variant-option__button-label--has-swatch input,
+.swatch-input__input {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  cursor: pointer !important;
+}
+
+/* Selected swatch: tight border on IMAGE only */
+product-swatches label:has(input:checked) .swatch,
+product-swatches label:has(input:checked) .swatch--variant-image,
+product-swatches label:has(input:checked) .swatch--image,
+product-swatches label:has(input:checked) .swatch--color {
+  border: 3px solid rgb(var(--color-foreground-rgb)) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+/* Focus state: slightly stronger border on IMAGE */
+product-swatches label:has(input:focus-visible) .swatch,
+product-swatches label:has(input:focus-visible) .swatch--variant-image,
+product-swatches label:has(input:focus-visible) .swatch--image,
+product-swatches label:has(input:focus-visible) .swatch--color {
+  border: 1.5px solid rgb(var(--color-foreground-rgb)) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 0 0 0.5px rgb(var(--color-foreground-rgb) / 0.2) !important;
+}
+
+/* Mobile — slightly smaller, same proportions */
+@media screen and (max-width: 749px) {
+  product-swatches label:has(.swatch),
+  .variant-option__button-label--has-swatch,
+  .swatch-input__label {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    border-radius: 10px !important;
+  }
+}
+
+/* Desktop / tablet — slightly larger */
+@media screen and (min-width: 750px) {
+  product-swatches label:has(.swatch),
+  .variant-option__button-label--has-swatch,
+  .swatch-input__label {
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    border-radius: 10px !important;
+  }
+}
+
+{% endstylesheet %}

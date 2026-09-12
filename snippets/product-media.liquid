@@ -1,0 +1,230 @@
+{%- doc -%}
+  Renders a product media component.
+
+  @param {object} media - The product media object.
+  @param {boolean} [preview_image_only] - Renders only the preview image without controls.
+  @param {string} [widths] - Image widths for responsive images.
+  @param {string} [sizes] - Image sizes for responsive images.
+  @param {string} [loading] - The loading attribute for the image.
+  @param {object} [block] - The block object.
+  @param {object} [section] - The section object.
+  @param {object} [selected_product] - The currently selected product.
+  @param {boolean} [first_3d_model] - Indicates if this is the first 3D model.
+  @param {boolean} [is_main_product_media] - Indicates if this is the main product image.
+  @param {string} [image_ref] - Optional ref attribute for the image element.
+
+  @example
+  {% render 'product-media', media: media, preview_image_only: false, loading: 'lazy' %}
+{%- enddoc -%}
+
+{% liquid
+  assign widths = widths | default: '320, 480, 640, 750, 960, 1200, 1440'
+  assign sizes = sizes | default: '(max-width: 749px) 100vw, (max-width: 1200px) 50vw, 42vw'
+
+  assign ref_image_to_transition = ''
+  if settings.transition_to_main_product
+    assign ref_image_to_transition = 'imagesToTransition[]'
+  endif
+
+  assign final_ref = image_ref
+  if final_ref == blank and ref_image_to_transition != blank
+    assign final_ref = ref_image_to_transition
+  endif
+
+  assign resolved_loading = loading
+  assign fetch_priority = 'auto'
+  assign image_width = 1440
+
+  if resolved_loading == blank
+    if is_main_product_media
+      assign resolved_loading = 'eager'
+    elsif section and section.index and section.index <= 2
+      assign resolved_loading = 'eager'
+    else
+      assign resolved_loading = 'lazy'
+    endif
+  endif
+
+  if is_main_product_media
+    assign fetch_priority = 'high'
+    assign image_width = 1600
+    assign resolved_loading = 'eager'
+  endif
+
+  assign high_res_url = media.preview_image | image_url: width: 1600
+  assign focal_point_style = '--focal-point: ' | append: media.presentation.focal_point | append: ';'
+%}
+
+<div
+  class="product-media"
+  style="--ratio: {{ media.aspect_ratio }}"
+  data-media-id="{{ media.id }}"
+>
+  {{
+    media.preview_image
+    | image_url: width: image_width
+    | image_tag:
+      widths: widths,
+      alt: media.alt,
+      sizes: sizes,
+      loading: resolved_loading,
+      class: 'product-media__image',
+      ref: final_ref,
+      data_max_resolution: high_res_url,
+      fetchpriority: fetch_priority,
+      style: focal_point_style
+  }}
+
+  {% unless preview_image_only %}
+    {%- case media.media_type -%}
+      {% when 'model' %}
+        <product-model data-media-id="{{ media.id }}">
+          <button
+            class="button deferred-media__poster-button button-unstyled"
+            ref="deferredMediaPlayButton"
+            on:click="/showDeferredMedia"
+            type="button"
+          >
+            {{
+              media.preview_image
+              | image_url: width: 1200
+              | image_tag:
+                widths: '320, 480, 640, 750, 960, 1200',
+                alt: media.alt,
+                sizes: sizes,
+                loading: 'lazy',
+                class: 'deferred-media__poster-image'
+            }}
+            <span class="deferred-media__poster-icon">
+              <span class="visually-hidden">{{ 'accessibility.play_model' | t }}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+                focusable="false"
+                class="icon"
+                fill="none"
+                viewBox="0 0 18 21"
+              >
+                {% render 'icon', icon: '3d-model' %}
+              </svg>
+            </span>
+          </button>
+
+          <template>
+            {{ media | model_viewer_tag }}
+          </template>
+        </product-model>
+
+        <button
+          class="button button-secondary button-shopify-xr"
+          type="button"
+          data-shopify-xr
+          data-shopify-model3d-id="{{ media.id }}"
+          data-shopify-title="{{ selected_product.title | escape }}"
+          data-shopify-xr-hidden
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            focusable="false"
+            class="icon icon-default"
+            fill="none"
+            viewBox="0 0 18 21"
+          >
+            {% render 'icon', icon: '3d-model' %}
+          </svg>
+          {{ 'actions.view_in_your_space' | t }}
+        </button>
+
+        {%- if first_3d_model -%}
+          <script
+            type="application/json"
+            id="ProductModelJSON-{{ selected_product.id }}"
+          >
+            {{ selected_product.media | where: 'media_type', 'model' | json }}
+          </script>
+        {%- endif -%}
+
+      {% when 'video', 'external_video' %}
+        {%- render 'video',
+          video: media,
+          video_loop: block.settings.video_loop,
+          widths: '320, 480, 640, 750, 960, 1200',
+          sizes: sizes,
+          loading: resolved_loading,
+          disable_controls: true,
+          section_id: section.id
+        -%}
+    {% endcase %}
+  {% endunless %}
+</div>
+
+{% stylesheet %}
+  .product-media {
+    aspect-ratio: var(--gallery-aspect-ratio, var(--ratio));
+    min-height: 0;
+    min-width: 0;
+    background: rgb(var(--color-background));
+    overflow: hidden;
+  }
+
+  .product-media__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--focal-point, center center);
+  }
+
+  @media screen and (min-width: 750px) {
+    .media-gallery--carousel slideshow-container,
+    .media-gallery--grid .product-media > * {
+      border-radius: var(--media-radius, 0);
+      overflow: hidden;
+    }
+
+    .product-information:not(.product-information--media-right)
+      .media-gallery--carousel.media-gallery--extend
+      slideshow-container {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .product-information.product-information--media-right
+      .media-gallery--carousel.media-gallery--extend
+      slideshow-container {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .product-information:not(.product-information--media-right) {
+      .media-gallery--grid.media-gallery--extend:not(.media-gallery--two-column) .product-media > *,
+      .media-gallery--grid.media-gallery--extend.media-gallery--two-column:not(.media-gallery--large-first-image)
+        .product-media-container:nth-of-type(odd)
+        .product-media
+        > *,
+      .media-gallery--grid.media-gallery--extend.media-gallery--two-column.media-gallery--large-first-image
+        .product-media-container:is(:first-of-type, :nth-of-type(even))
+        .product-media
+        > * {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+    }
+
+    .product-information.product-information--media-right {
+      .media-gallery--grid.media-gallery--extend:not(.media-gallery--two-column) .product-media > *,
+      .media-gallery--grid.media-gallery--extend.media-gallery--two-column:not(.media-gallery--large-first-image)
+        .product-media-container:nth-of-type(even)
+        .product-media
+        > *,
+      .media-gallery--grid.media-gallery--extend.media-gallery--two-column.media-gallery--large-first-image
+        .product-media-container:is(:first-of-type, :nth-of-type(odd))
+        .product-media
+        > * {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+{% endstylesheet %}

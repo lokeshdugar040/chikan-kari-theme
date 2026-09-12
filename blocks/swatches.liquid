@@ -1,0 +1,352 @@
+{%- liquid
+  assign block_settings = block.settings
+  assign product_has_swatches = false
+
+  for product_option in closest.product.options_with_values
+    assign swatch_count = product_option.values | map: 'swatch' | compact | size
+
+    if swatch_count > 0
+      assign product_has_swatches = true
+    endif
+  endfor
+-%}
+
+{% if product_has_swatches %}
+  <product-swatches
+    data-product-id="{{ closest.product.id }}"
+    data-product-url="{{ closest.product.url }}"
+    style="
+      --product-swatches-alignment:
+        {% if block_settings.product_swatches_alignment == 'flex-start' %}
+          flex-start
+        {% elsif block_settings.product_swatches_alignment == 'flex-end' %}
+          flex-end
+        {% else %}
+          center
+        {% endif %};
+
+      --product-swatches-alignment-mobile:
+        {% if block_settings.product_swatches_alignment_mobile == 'flex-start' %}
+          flex-start
+        {% elsif block_settings.product_swatches_alignment_mobile == 'flex-end' %}
+          flex-end
+        {% else %}
+          center
+        {% endif %};
+
+      --product-swatches-padding-block-start: {{ block_settings.product_swatches_padding_top }}px;
+      --product-swatches-padding-block-end: {{ block_settings.product_swatches_padding_bottom }}px;
+      --product-swatches-padding-inline-start: {{ block_settings.product_swatches_padding_left }}px;
+      --product-swatches-padding-inline-end: {{ block_settings.product_swatches_padding_right }}px;
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% render 'variant-swatches', product_resource: closest.product %}
+  </product-swatches>
+{% endif %}
+
+{% stylesheet %}
+  /* ============================================================
+     PRODUCT SWATCHES
+     Larger, responsive, aligned, and not cropped
+     ============================================================ */
+
+  product-swatches {
+    --swatch-size: 34px;
+    --swatch-gap: 8px;
+
+    display: block;
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    padding-block-start: var(
+      --product-swatches-padding-block-start,
+      0px
+    );
+
+    padding-block-end: var(
+      --product-swatches-padding-block-end,
+      0px
+    );
+
+    padding-inline-start: var(
+      --product-swatches-padding-inline-start,
+      0px
+    );
+
+    padding-inline-end: var(
+      --product-swatches-padding-inline-end,
+      0px
+    );
+
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  /* Allow the custom overflow list to expand */
+  product-swatches overflow-list {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  /* Swatch list layout */
+  product-swatches overflow-list::part(list) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: var(
+      --product-swatches-alignment,
+      flex-start
+    );
+
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    gap: var(--swatch-gap);
+    padding: 0;
+    margin: 0;
+
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  /* Variant swatch group */
+  product-swatches .variant-option--swatches {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  product-swatches .variant-option--swatches > overflow-list {
+    width: 100%;
+    overflow: visible !important;
+  }
+
+  /* Swatch label wrapper */
+  product-swatches .variant-option__button-label,
+  product-swatches .variant-option__button-label--has-swatch {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 var(--swatch-size);
+
+    width: var(--swatch-size);
+    min-width: var(--swatch-size);
+    max-width: var(--swatch-size);
+
+    height: var(--swatch-size);
+    min-height: var(--swatch-size);
+    max-height: var(--swatch-size);
+
+    margin: 0;
+    padding: 0 !important;
+
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  /* Actual swatch */
+  product-swatches .swatch,
+  product-swatches .swatch.swatch--unscaled,
+  product-swatches .swatch.swatch--variant-image {
+    --swatch-width: var(--swatch-size) !important;
+    --swatch-height: var(--swatch-size) !important;
+
+    display: block;
+    flex: 0 0 var(--swatch-size);
+
+    width: var(--swatch-size) !important;
+    min-width: var(--swatch-size) !important;
+    max-width: var(--swatch-size) !important;
+
+    height: var(--swatch-size) !important;
+    min-height: var(--swatch-size) !important;
+    max-height: var(--swatch-size) !important;
+
+    box-sizing: border-box;
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  /* Keep the input clickable across the full swatch */
+  product-swatches .variant-option__button-label input {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Do not crop selected or focused outlines */
+  product-swatches .variant-option__button-label:has(:checked),
+  product-swatches .variant-option__button-label:has(:focus-visible),
+  product-swatches
+    .variant-option__button-label--has-swatch:has(:checked) {
+    overflow: visible !important;
+    clip-path: none !important;
+  }
+
+  /* Desktop */
+  @media screen and (min-width: 750px) {
+    product-swatches {
+      --swatch-size: 36px;
+      --swatch-gap: 9px;
+    }
+
+    product-swatches overflow-list::part(list) {
+      justify-content: var(
+        --product-swatches-alignment,
+        flex-start
+      );
+    }
+  }
+
+  /* Mobile */
+  @media screen and (max-width: 749px) {
+    product-swatches {
+      --swatch-size: 32px;
+      --swatch-gap: 8px;
+    }
+
+    product-swatches overflow-list::part(list) {
+      justify-content: var(
+        --product-swatches-alignment-mobile,
+        flex-start
+      );
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.swatches",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.resource_reference_product_swatches"
+    },
+    {
+      "type": "select",
+      "id": "product_swatches_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "product_swatches_alignment_mobile",
+      "label": "t:settings.alignment_mobile",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding",
+      "visible_if": "{{ block.settings.hide_padding == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_padding",
+      "label": "t:settings.hide_padding",
+      "default": false,
+      "visible_if": "{{ false }}"
+    },
+    {
+      "type": "range",
+      "id": "product_swatches_padding_top",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ block.settings.hide_padding == false }}"
+    },
+    {
+      "type": "range",
+      "id": "product_swatches_padding_bottom",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ block.settings.hide_padding == false }}"
+    },
+    {
+      "type": "range",
+      "id": "product_swatches_padding_left",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.hide_padding == false }}"
+    },
+    {
+      "type": "range",
+      "id": "product_swatches_padding_right",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.hide_padding == false }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.swatches",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

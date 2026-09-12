@@ -1,0 +1,460 @@
+<div
+  id="buy-more-note-{{ block.id }}"
+  class="buy-more-note"
+  aria-labelledby="buy-more-note-title-{{ block.id }}"
+  {{ block.shopify_attributes }}
+  style="
+    --bmn-title-font: {{ block.settings.title_font }};
+    --bmn-body-font: {{ block.settings.body_font }};
+    --bmn-saving-font: {{ block.settings.saving_font }};
+    --bmn-title-size: {{ block.settings.title_size }};
+    --bmn-body-size: {{ block.settings.body_size }};
+    --bmn-saving-size: {{ block.settings.saving_size }};
+    --bmn-title-color: {{ block.settings.title_color }};
+    --bmn-text-color: {{ block.settings.body_color }};
+    --bmn-saving-color: {{ block.settings.saving_color }};
+    --bmn-featured-color: {{ block.settings.featured_saving_color }};
+    --bmn-border-color: {{ block.settings.border_color }};
+    --bmn-background: {{ block.settings.background_color }};
+    --bmn-radius: {{ block.settings.corner_radius }}px;
+    --bmn-padding-block-start: {{ block.settings.padding-block-start }}px;
+    --bmn-padding-inline-end: {{ block.settings.padding-inline-end }}px;
+    --bmn-padding-block-end: {{ block.settings.padding-block-end }}px;
+    --bmn-padding-inline-start: {{ block.settings.padding-inline-start }}px;
+    --bmn-gap: {{ block.settings.gap }}px;
+  "
+>
+  <div class="buy-more-note__inner">
+    <div class="buy-more-note__intro">
+      <h3 id="buy-more-note-title-{{ block.id }}" class="buy-more-note__title">
+        Buy more, save more
+      </h3>
+
+      <p class="buy-more-note__subtitle">
+        Add 2 or 3 pieces to unlock your discount.
+      </p>
+    </div>
+
+    <div
+      class="buy-more-note__offers"
+      role="list"
+      aria-label="Available multi-buy discounts"
+    >
+      <div class="buy-more-note__offer" role="listitem">
+        <span class="buy-more-note__label">2 pieces</span>
+        <strong class="buy-more-note__saving">Save ₹200</strong>
+      </div>
+
+      <div class="buy-more-note__offer buy-more-note__offer--preferred" role="listitem">
+        <div class="buy-more-note__offer-topline">
+          <span class="buy-more-note__label">3 pieces</span>
+          <span class="buy-more-note__recommended">Best value</span>
+        </div>
+
+        <strong class="buy-more-note__saving">Save ₹500</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+.buy-more-note,
+.buy-more-note *,
+.buy-more-note *::before,
+.buy-more-note *::after {
+  box-sizing: border-box;
+}
+
+.buy-more-note {
+  --bmn-ink: #40362d;
+  --bmn-muted: #766e66;
+  --bmn-line: #ded7cf;
+  --bmn-soft: #f8f5f1;
+  --bmn-featured-bg: #f3ece3;
+  --bmn-accent: #8a6847;
+  --bmn-shadow: rgb(82 60 40 / 8%);
+
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin-block-start: 18px;
+  container-type: inline-size;
+}
+
+.buy-more-note__inner {
+  display: grid;
+  gap: 17px;
+  width: 100%;
+  padding-block: var(--bmn-padding-block-start) var(--bmn-padding-block-end);
+  padding-inline: var(--bmn-padding-inline-start) var(--bmn-padding-inline-end);
+  border: 1px solid var(--bmn-line);
+  border-radius: var(--bmn-radius);
+  background: var(--bmn-soft);
+  box-shadow: 0 4px 14px rgb(82 60 40 / 4%);
+}
+
+.buy-more-note__intro {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.buy-more-note__title {
+  margin: 0;
+  color: var(--bmn-ink);
+  font-family: var(--bmn-title-font);
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.buy-more-note__subtitle {
+  margin: 0;
+  color: var(--bmn-muted);
+  font-family: var(--bmn-body-font);
+  font-size: max(0.75rem, var(--bmn-body-size));
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.buy-more-note__offers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--bmn-gap);
+  min-width: 0;
+}
+
+.buy-more-note__offer {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 82px;
+  padding: 14px 15px;
+  border: 1px solid var(--bmn-line);
+  border-radius: 9px;
+  background: #fffdfa;
+  text-align: left;
+  overflow: hidden;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.buy-more-note__offer::after {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 3px;
+  background: transparent;
+  content: "";
+  transition: background-color 180ms ease;
+}
+
+.buy-more-note__offer:hover {
+  border-color: #c4a27d;
+  background: #fffefa;
+  box-shadow:
+    0 6px 16px var(--bmn-shadow),
+    inset 0 1px 0 rgb(255 255 255 / 80%);
+}
+
+.buy-more-note__offer:hover::after {
+  background: #c4a27d;
+}
+
+.buy-more-note__offer--preferred {
+  border-color: #c6a37d;
+  background: var(--bmn-featured-bg);
+  box-shadow:
+    0 3px 10px rgb(82 60 40 / 5%),
+    inset 0 1px 0 rgb(255 255 255 / 70%);
+}
+
+.buy-more-note__offer--preferred::after {
+  background: var(--bmn-accent);
+}
+
+.buy-more-note__offer--preferred:hover {
+  border-color: var(--bmn-accent);
+  background: #f5eadd;
+  box-shadow:
+    0 7px 18px rgb(82 60 40 / 9%),
+    inset 0 1px 0 rgb(255 255 255 / 80%);
+}
+
+.buy-more-note__offer-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.buy-more-note__label {
+  color: var(--bmn-ink);
+  font-family: var(--bmn-body-font);
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.buy-more-note__saving {
+  color: var(--bmn-accent);
+  font-family: var(--bmn-saving-font);
+  font-size: clamp(1rem, 2vw, var(--bmn-saving-size));
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.buy-more-note__offer--preferred .buy-more-note__saving {
+  color: var(--bmn-featured-color);
+}
+
+.buy-more-note__recommended {
+  flex: 0 0 auto;
+  color: var(--bmn-accent);
+  font-family: var(--bmn-body-font);
+  font-size: 0.5625rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: 0.07em;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+@container (max-width: 520px) {
+  .buy-more-note__inner {
+    gap: 15px;
+  }
+
+  .buy-more-note__offers {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .buy-more-note__offer {
+    min-height: 70px;
+  }
+}
+
+@container (max-width: 330px) {
+  .buy-more-note__inner {
+    padding-inline: 14px;
+  }
+
+  .buy-more-note__offer {
+    padding: 13px 14px;
+  }
+
+  .buy-more-note__offer-topline {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buy-more-note__offer,
+  .buy-more-note__offer::after {
+    transition: none;
+  }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Buy more note",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "title_font",
+      "label": "Title font",
+      "options": [
+        { "value": "var(--font-body--family)", "label": "Body" },
+        { "value": "var(--font-subheading--family)", "label": "Subheading" },
+        { "value": "var(--font-heading--family)", "label": "Heading" },
+        { "value": "var(--font-accent--family)", "label": "Accent" }
+      ],
+      "default": "var(--font-heading--family)"
+    },
+    {
+      "type": "select",
+      "id": "body_font",
+      "label": "Body font",
+      "options": [
+        { "value": "var(--font-body--family)", "label": "Body" },
+        { "value": "var(--font-subheading--family)", "label": "Subheading" },
+        { "value": "var(--font-heading--family)", "label": "Heading" },
+        { "value": "var(--font-accent--family)", "label": "Accent" }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "saving_font",
+      "label": "Saving font",
+      "options": [
+        { "value": "var(--font-body--family)", "label": "Body" },
+        { "value": "var(--font-subheading--family)", "label": "Subheading" },
+        { "value": "var(--font-heading--family)", "label": "Heading" },
+        { "value": "var(--font-accent--family)", "label": "Accent" }
+      ],
+      "default": "var(--font-heading--family)"
+    },
+    {
+      "type": "select",
+      "id": "title_size",
+      "label": "Title size",
+      "options": [
+        { "value": "0.875rem", "label": "14px" },
+        { "value": "1rem", "label": "16px" },
+        { "value": "1.125rem", "label": "18px" },
+        { "value": "1.25rem", "label": "20px" }
+      ],
+      "default": "1rem"
+    },
+    {
+      "type": "select",
+      "id": "body_size",
+      "label": "Body size",
+      "options": [
+        { "value": "0.6875rem", "label": "11px" },
+        { "value": "0.75rem", "label": "12px" },
+        { "value": "0.875rem", "label": "14px" },
+        { "value": "1rem", "label": "16px" }
+      ],
+      "default": "0.75rem"
+    },
+    {
+      "type": "select",
+      "id": "saving_size",
+      "label": "Saving amount size",
+      "options": [
+        { "value": "1rem", "label": "16px" },
+        { "value": "1.125rem", "label": "18px" },
+        { "value": "1.25rem", "label": "20px" },
+        { "value": "1.5rem", "label": "24px" }
+      ],
+      "default": "1.125rem"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#F8F5F1"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title colour",
+      "default": "#40362D"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Body text colour",
+      "default": "#766E66"
+    },
+    {
+      "type": "color",
+      "id": "saving_color",
+      "label": "First saving colour",
+      "default": "#8A6847"
+    },
+    {
+      "type": "color",
+      "id": "featured_saving_color",
+      "label": "Featured saving colour",
+      "default": "#704721"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border colour",
+      "default": "#DED7CF"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right padding",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Offer gap",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Buy more note",
+      "category": "Basic"
+    }
+  ]
+}
+{% endschema %}

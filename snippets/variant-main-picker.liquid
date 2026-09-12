@@ -1,0 +1,628 @@
+{%- doc -%}
+Renders a default variant picker, used to display the variant picker in the variants block.
+
+
+@param {object} product_resource - The product object.
+@param {object} [block] - The block object.
+@param {string} [picker_context] - 'product-page' or 'product-card'
+{%- enddoc -%}
+
+
+{% liquid
+assign block_settings = block.settings
+assign is_product_card = false
+
+
+if picker_context == 'product-card'
+assign is_product_card = true
+endif
+%}
+
+
+{% unless product_resource.has_only_default_variant %}
+{% liquid
+assign button_background_brightness = section.settings.color_scheme.settings.foreground | color_brightness
+
+
+if button_background_brightness < 105
+assign strikethrough_color_mix = '#000'
+else
+assign strikethrough_color_mix = '#fff'
+endif
+%}
+
+
+<variant-picker
+class="variant-picker spacing-style variant-picker--{{ block_settings.alignment }}"
+style="--color-strikethrough-mix: {{ strikethrough_color_mix }}; {% render 'spacing-style', settings: block_settings %}"
+data-section-id="{{ section.id }}"
+data-product-id="{{ product_resource.id }}"
+data-block-id="{{ block.id }}"
+data-product-url="{{ product_resource.url }}"
+ref="mainVariantPicker"
+{% if product.id == product_resource.id %}
+data-template-product-match="true"
+{% endif %}
+{{ block.shopify_attributes }}
+{% if request.visual_preview_mode %}
+data-shopify-visual-preview
+{% endif %}
+>
+<form class="variant-picker__form">
+{%- for product_option in product_resource.options_with_values -%}
+
+
+{% liquid
+assign swatch_count = product_option.values | map: 'swatch' | compact | size
+assign variant_style = block_settings.variant_style
+
+
+if swatch_count > 0 and block_settings.show_swatches
+if block_settings.variant_style == 'dropdown'
+assign variant_style = 'swatch_dropdown'
+else
+assign variant_style = 'swatch'
+endif
+endif
+
+
+assign swatch_display_limit = product_option.values.size
+assign hidden_swatch_count = 0
+
+
+# Product cards show only 3 swatches.
+# Product pages show all swatches.
+if is_product_card and variant_style == 'swatch'
+if product_option.values.size > 3
+assign swatch_display_limit = 3
+assign hidden_swatch_count = product_option.values.size | minus: 3
+endif
+endif
+
+
+assign option_id_attribute = blank
+assign longest_value = 0
+
+
+if variant_style == 'buttons' and settings.variant_button_width == 'equal-width-buttons'
+assign fieldset_id = section.id | append: '-' | append: product_resource.id | append: '-' | append: product_option.name | handleize
+assign option_id_attribute = 'data-option-id="' | append: fieldset_id | append: '"'
+endif
+%}
+
+
+{%- if product_option.values.size == 1 and variant_style != 'swatch' -%}
+
+
+<div
+class="variant-option"
+data-testid="variant-option-single"
+>
+{{ product_option.name | escape }}
+
+
+<span
+class="variant-option__swatch-value"
+data-testid="variant-option-single-value"
+>
+{{ product_option.selected_value }}
+</span>
+</div>
+
+
+{%- elsif variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
+
+
+{% assign fieldset_index = forloop.index0 %}
+
+
+<fieldset
+class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+data-fieldset-index="{{ fieldset_index }}"
+ref="fieldsets[]"
+{{ option_id_attribute }}
+>
+<legend>
+{{ product_option.name | escape }}
+
+
+{% if variant_style == 'swatch' %}
+<span class="variant-option__swatch-value">
+{{ product_option.selected_value }}
+</span>
+{% endif %}
+</legend>
+
+
+{%- for product_option_value in product_option.values limit: swatch_display_limit -%}
+
+
+{% if product_option_value.size > longest_value and option_id_attribute != blank %}
+{% assign longest_value = product_option_value.size %}
+{% endif %}
+
+
+<label
+class="variant-option__button-label{% if variant_style == 'swatch' %} variant-option__button-label--has-swatch{% endif %}"
+>
+<input
+type="radio"
+name="{{ product_option.name | escape }}-{{ block.id }}-{{ product_resource.id }}"
+value="{{ product_option_value | escape }}"
+aria-label="{{ product_option_value.name }}"
+{% if product_option_value.available == false %}
+aria-disabled="true"
+{% endif %}
+data-previous-checked="false"
+data-fieldset-index="{{ fieldset_index }}"
+data-input-index="{{ forloop.index0 }}"
+data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+data-option-value-id="{{ product_option_value.id }}"
+data-option-available="{{ product_option_value.available }}"
+data-connected-product-url="{{ product_option_value.product_url }}"
+{% if product_option_value.variant.id %}
+data-variant-id="{{ product_option_value.variant.id }}"
+{% endif %}
+{% if product_option_value.selected %}
+data-current-checked="true"
+checked
+{% else %}
+data-current-checked="false"
+{% endif %}
+>
+
+
+{% if variant_style == 'swatch' %}
+{% liquid
+assign featured_media = product_option_value.variant.featured_media
+
+
+if featured_media == blank and product_option_value.product_url
+assign featured_media = product_option_value.variant.product.featured_media
+endif
+%}
+
+
+{% render 'swatch',
+swatch: product_option_value.swatch,
+variant_image: featured_media,
+mode: 'unscaled'
+%}
+{% else %}
+{% if product_option_value.available == true %}
+<span
+class="variant-option__button-label__pill"
+data-key="variant-option-pill"
+></span>
+{% endif %}
+
+
+<span
+class="variant-option__button-label__text"
+data-key="variant-option-text"
+>
+{{ product_option_value | escape }}
+</span>
+{% endif %}
+
+
+{% render 'strikethrough-variant',
+product_option: product_option_value
+%}
+</label>
+{%- endfor -%}
+
+
+{% if is_product_card and variant_style == 'swatch' and hidden_swatch_count > 0 %}
+<span
+class="swatch-more-count"
+aria-hidden="true"
+>
++{{ hidden_swatch_count }}
+</span>
+{% endif %}
+
+
+{% if option_id_attribute != blank %}
+{% style %}
+[data-option-id="{{ fieldset_id }}"] {
+--variant-ch: {{ longest_value | times: 0.65 }}em;
+}
+{% endstyle %}
+{% endif %}
+</fieldset>
+
+
+{%- elsif block_settings.variant_style == 'dropdowns' -%}
+
+
+{% liquid
+assign property_being_updated = false
+assign new_width = 20
+
+
+if settings.variant_swatch_width != settings.variant_swatch_height
+assign property_being_updated = true
+assign new_width = settings.variant_swatch_width | times: 1.0 | divided_by: settings.variant_swatch_height | times: 20
+endif
+%}
+
+
+<div class="variant-option variant-option--dropdowns">
+<label for="Option-{{ block.id }}-{{ forloop.index0 }}">
+{{ product_option.name | escape }}
+</label>
+
+
+<div
+class="variant-option__select-wrapper"
+style="
+{% if property_being_updated %}
+--variant-picker-swatch-width: clamp(10px, {{ new_width }}px, 50px);
+{% endif %}
+"
+>
+<select
+id="Option-{{ block.id }}-{{ forloop.index0 }}"
+name="options[{{ product_option.name | escape }}]"
+class="variant-option__select"
+>
+{%- for product_option_value in product_option.values -%}
+<option
+value="{{ product_option_value | escape }}"
+data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
+data-option-value-id="{{ product_option_value.id }}"
+data-variant-id="{{ product_option_value.variant.id }}"
+data-connected-product-url="{{ product_option_value.product_url }}"
+{% if product_option_value.selected %}
+selected="selected"
+{% endif %}
+>
+{% if product_option_value.available == false %}
+{{ product_option_value | escape }} - {{ 'content.unavailable' | t }}
+{% else %}
+{{ product_option_value | escape }}
+{% endif %}
+</option>
+{%- endfor -%}
+</select>
+
+
+<svg
+aria-hidden="true"
+focusable="false"
+class="icon icon-caret"
+viewBox="0 0 10 6"
+>
+{% render 'icon', icon: 'caret' %}
+</svg>
+</div>
+</div>
+
+
+{%- endif -%}
+{%- endfor -%}
+
+
+<script type="application/json">
+{{ product_resource.selected_or_first_available_variant | json }}
+</script>
+</form>
+</variant-picker>
+{% endunless %}
+
+
+{% stylesheet %}
+
+
+/* ============================================================
+ VARIANT PICKER BASE
+ ============================================================ */
+
+
+.variant-picker {
+width: 100%;
+}
+
+
+.variant-picker__form {
+width: 100%;
+}
+
+
+.variant-picker[data-shopify-visual-preview] {
+min-width: 300px;
+padding-inline-start: max(4px, var(--padding-inline-start));
+}
+
+
+/* Product-card +N counter */
+.swatch-more-count {
+display: inline-flex !important;
+align-items: center;
+justify-content: center;
+
+
+min-width: 34px;
+height: 34px;
+
+
+padding: 0 4px;
+margin: 0;
+
+
+color: currentColor;
+background: transparent;
+
+
+font-size: 12px;
+font-weight: 600;
+line-height: 1;
+white-space: nowrap;
+}
+
+
+/* Product card swatches */
+.product-card product-swatches .swatch,
+.product-grid-card product-swatches .swatch,
+[id^='product-card-'] product-swatches .swatch {
+--swatch-width: 48px !important;
+--swatch-height: 60px !important;
+
+
+width: 48px !important;
+height: 60px !important;
+
+
+aspect-ratio: 4 / 5 !important;
+
+
+border-radius: 6px !important;
+overflow: hidden !important;
+
+
+background-size: cover !important;
+background-position: top center !important;
+}
+
+
+/* Product-card variant images */
+.product-card product-swatches .swatch--variant-image,
+.product-grid-card product-swatches .swatch--variant-image,
+[id^='product-card-'] product-swatches .swatch--variant-image {
+--swatch-width: 48px !important;
+--swatch-height: 60px !important;
+
+
+width: 48px !important;
+height: 60px !important;
+
+
+border-radius: 6px !important;
+background-size: cover !important;
+background-position: top center !important;
+}
+
+
+/* Dropdown styles */
+.variant-option__select-wrapper {
+display: flex;
+position: relative;
+
+
+align-items: center;
+
+
+margin-top: var(--margin-2xs);
+
+
+border: var(--style-border-width-inputs) solid var(--color-border);
+border-radius: var(--style-border-radius-inputs);
+
+
+overflow: clip;
+}
+
+
+.variant-option__select-wrapper:has(.swatch) {
+--variant-picker-swatch-width: 20px;
+--variant-picker-swatch-height: 20px;
+}
+
+
+.variant-option__select-wrapper:hover {
+border-color: var(--color-variant-hover-border);
+}
+
+
+.variant-option__select:focus-visible {
+outline: var(--focus-outline-width) solid currentcolor;
+outline-offset: var(--focus-outline-offset);
+}
+
+
+.variant-option__select {
+width: 100%;
+
+
+padding-block: var(--padding-md);
+padding-inline: var(--padding-lg) calc(var(--padding-lg) + var(--icon-size-2xs));
+
+
+margin: 0;
+
+
+appearance: none;
+border: 0;
+cursor: pointer;
+}
+
+
+.variant-option__select-wrapper .icon {
+position: absolute;
+top: 50%;
+right: var(--padding-md);
+
+
+width: var(--icon-size-2xs);
+height: var(--icon-size-2xs);
+
+
+pointer-events: none;
+transform: translateY(-50%);
+}
+
+
+.variant-option__select--has-swatch {
+padding-inline-start: calc((2 * var(--padding-sm)) + var(--variant-picker-swatch-width));
+}
+
+
+.variant-option__select-wrapper .swatch {
+position: absolute;
+top: 50%;
+left: var(--padding-md);
+
+
+transform: translateY(-50%);
+}
+
+
+/* Alignment */
+.variant-picker--center,
+.variant-picker--center .variant-option {
+width: 100%;
+
+
+text-align: center;
+align-items: center;
+justify-content: center;
+}
+
+
+.variant-picker--right,
+.variant-picker--right .variant-option {
+text-align: right;
+justify-content: right;
+}
+
+
+/* Mobile product-card swatches */
+@media screen and (max-width: 749px) {
+.product-card product-swatches .swatch,
+.product-grid-card product-swatches .swatch,
+[id^='product-card-'] product-swatches .swatch {
+--swatch-width: 44px !important;
+--swatch-height: 55px !important;
+
+
+width: 44px !important;
+height: 55px !important;
+
+
+aspect-ratio: 4 / 5 !important;
+}
+
+
+.product-card product-swatches .swatch--variant-image,
+.product-grid-card product-swatches .swatch--variant-image,
+[id^='product-card-'] product-swatches .swatch--variant-image {
+width: 44px !important;
+height: 55px !important;
+}
+}
+
+
+/* ============================================================
+ PRODUCT PAGE SWATCHES — 4:5 PORTRAIT
+ ============================================================ */
+
+
+/* Product-page clickable label */
+variant-picker .variant-option__button-label--has-swatch {
+display: block !important;
+
+
+width: 52px !important;
+min-width: 52px !important;
+height: 65px !important;
+min-height: 65px !important;
+
+
+padding: 0 !important;
+margin: 0 !important;
+
+
+background: transparent !important;
+border: 0 !important;
+border-radius: 6px !important;
+box-shadow: none !important;
+
+
+overflow: hidden !important;
+aspect-ratio: 4 / 5 !important;
+}
+
+
+/* Actual product-page image swatch */
+variant-picker .variant-option__button-label--has-swatch .swatch,
+variant-picker .variant-option__button-label--has-swatch .swatch--variant-image,
+variant-picker .variant-option__button-label--has-swatch .swatch--image {
+display: block !important;
+
+
+width: 100% !important;
+height: 100% !important;
+
+
+margin: 0 !important;
+padding: 0 !important;
+
+
+border: 0 !important;
+border-radius: 6px !important;
+overflow: hidden !important;
+
+
+background-repeat: no-repeat !important;
+background-size: cover !important;
+background-position: top center !important;
+}
+
+
+/* Selected swatch stroke on IMAGE (no dual box) */
+variant-picker .variant-option__button-label--has-swatch input[type="radio"]:checked + .swatch,
+variant-picker .variant-option__button-label--has-swatch input[type="radio"]:checked + .swatch--variant-image,
+variant-picker .variant-option__button-label--has-swatch input[type="radio"]:checked + .swatch--image {
+border: 2px solid rgb(var(--color-foreground-rgb)) !important; /* stroke width */
+border-radius: 6px !important;
+box-shadow: none !important;
+}
+
+
+/* Mobile product-page swatches */
+@media screen and (max-width: 749px) {
+variant-picker .variant-option__button-label--has-swatch {
+width: 44px !important;
+min-width: 44px !important;
+height: 55px !important;
+min-height: 55px !important;
+border-radius: 6px !important;
+}
+}
+
+
+/* Desktop product-page swatches */
+@media screen and (min-width: 750px) {
+variant-picker .variant-option__button-label--has-swatch {
+width: 52px !important;
+min-width: 52px !important;
+height: 65px !important;
+min-height: 65px !important;
+border-radius: 6px !important;
+}
+}
+
+loke
+
+{% endstylesheet %}

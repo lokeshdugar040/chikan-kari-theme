@@ -1,0 +1,148 @@
+<section class="product-extra-content page-width">
+  {% if section.settings.heading != blank %}
+    <h2 class="product-extra-content__heading">{{ section.settings.heading }}</h2>
+  {% endif %}
+
+  <div class="product-extra-content__blocks">
+    {% for block in section.blocks %}
+      <div class="product-extra-content__block" {{ block.shopify_attributes }}>
+        {% case block.type %}
+          {% when 'text' %}
+            {% if block.settings.heading != blank %}
+              <h3>{{ block.settings.heading }}</h3>
+            {% endif %}
+            {% if block.settings.text != blank %}
+              <p>{{ block.settings.text }}</p>
+            {% endif %}
+
+          {% when 'richtext' %}
+            {% if block.settings.heading != blank %}
+              <h3>{{ block.settings.heading }}</h3>
+            {% endif %}
+            <div class="rte">{{ block.settings.content }}</div>
+
+          {% when 'image' %}
+            {% if block.settings.image != blank %}
+              {{
+                block.settings.image
+                | image_url: width: 1200
+                | image_tag: loading: 'lazy', alt: block.settings.image.alt
+              }}
+            {% endif %}
+
+          {% when 'button' %}
+            {% if block.settings.label != blank and block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="button">
+                {{ block.settings.label }}
+              </a>
+            {% endif %}
+
+          {% when 'custom_liquid' %}
+            {{ block.settings.custom_liquid }}
+        {% endcase %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product extra content",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "More information"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Add your text here."
+        }
+      ]
+    },
+    {
+      "type": "richtext",
+      "name": "Rich text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Details"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "default": "<p>Add rich text here.</p>"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button label",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button link"
+        }
+      ]
+    },
+    {
+      "type": "custom_liquid",
+      "name": "Custom liquid",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "Custom liquid"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product extra content",
+      "blocks": [
+        { "type": "text" },
+        { "type": "richtext" }
+      ]
+    }
+  ]
+}
+{% endschema %}
