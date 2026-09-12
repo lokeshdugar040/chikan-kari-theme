@@ -5030,36 +5030,23 @@ product-recommendations:has([data-has-recommendations='false']) {
 }
 
 /* ==========================================================================
-   RESPONSIVE LAYOUT SYSTEM  (store customisations)
+   DESIGN SYSTEM LAYER  (store customisations)
    --------------------------------------------------------------------------
    Everything above this line is the stock Tinker/Horizon stylesheet.
-   Everything below is the store-specific layer, written mobile-first:
+   Everything below is the store layer – mobile-first, clean D2C look.
 
-     • Base rules  = phones (360–480px)
-     • min-width: 480px   = large phones / landscape
-     • min-width: 750px   = tablet portrait   (matches utilities.js mediaQueryLarge)
-     • min-width: 990px   = tablet landscape / laptop
-     • min-width: 1200px  = desktop
-     • min-width: 1400px  = wide desktop
+   Breakpoints (custom layer):   640px tablet · 1024px desktop · 1280px wide
+   (Stock Tinker components switch at 750px; that is left untouched.)
 
-   Design tokens live in snippets/theme-styles-variables.liquid:
-     --space-1 … --space-20      4px baseline scale
-     --space-fluid-xs … -xl      fluid spacing (clamp)
-     --page-gutter               fluid page margin
-     --text-2xs … --text-4xl     fluid type scale
-     --touch-target              44px
-
-   Rules of this layer:
-     1. No `!important` unless overriding an inline style or a stock
-        `!important`; when used, it is commented.
-     2. No fixed pixel widths on containers – use %, fr, clamp(), min().
-     3. Never fight the section grid (`.section`) – it already centres
-        content and lets backgrounds bleed full-width.
+   Tokens (snippets/theme-styles-variables.liquid):
+     --space-1 … --space-12   4px grid (4 → 48px)
+     --space-fluid-xs … -xl   fluid spacing
+     --page-gutter            12px → 32px
+     --text-xs / sm / base / lg / xl / h3 / h2 / h1
+     --touch-target           44px
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   1. Global foundation
-   -------------------------------------------------------------------------- */
+/* 1. Foundation ---------------------------------------------------------- */
 
 *,
 *::before,
@@ -5068,27 +5055,22 @@ product-recommendations:has([data-has-recommendations='false']) {
 }
 
 html {
-  /* Respect user font-size preference; type scale is rem-based. */
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
 body {
-  /* Body copy never dips below 16px on phones (avoids iOS zoom-on-focus). */
   font-size: var(--text-base);
-  line-height: var(--line-height--body-normal, 1.5);
+  line-height: 1.5;
   overflow-wrap: break-word;
 }
 
-/* Main content column: prevent horizontal scroll from full-bleed sections
-   without hiding overflow on <html>/<body> (which breaks position: sticky). */
 .content-for-layout {
   min-width: 0;
   overflow-x: clip;
 }
 
-/* Fluid media everywhere */
 img,
 picture,
 video,
@@ -5103,179 +5085,104 @@ video {
   height: auto;
 }
 
-iframe,
-video,
-.video-wrapper,
-.rte iframe {
-  aspect-ratio: var(--media-aspect-ratio, 16 / 9);
-  width: 100%;
-}
-
-/* Media that fills a fixed-ratio container */
-.product-media-container img,
-.product-media-container video,
-.collection-card__image img,
-.featured-blog-posts-card__image img,
-.hero__media img,
-.hero__media video,
-.slideshow-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: var(--image-fit, cover);
-}
-
-/* Long words / URLs must never push the layout wider than the viewport */
 p,
+li,
 h1,
 h2,
 h3,
 h4,
 h5,
-h6,
-li,
-dd,
-dt,
-a {
+h6 {
   overflow-wrap: anywhere;
-  hyphens: manual;
 }
 
-/* Headings default to balanced wrapping; paragraphs to pretty */
 h1,
 h2,
 h3,
-h4,
 .h1,
 .h2,
-.h3,
-.h4 {
+.h3 {
   text-wrap: balance;
 }
 
-p {
-  text-wrap: pretty;
-}
-
-/* --------------------------------------------------------------------------
-   2. Fluid typography
-   --------------------------------------------------------------------------
-   The theme editor sets absolute heading sizes (--font-size--h1 … h6) and the
-   stock stylesheet already makes anything ≥48px fluid. We tighten that here by
-   redefining the *preset* variables on <body> (they're consumed by h1–h6, the
-   .text-block.hN presets, product titles, buttons, etc.), so:
-
-     heading size = min(editor size, fluid scale)   → editor value is a ceiling
-     body size    = max(editor size, 16px fluid)    → never below 16px on phones
-
-   Overriding on <body> (not :root) is intentional – the inline
-   theme-styles-variables block writes :root after this file loads.
-   -------------------------------------------------------------------------- */
+/* 2. Typography ------------------------------------------------------------
+   Theme-editor sizes are ceilings; the fluid scale governs phones.
+   Set on <body> so it wins over the :root values that the inline
+   theme-styles-variables block emits. */
 
 body {
-  --font-h1--size: min(var(--font-size--h1), var(--text-4xl));
-  --font-h2--size: min(var(--font-size--h2), var(--text-3xl));
-  --font-h3--size: min(var(--font-size--h3), var(--text-2xl));
+  --font-h1--size: min(var(--font-size--h1), var(--text-h1));
+  --font-h2--size: min(var(--font-size--h2), var(--text-h2));
+  --font-h3--size: min(var(--font-size--h3), var(--text-h3));
   --font-h4--size: min(var(--font-size--h4), var(--text-xl));
-  --font-h5--size: max(var(--font-size--h5), var(--text-sm));
-  --font-h6--size: max(var(--font-size--h6), var(--text-xs));
-  --font-paragraph--size: max(var(--font-size--paragraph), var(--text-base));
+  --font-h5--size: var(--text-sm);
+  --font-h6--size: var(--text-xs);
+  --font-paragraph--size: var(--text-base);
+
+  --font-h1--line-height: 1.2;
+  --font-h2--line-height: 1.25;
+  --font-h3--line-height: 1.3;
+  --font-h4--line-height: 1.3;
+  --font-paragraph--line-height: 1.5;
 }
 
-/* Rich text rhythm on the 4px grid */
 .rte > * + *,
 rte-formatter > * + * {
-  margin-block-start: var(--space-4);
+  margin-block-start: var(--space-3);
 }
 
-.rte :is(h1, h2, h3, h4, h5, h6) + *,
-rte-formatter :is(h1, h2, h3, h4, h5, h6) + * {
+.rte :is(h1, h2, h3, h4) + *,
+rte-formatter :is(h1, h2, h3, h4) + * {
   margin-block-start: var(--space-2);
 }
 
-.rte li + li,
-rte-formatter li + li {
-  margin-block-start: var(--space-1);
-}
-
-/* Small print stays legible */
 small,
 .caption,
 .badge,
-.meta,
 .tax-note,
 .unit-price {
-  font-size: max(var(--text-xs), 0.75rem);
+  font-size: var(--text-xs);
   line-height: 1.4;
 }
 
-/* Product title on the product page */
-.product-details .product-title,
-.product-details .product-title h1,
-.product-details .text-block.h1 h1,
-.product-information .product-title h1 {
-  font-size: min(var(--font-h2--size), var(--text-3xl));
-  line-height: 1.15;
-  max-inline-size: 100%;
+/* 3. Layout & rhythm ------------------------------------------------------- */
+
+/* Stock sections read editor padding through --spacing-scale (0.7 on <990px).
+   Tighten phones further so 60–80px desktop values land at ~30–40px. */
+.spacing-style {
+  --spacing-scale: var(--spacing-scale-sm);
 }
 
-/* Product price on the product page: prominent but not oversized on phones */
-.product-details product-price .price {
-  font-size: var(--text-2xl);
-  line-height: 1.1;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-foreground-heading);
+@media screen and (min-width: 640px) {
+  .spacing-style {
+    --spacing-scale: var(--spacing-scale-md);
+  }
 }
 
-.product-details product-price .compare-at-price {
-  font-size: var(--text-base);
-  font-weight: 500;
-  opacity: var(--opacity-60, 0.6);
-  letter-spacing: 0;
+@media screen and (min-width: 1024px) {
+  .spacing-style {
+    --spacing-scale: var(--spacing-scale-default);
+  }
 }
 
-.product-details product-price .tax-note,
-.product-details product-price .installments,
-.product-details product-price .volume-pricing-note {
-  font-size: var(--text-xs);
-  line-height: 1.45;
-}
-
-/* Product card titles: clamp to 2 lines so grid rows stay even.
-   (Cards use a text block whose class contains "product_title".) */
-.product-grid__card [class*='product_title'] p,
-.product-card [class*='product_title'] p {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal;
-  line-height: 1.3;
-  min-block-size: calc(1.3em * 2);
-  margin: 0;
-  max-inline-size: 100%;
-}
-
-/* Rich text inside product details must be able to use the full column */
-.product-details rte-formatter.text-block,
-.product-details rte-formatter.text-block > * {
-  --max-width: 100%;
-  max-width: 100%;
-  width: 100%;
-}
-
-/* --------------------------------------------------------------------------
-   3. Touch targets, buttons & forms (min 44px)
-   -------------------------------------------------------------------------- */
+/* 4. Buttons & inputs ------------------------------------------------------ */
 
 .button,
 .button-secondary,
 .shopify-payment-button__button,
 .quick-add__button,
 .add-to-cart-button,
-.sticky-add-to-cart__button,
+.sticky-add-to-cart__button {
+  min-block-size: var(--touch-target);
+  padding-block: var(--space-3);
+  padding-inline: var(--space-6);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus),
 .pagination__item,
 .facets__summary,
 .header-actions__action,
@@ -5283,95 +5190,74 @@ small,
 .header-drawer summary,
 .account-button,
 .search-action .button-unstyled,
-.quantity-selector :is(.quantity-minus, .quantity-plus),
 .slideshow-control,
-.variant-option__button-label,
 .dropdown-localization__button {
   min-block-size: var(--touch-target);
   min-inline-size: var(--touch-target);
 }
 
-.button,
-.button-secondary {
-  padding-block: max(var(--button-padding-block), calc((var(--touch-target) - 1.25em) / 2));
-  padding-inline: var(--button-padding-inline);
-  line-height: 1.25;
+.variant-option__button-label {
+  min-block-size: 2.5rem;
+  min-inline-size: 2.75rem;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4);
+  font-size: var(--text-sm);
+  justify-content: center;
 }
 
-/* Full-width primary actions on phones, natural width from tablet up */
 .product-form-buttons .button,
 .product-form-buttons .add-to-cart-button,
-.cart__checkout-button,
-.contact-form .button,
-.email-signup .button {
+.cart__checkout-button {
   inline-size: 100%;
 }
 
-@media screen and (min-width: 750px) {
-  .contact-form .button,
-  .email-signup .button {
-    inline-size: auto;
-  }
-}
-
-/* Inputs: ≥44px tall and ≥16px type (prevents iOS zoom-on-focus).
-   Padding is left to the theme's --input-padding (now on the 4px grid). */
 input:not([type='checkbox'], [type='radio'], [type='range'], [type='hidden']),
 textarea,
 select,
 .field__input {
   min-block-size: var(--touch-target);
-  font-size: max(1rem, var(--font-paragraph--size, 1rem));
+  font-size: max(1rem, var(--text-base)); /* ≥16px prevents iOS zoom-on-focus */
 }
 
 textarea {
   min-block-size: var(--input-textarea-min-height, 6rem);
 }
 
-/* Checkbox / radio: stock theme renders custom controls (.checkbox) with
-   visually-hidden inputs, so no generic sizing here. Only widen the hit area. */
 .checkbox__label {
   min-block-size: var(--touch-target);
   display: flex;
   align-items: center;
 }
 
-/* Quantity selector: whole control ≥ 44px, fluid width */
 .quantity-selector {
-  --quantity-selector-width: clamp(7rem, 30%, 8.5rem);
+  --quantity-selector-width: 7.5rem;
 
   min-block-size: var(--touch-target);
 }
 
 .quantity-selector input[type='number'] {
   min-inline-size: 2.5rem;
-  font-size: max(1rem, var(--font-paragraph--size, 1rem));
+  font-size: var(--text-base);
 }
 
-/* Visible focus for keyboard users */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: var(--focus-outline-width, 2px) solid currentcolor;
-  outline-offset: var(--focus-outline-offset, 2px);
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
 }
 
-/* --------------------------------------------------------------------------
-   4. Header
-   -------------------------------------------------------------------------- */
+/* 5. Header ---------------------------------------------------------------- */
 
-/* Header background bleeds full width; content sits in the page column.
-   Do NOT set fixed heights here – header height is measured by JS into
-   --header-height / --header-group-height. */
 .header-section,
 #header-component {
   inline-size: 100%;
   max-inline-size: none;
 }
 
-/* Phones: stock header uses 44px bookend columns with zero padding, which
-   leaves the icons ~11px from the edge; add a small inset so the hamburger and
-   cart aren't glued to the viewport. From 750px the header row is a
-   `.section--full-width-margin`, so the fluid --page-margin supplies the gutter
-   and we must NOT add padding here (it would double the gutter). */
+/* Compact 56–64px header: cap the editor's row padding, keep it fluid. */
+#header-component .header__columns {
+  --header-padding: clamp(var(--space-2), 1vw, var(--space-3));
+}
+
 #header-component .header__row > .header__columns {
   padding-inline: var(--space-2);
 }
@@ -5382,14 +5268,10 @@ textarea {
   }
 }
 
-/* Logo: no extra vertical padding; the image is sized by the theme
-   editor (logo_height / logo_height_mobile) via --header-logo-image-height */
 a.header-logo {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding-block: var(--space-1);
-  padding-inline: 0;
+  padding: 0;
   line-height: 1;
 }
 
@@ -5397,18 +5279,17 @@ a.header-logo {
 .header-logo__image-container img {
   inline-size: auto;
   block-size: auto;
-  max-block-size: var(--header-logo-image-height-mobile, 3.5rem);
+  max-block-size: var(--header-logo-image-height-mobile, 2.5rem);
   object-fit: contain;
 }
 
 @media screen and (min-width: 750px) {
   .header-logo__image,
   .header-logo__image-container img {
-    max-block-size: var(--header-logo-image-height, 4.5rem);
+    max-block-size: var(--header-logo-image-height, 3rem);
   }
 }
 
-/* Header icons: 44px hit area, 20–22px glyph */
 .header-actions__action,
 .header__icon,
 .header-drawer summary,
@@ -5425,11 +5306,10 @@ a.header-logo {
 .header-drawer summary svg,
 .account-button svg,
 .search-action svg {
-  inline-size: var(--icon-size-md, 1.375rem);
-  block-size: var(--icon-size-md, 1.375rem);
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
 }
 
-/* Inline menu links */
 .menu-list__link {
   display: inline-flex;
   align-items: center;
@@ -5438,10 +5318,8 @@ a.header-logo {
   padding-inline: var(--space-3);
   font-size: var(--text-sm);
   font-weight: 500;
-  line-height: 1.3;
   letter-spacing: 0.02em;
-  text-decoration: none;
-  text-underline-offset: 0.18em;
+  text-underline-offset: 0.2em;
   white-space: nowrap;
 }
 
@@ -5449,7 +5327,6 @@ a.header-logo {
   font-weight: 600;
 }
 
-/* Drawer menu links (phones/tablets): full-width rows */
 .header-drawer .menu-list__link,
 .menu-drawer__menu-item {
   inline-size: 100%;
@@ -5457,49 +5334,90 @@ a.header-logo {
   padding-block: var(--space-3);
   padding-inline: 0;
   font-size: var(--text-base);
-  line-height: 1.35;
   white-space: normal;
 }
 
-/* Cart bubble */
 .cart-bubble {
   position: absolute;
-  inset-block-start: -0.4rem;
-  inset-inline-end: -0.5rem;
+  inset-block-start: -0.25rem;
+  inset-inline-end: -0.375rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-inline-size: 1.25rem;
-  block-size: 1.25rem;
+  min-inline-size: 1.125rem;
+  block-size: 1.125rem;
   padding-inline: var(--space-1);
   border: 2px solid var(--color-background);
   border-radius: 999px;
   background: var(--color-primary-button-background);
   color: var(--color-primary-button-text);
-  font-size: var(--text-2xs);
-  font-weight: 700;
+  font-size: 0.6875rem;
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
   z-index: var(--layer-raised);
 }
 
-/* --------------------------------------------------------------------------
-   5. Sections & vertical rhythm
-   -------------------------------------------------------------------------- */
+/* 6. Product cards & grids ------------------------------------------------- */
 
-/* Stock collection/product grids are already `repeat(auto-fill, minmax())`.
-   Just make the mobile 2-col grid breathe and step up on wider phones. */
 .product-grid {
-  --product-grid-gap-mobile: var(--space-fluid-xs);
+  --product-grid-gap-mobile: var(--space-3);
 }
 
-@media screen and (min-width: 480px) and (max-width: 749px) {
-  .product-grid:not([product-grid-view='zoom-out']) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media screen and (min-width: 1024px) {
+  .product-grid {
+    --product-grid-gap-desktop: var(--space-6) var(--space-5);
   }
 }
 
-/* Pagination controls */
+/* Image-first cards: 3:4 media, tight text stack under it */
+.product-card .product-media-container,
+.product-grid__card .product-media-container {
+  aspect-ratio: var(--gallery-aspect-ratio, 3 / 4);
+}
+
+.product-grid__card.product-grid__card {
+  --product-card-gap: var(--space-2);
+}
+
+.product-card__content,
+.product-grid__card .group-block-content {
+  gap: var(--space-1);
+}
+
+.product-grid__card [class*='product_title'] p,
+.product-card [class*='product_title'] p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.product-card .price,
+.product-grid__card .price {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.product-card .compare-at-price,
+.product-grid__card .compare-at-price {
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+.product-badges__badge,
+.badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--space-1) var(--space-2);
+}
+
 .pagination {
   display: flex;
   flex-wrap: wrap;
@@ -5507,27 +5425,8 @@ a.header-logo {
   gap: var(--space-2);
 }
 
-/* Slideshow / carousel arrows */
-.slideshow-control {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: var(--layer-raised);
-}
+/* 7. Product page ---------------------------------------------------------- */
 
-.slideshow-control--previous {
-  inset-inline-start: var(--space-3);
-}
-
-.slideshow-control--next {
-  inset-inline-end: var(--space-3);
-}
-
-/* --------------------------------------------------------------------------
-   6. Product page
-   -------------------------------------------------------------------------- */
-
-/* Media gallery: one slide per view, fills its column, keeps ratio */
 .product-information__media > media-gallery {
   --peek-next-slide-size: 0px;
   --image-gap: 0px;
@@ -5535,14 +5434,12 @@ a.header-logo {
 
   inline-size: 100%;
   max-inline-size: 100%;
-  margin-inline: auto;
 }
 
 .product-information__media > media-gallery,
 .product-information__media > media-gallery > slideshow-component,
 .product-information__media > media-gallery > slideshow-component > slideshow-container {
   inline-size: 100%;
-  max-inline-size: 100%;
   overflow: hidden;
   position: relative;
 }
@@ -5555,19 +5452,15 @@ a.header-logo {
 
 .product-information__media .product-media-container {
   inline-size: 100%;
-  aspect-ratio: var(--gallery-aspect-ratio, var(--media-preview-ratio, 4 / 5));
-  block-size: auto;
+  aspect-ratio: var(--gallery-aspect-ratio, var(--media-preview-ratio, 3 / 4));
 }
 
-.product-information__media .product-media-container img,
-.product-information__media .product-media img {
+.product-information__media .product-media-container img {
   inline-size: 100%;
   block-size: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
-/* Info column: no side padding of its own on phones (section grid supplies
-   the gutter); on tablet+ the two-column layout adds breathing room. */
 .product-information__text,
 .product-information__content,
 .product-details {
@@ -5575,65 +5468,75 @@ a.header-logo {
   max-inline-size: 100%;
 }
 
-.product-information__text > *,
-.product-information__content > *,
-.product-details > * {
-  max-inline-size: 100%;
+.product-details > * + * {
+  margin-block-start: var(--space-4);
 }
 
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 1024px) {
   .product-information__text,
   .product-information__content {
-    padding-inline: var(--space-fluid-sm);
+    padding-inline-start: var(--space-8);
   }
 }
 
-/* Details/info scroll with the media instead of sticking */
-.product-information .sticky-content,
-.product-information .sticky-content--desktop,
-.product-information .sticky-content--desktop.full-height--desktop .group-block {
-  position: static;
-  top: auto;
+.product-details .product-title h1,
+.product-information .product-title h1 {
+  font-size: var(--text-h3);
+  font-weight: 500;
+  line-height: 1.3;
 }
 
-/* Variant swatches wrap */
+.product-details product-price .price {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--color-foreground-heading);
+}
+
+.product-details product-price .compare-at-price {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.product-details product-price .tax-note,
+.product-details product-price .installments {
+  font-size: var(--text-xs);
+}
+
+.product-details rte-formatter.text-block,
+.product-details rte-formatter.text-block > * {
+  --max-width: 100%;
+  max-width: 100%;
+}
+
 .variant-option__swatches-list {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: var(--gap-sm);
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
-  inline-size: 100%;
-}
-
-.variant-option__swatches-list .variant-option__swatch {
-  flex: 0 0 auto;
 }
 
 .variant-option__swatches-list [slot='more'] {
   display: none;
 }
 
-/* Size buttons: white unselected, black selected */
+/* Size buttons: outlined, accent when selected (radius from editor) */
 .variant-picker .variant-option--buttons label.variant-option__button-label:not(.variant-option__button-label--has-swatch) {
-  background-color: #fff;
-  border-radius: 999px;
-  border: 1px solid var(--color-variant-border);
-  color: var(--color-variant-text);
-  padding-inline: var(--space-4);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground);
 }
 
 .variant-picker .variant-option--buttons label.variant-option__button-label:not(.variant-option__button-label--has-swatch):has(:checked) {
-  background-color: #000;
-  border-color: #000;
-  color: #fff;
+  background-color: var(--color-primary-button-background);
+  border-color: var(--color-primary-button-background);
+  color: var(--color-primary-button-text);
 }
 
-/* --------------------------------------------------------------------------
-   7. Sticky add-to-cart bar
-   -------------------------------------------------------------------------- */
+/* 8. Sticky add-to-cart ---------------------------------------------------- */
 
 .sticky-add-to-cart {
   position: fixed;
@@ -5641,27 +5544,18 @@ a.header-logo {
   inset-block-end: 0;
   z-index: var(--layer-sticky, 8);
   pointer-events: none;
-  padding-inline: 0;
 }
 
 .sticky-add-to-cart__bar {
   pointer-events: auto;
-  inline-size: 100%;
-  margin-inline: auto;
   display: grid;
   grid-template-columns: 2.5rem minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-3);
-  padding-block: var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom));
-  padding-inline: var(--space-4);
-  border: 1px solid rgb(var(--color-border-rgb) / 0.08);
-  border-block-end: 0;
-  border-inline: 0;
-  border-radius: var(--space-4) var(--space-4) 0 0;
-  background: rgb(var(--color-background-rgb) / 0.96);
-  box-shadow: 0 -6px 20px rgb(var(--color-shadow-rgb) / 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: var(--space-2) var(--space-4) calc(var(--space-2) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background);
+  box-shadow: 0 -4px 16px rgb(0 0 0 / 0.06);
 }
 
 .sticky-add-to-cart__image {
@@ -5672,12 +5566,9 @@ a.header-logo {
 .sticky-add-to-cart__image-img {
   inline-size: 100%;
   block-size: 100%;
-  display: block;
   object-fit: cover;
-  object-position: center;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.75);
-  border: 1px solid rgb(var(--color-border-rgb) / 0.08);
+  border-radius: var(--style-border-radius-xs, 4px);
+  border: 1px solid var(--color-border);
 }
 
 .sticky-add-to-cart__info {
@@ -5687,154 +5578,85 @@ a.header-logo {
 }
 
 .sticky-add-to-cart__title,
-.sticky-add-to-cart__variant {
+.sticky-add-to-cart__variant,
+.sticky-add-to-cart__added,
+.sticky-add-to-cart__button .add-to-cart-icon {
   display: none;
-}
-
-.sticky-add-to-cart__price {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
 }
 
 .sticky-add-to-cart__price [ref='priceContainer'] {
   display: inline-flex;
   align-items: baseline;
   gap: var(--space-2);
-  flex-wrap: nowrap;
 }
 
 .sticky-add-to-cart__price .price {
-  color: var(--color-foreground-heading);
-  font-family: var(--font-body--family);
   font-size: var(--text-base);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
 }
 
 .sticky-add-to-cart__price .compare-at-price {
-  color: rgb(var(--color-foreground-rgb) / 0.42);
-  font-family: var(--font-body--family);
   font-size: var(--text-xs);
-  font-weight: 500;
-  line-height: 1;
+  opacity: 0.6;
   text-decoration: line-through;
-  text-decoration-thickness: 1px;
+  line-height: 1;
 }
 
 .sticky-add-to-cart__button {
-  min-inline-size: 7.5rem;
-  padding-inline: var(--space-4);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
+  min-inline-size: 8rem;
   border: 0;
-  border-radius: var(--style-border-radius-buttons-primary, 100px);
+  border-radius: var(--style-border-radius-buttons-primary, 4px);
   background: var(--color-primary-button-background);
   color: var(--color-primary-button-text);
-  font-family: var(--button-font-family-primary, var(--font-body--family));
-  font-size: var(--text-xs);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.03em;
   text-transform: uppercase;
-  box-shadow: 0 6px 16px rgb(var(--color-shadow-rgb) / 0.1);
-  transition:
-    background var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out),
-    color var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out),
-    transform var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out),
-    box-shadow var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out);
+  transition: background 0.2s ease;
 }
 
 .sticky-add-to-cart__button:hover {
   background: var(--color-primary-button-hover-background);
   color: var(--color-primary-button-hover-text);
-  box-shadow: 0 8px 18px rgb(var(--color-shadow-rgb) / 0.14);
-  transform: translateY(-1px);
 }
 
-.sticky-add-to-cart__button:active {
-  transform: translateY(0);
-}
-
-.sticky-add-to-cart__button .add-to-cart-text {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.sticky-add-to-cart__button .add-to-cart-icon {
-  display: none;
-}
-
-.sticky-add-to-cart__button .add-to-cart-icon,
-.sticky-add-to-cart__button .add-to-cart-icon svg {
-  inline-size: 1rem;
-  block-size: 1rem;
-}
-
-.sticky-add-to-cart__added {
-  display: none;
-}
-
-/* Tablet and up: floating pill, capped width */
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 640px) {
   .sticky-add-to-cart {
-    inset-block-end: var(--space-3);
+    inset-block-end: var(--space-4);
     padding-inline: var(--page-gutter);
   }
 
   .sticky-add-to-cart__bar {
-    inline-size: min(42.5rem, 100%);
-    grid-template-columns: 2.875rem minmax(0, 1fr) auto;
-    padding-block: var(--space-3);
-    padding-inline: var(--space-3);
-    border: 1px solid rgb(var(--color-border-rgb) / 0.08);
-    border-radius: var(--space-4);
-    box-shadow: 0 10px 24px rgb(var(--color-shadow-rgb) / 0.08);
-  }
-
-  .sticky-add-to-cart__button {
-    min-inline-size: 9rem;
-    padding-inline: var(--space-5);
-    font-size: var(--text-sm);
-    letter-spacing: 0.04em;
-  }
-
-  .sticky-add-to-cart__button .add-to-cart-icon {
-    display: inline-flex;
+    inline-size: min(40rem, 100%);
+    margin-inline: auto;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-sm, 8px);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
   }
 }
 
-/* --------------------------------------------------------------------------
-   8. Cart, footer, misc. components
-   -------------------------------------------------------------------------- */
+/* 9. Footer ---------------------------------------------------------------- */
 
-/* Footer (sections/footer.liquid) already uses a mobile-first CSS grid
-   (1 → 2/3 → N columns). We only make its gap fluid on phones. */
 .footer-content {
-  gap: max(var(--footer-gap, 0px), var(--space-fluid-md));
+  gap: var(--space-fluid-lg) var(--space-fluid-md);
 }
 
-/* Utility: hide on specific ranges (complements stock hidden--mobile/desktop) */
-@media screen and (max-width: 989px) {
-  .hidden--tablet-down {
-    display: none !important; /* utility class – intentionally forced */
-  }
+.footer-content :is(h2, h3, h4, .h4, .h5) {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-block-end: var(--space-3);
 }
 
-@media screen and (min-width: 990px) {
-  .hidden--desktop-lg {
-    display: none !important; /* utility class – intentionally forced */
-  }
+.footer-content :is(p, li, a) {
+  font-size: var(--text-sm);
+  line-height: 1.7;
 }
 
-/* Reduced motion: strip hover lifts & transitions from this layer */
+/* 10. Motion --------------------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
-  .sticky-add-to-cart__button,
-  .sticky-add-to-cart__button:hover {
+  .sticky-add-to-cart__button {
     transition: none;
-    transform: none;
   }
 }

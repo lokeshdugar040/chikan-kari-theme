@@ -131,13 +131,13 @@
          - assets/base.css  (@media min-width rules)
          - assets/utilities.js  mediaQueryLarge = '(min-width: 750px)'
        ------------------------------------------------------------------ */
-    --bp-xs: 480px;   /* large phones (landscape) */
-    --bp-sm: 750px;   /* tablet portrait  – matches theme JS */
-    --bp-md: 990px;   /* tablet landscape / small laptop */
-    --bp-lg: 1200px;  /* desktop */
-    --bp-xl: 1400px;  /* wide desktop */
+    --bp-sm: 640px;   /* tablet */
+    --bp-md: 1024px;  /* desktop */
+    --bp-lg: 1280px;  /* wide */
+    /* NOTE: stock Tinker JS/CSS switch layouts at 750px (utilities.js mediaQueryLarge);
+       the custom layer uses 640/1024/1280 for its own components only. */
 
-    /* 4px baseline spacing scale (fixed steps) */
+    /* 4px baseline spacing scale */
     --space-0: 0;
     --space-1: 0.25rem;   /* 4px  */
     --space-2: 0.5rem;    /* 8px  */
@@ -145,34 +145,33 @@
     --space-4: 1rem;      /* 16px */
     --space-5: 1.25rem;   /* 20px */
     --space-6: 1.5rem;    /* 24px */
+    --space-7: 1.75rem;   /* 28px */
     --space-8: 2rem;      /* 32px */
+    --space-9: 2.25rem;   /* 36px */
     --space-10: 2.5rem;   /* 40px */
+    --space-11: 2.75rem;  /* 44px */
     --space-12: 3rem;     /* 48px */
-    --space-16: 4rem;     /* 64px */
-    --space-20: 5rem;     /* 80px */
 
-    /* Fluid spacing – scales smoothly between ~360px and ~1400px viewports */
-    --space-fluid-xs: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);     /* 8  → 12px */
-    --space-fluid-sm: clamp(0.75rem, 0.6rem + 0.75vw, 1.25rem);   /* 12 → 20px */
-    --space-fluid-md: clamp(1rem, 0.75rem + 1.25vw, 2rem);        /* 16 → 32px */
-    --space-fluid-lg: clamp(1.5rem, 1rem + 2.5vw, 3rem);          /* 24 → 48px */
-    --space-fluid-xl: clamp(2rem, 1.25rem + 3.75vw, 4.5rem);      /* 32 → 72px */
-    --space-section: var(--space-fluid-xl);                       /* vertical rhythm between sections */
+    /* Fluid spacing (phone → desktop) */
+    --space-fluid-xs: clamp(0.5rem, 0.45rem + 0.25vw, 0.75rem);   /* 8  → 12px */
+    --space-fluid-sm: clamp(0.75rem, 0.65rem + 0.5vw, 1rem);      /* 12 → 16px */
+    --space-fluid-md: clamp(1rem, 0.8rem + 1vw, 1.5rem);          /* 16 → 24px */
+    --space-fluid-lg: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);      /* 24 → 40px */
+    --space-fluid-xl: clamp(2rem, 1.5rem + 2vw, 3rem);            /* 32 → 48px */
+    --space-section: var(--space-fluid-lg);                       /* section vertical padding */
 
-    /* Fluid page gutter: 16px on a 360px phone → 40px at ~1000px, capped there */
-    --page-gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
+    /* Page gutter: 12px phones → 24px tablet → 32px desktop */
+    --page-gutter: clamp(0.75rem, 0.4rem + 1.75vw, 2rem);
 
-    /* Fluid typography scale (rem based, respects user zoom).
-       Body never drops below 16px on phones to avoid iOS input zoom. */
-    --text-2xs: clamp(0.6875rem, 0.66rem + 0.15vw, 0.75rem);   /* 11 → 12px */
-    --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);    /* 12 → 13px */
-    --text-sm: clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem);   /* 14 → 15px */
-    --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);        /* 16 → 18px */
-    --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);    /* 18 → 21px */
-    --text-xl: clamp(1.25rem, 1.12rem + 0.6vw, 1.625rem);       /* 20 → 26px */
-    --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 2.125rem);          /* 24 → 34px */
-    --text-3xl: clamp(1.875rem, 1.5rem + 1.75vw, 3rem);          /* 30 → 48px */
-    --text-4xl: clamp(2.25rem, 1.7rem + 2.5vw, 3.75rem);        /* 36 → 60px */
+    /* Type scale (rem; px comments at 16px root) */
+    --text-xs: 0.8125rem;                                   /* 13px */
+    --text-sm: 0.875rem;                                    /* 14px */
+    --text-base: clamp(0.9375rem, 0.875rem + 0.25vw, 1rem); /* 15 → 16px */
+    --text-lg: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);      /* 16 → 18px */
+    --text-xl: clamp(1.125rem, 1.05rem + 0.4vw, 1.25rem);   /* 18 → 20px */
+    --text-h3: clamp(1.25rem, 1.125rem + 0.8vw, 1.75rem);   /* 20 → 28px */
+    --text-h2: clamp(1.5rem, 1.375rem + 1vw, 2.25rem);      /* 24 → 36px */
+    --text-h1: clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem);     /* 28 → 44px */
 
     /* Touch targets */
     --touch-target: 44px;
@@ -183,7 +182,7 @@
     --narrow-content-width: 36rem;
     --normal-content-width: 42rem;
     --wide-content-width: 46rem;
-    --narrow-page-width: 90rem;
+    --narrow-page-width: 90rem;   /* 1440px content – used by page_width: narrow */
     --normal-page-width: 120rem;
     --wide-page-width: 150rem;
 
@@ -501,7 +500,7 @@
     --gap-2xl: 2rem;
     --gap-3xl: 3rem;
 
-    --spacing-scale-sm: 0.6;
+    --spacing-scale-sm: 0.5;
     --spacing-scale-md: 0.7;
     --spacing-scale-default: 1.0;
 
