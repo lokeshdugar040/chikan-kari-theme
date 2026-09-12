@@ -124,6 +124,60 @@
   %}
 
   :root {
+    /* ------------------------------------------------------------------
+       Responsive design tokens (mobile-first)
+       Breakpoints are documentation only (custom properties can't be used
+       inside @media). Keep these in sync with:
+         - assets/base.css  (@media min-width rules)
+         - assets/utilities.js  mediaQueryLarge = '(min-width: 750px)'
+       ------------------------------------------------------------------ */
+    --bp-xs: 480px;   /* large phones (landscape) */
+    --bp-sm: 750px;   /* tablet portrait  – matches theme JS */
+    --bp-md: 990px;   /* tablet landscape / small laptop */
+    --bp-lg: 1200px;  /* desktop */
+    --bp-xl: 1400px;  /* wide desktop */
+
+    /* 4px baseline spacing scale (fixed steps) */
+    --space-0: 0;
+    --space-1: 0.25rem;   /* 4px  */
+    --space-2: 0.5rem;    /* 8px  */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.25rem;   /* 20px */
+    --space-6: 1.5rem;    /* 24px */
+    --space-8: 2rem;      /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-16: 4rem;     /* 64px */
+    --space-20: 5rem;     /* 80px */
+
+    /* Fluid spacing – scales smoothly between ~360px and ~1400px viewports */
+    --space-fluid-xs: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);     /* 8  → 12px */
+    --space-fluid-sm: clamp(0.75rem, 0.6rem + 0.75vw, 1.25rem);   /* 12 → 20px */
+    --space-fluid-md: clamp(1rem, 0.75rem + 1.25vw, 2rem);        /* 16 → 32px */
+    --space-fluid-lg: clamp(1.5rem, 1rem + 2.5vw, 3rem);          /* 24 → 48px */
+    --space-fluid-xl: clamp(2rem, 1.25rem + 3.75vw, 4.5rem);      /* 32 → 72px */
+    --space-section: var(--space-fluid-xl);                       /* vertical rhythm between sections */
+
+    /* Fluid page gutter: 16px on a 360px phone → 40px at ~1000px, capped there */
+    --page-gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
+
+    /* Fluid typography scale (rem based, respects user zoom).
+       Body never drops below 16px on phones to avoid iOS input zoom. */
+    --text-2xs: clamp(0.6875rem, 0.66rem + 0.15vw, 0.75rem);   /* 11 → 12px */
+    --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);    /* 12 → 13px */
+    --text-sm: clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem);   /* 14 → 15px */
+    --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);        /* 16 → 18px */
+    --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem);    /* 18 → 21px */
+    --text-xl: clamp(1.25rem, 1.12rem + 0.6vw, 1.625rem);       /* 20 → 26px */
+    --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 2.125rem);          /* 24 → 34px */
+    --text-3xl: clamp(1.875rem, 1.5rem + 1.75vw, 3rem);          /* 30 → 48px */
+    --text-4xl: clamp(2.25rem, 1.7rem + 2.5vw, 3.75rem);        /* 36 → 60px */
+
+    /* Touch targets */
+    --touch-target: 44px;
+    --touch-target-lg: 48px;
+
     /* Page Layout */
     --sidebar-width: 25rem;
     --narrow-content-width: 36rem;
@@ -410,10 +464,10 @@
 
     /* Spacing */
     --margin-3xs: 0.125rem;
-    --margin-2xs: 0.3rem;
+    --margin-2xs: 0.25rem;
     --margin-xs: 0.5rem;
-    --margin-sm: 0.7rem;
-    --margin-md: 0.8rem;
+    --margin-sm: 0.75rem;
+    --margin-md: 0.75rem;
     --margin-lg: 1rem;
     --margin-xl: 1.25rem;
     --margin-2xl: 1.5rem;
@@ -427,8 +481,8 @@
     --padding-3xs: 0.125rem;
     --padding-2xs: 0.25rem;
     --padding-xs: 0.5rem;
-    --padding-sm: 0.7rem;
-    --padding-md: 0.8rem;
+    --padding-sm: 0.75rem;
+    --padding-md: 0.75rem;
     --padding-lg: 1rem;
     --padding-xl: 1.25rem;
     --padding-2xl: 1.5rem;
@@ -438,10 +492,10 @@
     --padding-6xl: 4rem;
 
     --gap-3xs: 0.125rem;
-    --gap-2xs: 0.3rem;
+    --gap-2xs: 0.25rem;
     --gap-xs: 0.5rem;
-    --gap-sm: 0.7rem;
-    --gap-md: 0.9rem;
+    --gap-sm: 0.75rem;
+    --gap-md: 1rem;
     --gap-lg: 1rem;
     --gap-xl: 1.25rem;
     --gap-2xl: 2rem;
@@ -560,8 +614,8 @@
     /* Input */
     --input-email-min-width: 200px;
     --input-search-max-width: 650px;
-    --input-padding-y: 0.8rem;
-    --input-padding-x: 0.8rem;
+    --input-padding-y: 0.75rem;
+    --input-padding-x: 0.75rem;
     --input-padding: var(--input-padding-y) var(--input-padding-x);
     --input-box-shadow-width: var(--style-border-width-inputs);
     --input-box-shadow: 0 0 0 var(--input-box-shadow-width) var(--color-input-border);
@@ -569,7 +623,7 @@
     --input-disabled-background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10));
     --input-disabled-border-color: rgb(var(--color-foreground-rgb) / var(--opacity-5));
     --input-disabled-text-color: rgb(var(--color-foreground-rgb) / var(--opacity-50));
-    --input-textarea-min-height: 55px;
+    --input-textarea-min-height: 6rem;
 
     /* Checkbox */
     --checkbox-size: 22px;
@@ -587,8 +641,8 @@
     --button-size-sm: 30px;
     --button-size-md: 36px;
     --button-size: var(--minimum-touch-target);
-    --button-padding-inline: 24px;
-    --button-padding-block: 16px;
+    --button-padding-inline: var(--space-6);
+    --button-padding-block: var(--space-4);
 
     /* Button font-family */
     --button-font-family-primary: var(--font-{{ settings.type_font_button_primary }}--family);
@@ -612,7 +666,7 @@
     --drawer-header-block-padding: 20px;
     --drawer-content-block-padding: 10px;
     --drawer-header-desktop-top: 0rem;
-    --drawer-padding: calc(var(--padding-sm) + 7px);
+    --drawer-padding: var(--space-5);
     --drawer-height: 100dvh;
     --drawer-width: 95vw;
     --drawer-max-width: 500px;

@@ -10,17 +10,19 @@
 
 {% style %}
   .ai-testimonial-carousel-{{ ai_gen_id }} {
-    --section-max-width: 1240px;
-    --section-padding-x: 20px;
-    --section-padding-y: 56px;
+    /* Mobile-first tokens: phone values here, upgraded at 750px / 990px below */
+    --section-max-width: 77.5rem;
+    --section-padding-x: var(--space-4, 1rem);
+    --section-padding-y: var(--space-fluid-lg, clamp(1.5rem, 1rem + 2.5vw, 3rem));
     --card-width: {{ block.settings.card_width }}px;
-    --card-gap: {{ block.settings.card_gap }}px;
+    --card-gap: clamp(1rem, 0.75rem + 1vw, {{ block.settings.card_gap }}px);
     --card-radius: {{ block.settings.card_border_radius }}px;
-    --avatar-size: {{ block.settings.image_size }}px;
+    --avatar-size: clamp({{ block.settings.image_size | times: 0.8 | round: 0 }}px, {{ block.settings.image_size | times: 0.8 | round: 0 }}px + 1vw, {{ block.settings.image_size }}px);
     --avatar-ring: {{ block.settings.image_border_width }}px;
     --title-size: clamp(1.75rem, 1.2rem + 1.8vw, {{ block.settings.title_size }}px);
-    --name-size: {{ block.settings.name_size }}px;
-    --review-size: {{ block.settings.review_size }}px;
+    --name-size: clamp(1rem, 0.9rem + 0.3vw, {{ block.settings.name_size }}px);
+    --review-size: clamp(0.9375rem, 0.9rem + 0.2vw, {{ block.settings.review_size }}px);
+    --nav-size: var(--touch-target, 44px);
     --surface: {{ block.settings.card_background }};
     --section-bg: {{ block.settings.background_color }};
     --text: {{ block.settings.text_color }};
@@ -31,7 +33,7 @@
     --nav-fg: {{ block.settings.nav_button_icon_color }};
 
     display: block;
-    width: min({{ block.settings.desktop_width_percent }}%, 100%);
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
     padding: var(--section-padding-y) var(--section-padding-x);
@@ -42,8 +44,8 @@
   }
 
   .ai-testimonial-carousel__header-{{ ai_gen_id }} {
-    max-width: 720px;
-    margin: 0 auto 36px;
+    max-width: min(100%, 45rem);
+    margin: 0 auto var(--space-fluid-md, clamp(1rem, 0.75rem + 1.25vw, 2rem));
     text-align: center;
   }
 
@@ -65,7 +67,8 @@
   .ai-testimonial-carousel__track-{{ ai_gen_id }} {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(260px, var(--card-width));
+    /* Phones: one card with a little peek of the next */
+    grid-auto-columns: calc(100% - var(--space-8, 2rem));
     gap: var(--card-gap);
     overflow-x: auto;
     overscroll-behavior-x: contain;
@@ -73,7 +76,7 @@
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: calc(var(--avatar-size) * 0.58) 2px 10px;
+    padding: calc(var(--avatar-size) * 0.58) 2px var(--space-3, 0.75rem);
     align-items: stretch;
   }
 
@@ -87,8 +90,8 @@
     scroll-snap-stop: always;
     min-width: 0;
     min-height: 100%;
-    padding: calc(var(--avatar-size) * 0.5 + 24px) 24px 24px;
-    border-radius: var(--card-radius);
+    padding: calc(var(--avatar-size) * 0.5 + var(--space-5, 1.25rem)) var(--space-5, 1.25rem) var(--space-5, 1.25rem);
+    border-radius: min(var(--card-radius), 1.5rem);
     background:
       linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.96)),
       var(--surface);
@@ -183,18 +186,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    margin: 0 auto 14px;
+    width: 2.125rem;
+    height: 2.125rem;
+    margin: 0 auto var(--space-3, 0.75rem);
     border-radius: 999px;
     background: rgba(17, 24, 39, 0.05);
     color: var(--text);
-    font-size: 18px;
+    font-size: var(--text-lg, 1.125rem);
     line-height: 1;
   }
 
   .ai-testimonial-carousel__name-{{ ai_gen_id }} {
-    margin: 0 0 10px;
+    margin: 0 0 var(--space-2, 0.5rem);
     color: var(--text);
     font-size: var(--name-size);
     font-weight: 650;
@@ -213,19 +216,20 @@
     word-break: break-word;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
   }
 
   .ai-testimonial-carousel__nav-{{ ai_gen_id }} {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    margin-top: 28px;
+    gap: var(--space-3, 0.75rem);
+    margin-top: var(--space-fluid-md, clamp(1rem, 0.75rem + 1.25vw, 2rem));
   }
 
   .ai-testimonial-carousel__nav-button-{{ ai_gen_id }} {
-    width: 46px;
-    height: 46px;
+    width: var(--nav-size);
+    height: var(--nav-size);
     border: 1px solid rgba(17, 24, 39, 0.08);
     border-radius: 999px;
     background: var(--nav-bg);
@@ -243,6 +247,11 @@
     transform: translateY(-1px);
   }
 
+  .ai-testimonial-carousel__nav-button-{{ ai_gen_id }}:focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+  }
+
   .ai-testimonial-carousel__nav-button-{{ ai_gen_id }}:disabled {
     opacity: 0.35;
     cursor: not-allowed;
@@ -250,60 +259,49 @@
   }
 
   .ai-testimonial-carousel__nav-button-{{ ai_gen_id }} svg {
-    width: 20px;
-    height: 20px;
+    width: 1.25rem;
+    height: 1.25rem;
   }
 
   .ai-testimonial-carousel__empty-state-{{ ai_gen_id }} {
     text-align: center;
-    padding: 56px 20px;
+    padding: var(--space-fluid-xl, clamp(2rem, 1.25rem + 3.75vw, 4.5rem)) var(--space-5, 1.25rem);
     color: rgba(17, 24, 39, 0.65);
-    font-size: 14px;
+    font-size: var(--text-sm, 0.875rem);
   }
 
-  @media screen and (max-width: 989px) {
-    .ai-testimonial-carousel-{{ ai_gen_id }} {
-      --section-padding-y: 48px;
-    }
-
+  /* Large phones: cards a bit narrower so two-ish peek */
+  @media screen and (min-width: 480px) {
     .ai-testimonial-carousel__track-{{ ai_gen_id }} {
-      grid-auto-columns: minmax(250px, 78vw);
+      grid-auto-columns: minmax(15.625rem, 78vw);
     }
   }
 
-  @media screen and (max-width: 749px) {
+  /* Tablet: fixed card width from settings, larger padding */
+  @media screen and (min-width: 750px) {
     .ai-testimonial-carousel-{{ ai_gen_id }} {
-      --section-padding-x: 16px;
-      --section-padding-y: 40px;
-      width: 100%;
-    }
-
-    .ai-testimonial-carousel__header-{{ ai_gen_id }} {
-      margin-bottom: 28px;
+      --section-padding-x: var(--space-5, 1.25rem);
     }
 
     .ai-testimonial-carousel__track-{{ ai_gen_id }} {
-      gap: 16px;
-      grid-auto-columns: calc(100% - 28px);
-      padding-top: calc(var(--avatar-size) * 0.56);
+      grid-auto-columns: minmax(16.25rem, var(--card-width));
     }
 
     .ai-testimonial-carousel__card-{{ ai_gen_id }} {
-      padding: calc(var(--avatar-size) * 0.5 + 20px) 18px 18px;
-      border-radius: max(18px, calc(var(--card-radius) - 4px));
+      padding: calc(var(--avatar-size) * 0.5 + var(--space-6, 1.5rem)) var(--space-6, 1.5rem) var(--space-6, 1.5rem);
+      border-radius: var(--card-radius);
     }
 
     .ai-testimonial-carousel__review-{{ ai_gen_id }} {
-      -webkit-line-clamp: 6;
+      -webkit-line-clamp: 5;
+      line-clamp: 5;
     }
+  }
 
-    .ai-testimonial-carousel__nav-{{ ai_gen_id }} {
-      margin-top: 22px;
-    }
-
-    .ai-testimonial-carousel__nav-button-{{ ai_gen_id }} {
-      width: 42px;
-      height: 42px;
+  /* Desktop: honour the editor's width percentage */
+  @media screen and (min-width: 990px) {
+    .ai-testimonial-carousel-{{ ai_gen_id }} {
+      width: min({{ block.settings.desktop_width_percent }}%, 100%);
     }
   }
 
