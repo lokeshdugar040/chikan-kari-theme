@@ -12,8 +12,8 @@
     "1772472655cd1173af": {
       "type": "_blocks",
       "blocks": {
-        "ai_gen_block_942e6c0_U4CpPm": {
-          "type": "ai_gen_block_942e6c0",
+        "slideshow_banner_U4CpPm": {
+          "type": "slideshow-banner",
           "settings": {
             "image_size": "adapt",
             "desktop_height": 1000,
@@ -51,7 +51,7 @@
         }
       },
       "block_order": [
-        "ai_gen_block_942e6c0_U4CpPm"
+        "slideshow_banner_U4CpPm"
       ],
       "settings": {
         "content_direction": "row",
@@ -527,8 +527,8 @@
     "blocks_gnpgjb": {
       "type": "_blocks",
       "blocks": {
-        "ai_gen_block_942e6c0_NCdJnm": {
-          "type": "ai_gen_block_942e6c0",
+        "slideshow_banner_NCdJnm": {
+          "type": "slideshow-banner",
           "settings": {
             "image_size": "adapt",
             "desktop_height": 800,
@@ -564,7 +564,7 @@
         }
       },
       "block_order": [
-        "ai_gen_block_942e6c0_NCdJnm"
+        "slideshow_banner_NCdJnm"
       ],
       "name": "Slideshow banner",
       "settings": {
@@ -1075,8 +1075,8 @@
     "1772474882e1e16933": {
       "type": "_blocks",
       "blocks": {
-        "ai_gen_block_b942b16_EyBkYd": {
-          "type": "ai_gen_block_b942b16",
+        "testimonials_carousel_EyBkYd": {
+          "type": "testimonials-carousel",
           "settings": {
             "title": "What our customers say",
             "desktop_width_percent": 100,
@@ -1125,7 +1125,7 @@
         }
       },
       "block_order": [
-        "ai_gen_block_b942b16_EyBkYd"
+        "testimonials_carousel_EyBkYd"
       ],
       "settings": {
         "content_direction": "column",

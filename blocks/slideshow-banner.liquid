@@ -1,8 +1,9 @@
 {% doc %}
-  @prompt
-    make an slideshow clickable banner of multiple size medium small large adapt to first img and full size banner differ img option to put in mobile view and dekstop
+  Slideshow banner
+  Up to five clickable slides with separate desktop / mobile images.
+  Height presets interpolate fluidly between the mobile and desktop values.
 {% enddoc %}
-{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign banner_id = block.id | replace: '_', '' | downcase %}
 
 {% liquid
   assign first_desktop_image = blank
@@ -49,7 +50,7 @@
     assign nav_size = block.settings.nav_button_size | at_least: 44
   -%}
 
-  .ai-slideshow-banner-{{ ai_gen_id }} {
+  .slideshow-banner-{{ banner_id }} {
     --slide-bg-color: {{ block.settings.banner_background }};
     --ai-nav-size: {{ nav_size }}px;
     --ai-nav-offset: clamp(0.5rem, {{ block.settings.nav_button_offset | times: 0.5 }}px + 1vw, {{ block.settings.nav_button_offset }}px);
@@ -65,7 +66,7 @@
     box-sizing: border-box;
   }
 
-  .ai-slideshow-container-{{ ai_gen_id }} {
+  .slideshow-banner__container-{{ banner_id }} {
     position: relative;
     width: 100%;
     background: var(--slide-bg-color);
@@ -75,30 +76,30 @@
 
   {% if block.settings.image_size == 'adapt' %}
     /* Adapt: follow the first mobile image's ratio on phones, desktop image's ratio from tablet up */
-    .ai-slideshow-container-{{ ai_gen_id }} {
+    .slideshow-banner__container-{{ banner_id }} {
       aspect-ratio: {% if first_mobile_image != blank %}{{ first_mobile_image.aspect_ratio }}{% elsif first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}1 / 1{% endif %};
       min-height: clamp(11.25rem, 40vw, 13.75rem);
     }
 
     @media screen and (min-width: 750px) {
-      .ai-slideshow-container-{{ ai_gen_id }} {
+      .slideshow-banner__container-{{ banner_id }} {
         aspect-ratio: {% if first_desktop_image != blank %}{{ first_desktop_image.aspect_ratio }}{% else %}2 / 1{% endif %};
       }
     }
   {% else %}
     /* Fixed presets / custom: fluid between phone and desktop values, capped at the desktop value */
-    .ai-slideshow-container-{{ ai_gen_id }} {
+    .slideshow-banner__container-{{ banner_id }} {
       height: clamp({{ h_mobile }}px, {{ h_mobile }}px + ({{ h_desktop | minus: h_mobile }} / 1040) * (100vw - 360px), {{ h_desktop }}px);
     }
   {% endif %}
 
-  .ai-slideshow-slides-{{ ai_gen_id }} {
+  .slideshow-banner__slides-{{ banner_id }} {
     position: relative;
     width: 100%;
     height: 100%;
   }
 
-  .ai-slideshow-slide-{{ ai_gen_id }} {
+  .slideshow-banner__slide-{{ banner_id }} {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -108,12 +109,12 @@
     pointer-events: none;
   }
 
-  .ai-slideshow-slide-{{ ai_gen_id }}.active {
+  .slideshow-banner__slide-{{ banner_id }}.active {
     opacity: 1;
     pointer-events: auto;
   }
 
-  .ai-slideshow-link-{{ ai_gen_id }} {
+  .slideshow-banner__link-{{ banner_id }} {
     display: block;
     width: 100%;
     height: 100%;
@@ -122,18 +123,18 @@
     background: var(--slide-bg-color);
   }
 
-  .ai-slideshow-link-{{ ai_gen_id }}:focus-visible {
+  .slideshow-banner__link-{{ banner_id }}:focus-visible {
     outline: 2px solid currentcolor;
     outline-offset: -4px;
   }
 
-  .ai-slideshow-picture-{{ ai_gen_id }} {
+  .slideshow-banner__picture-{{ banner_id }} {
     display: block;
     width: 100%;
     height: 100%;
   }
 
-  .ai-slideshow-image-{{ ai_gen_id }} {
+  .slideshow-banner__image-{{ banner_id }} {
     width: 100%;
     height: 100%;
     display: block;
@@ -142,7 +143,7 @@
     background: var(--slide-bg-color);
   }
 
-  .ai-slideshow-placeholder-{{ ai_gen_id }} {
+  .slideshow-banner__placeholder-{{ banner_id }} {
     width: 100%;
     height: 100%;
     background-color: #f4f4f4;
@@ -152,14 +153,14 @@
     position: relative;
   }
 
-  .ai-slideshow-placeholder-{{ ai_gen_id }} svg {
+  .slideshow-banner__placeholder-{{ banner_id }} svg {
     width: 100%;
     height: 100%;
     max-width: min(100%, 31.25rem);
     max-height: min(100%, 31.25rem);
   }
 
-  .ai-slideshow-empty-state-{{ ai_gen_id }} {
+  .slideshow-banner__empty-state-{{ banner_id }} {
     position: absolute;
     bottom: var(--space-5, 1.25rem);
     left: 50%;
@@ -171,7 +172,7 @@
     pointer-events: none;
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }} {
+  .slideshow-banner__nav-{{ banner_id }} {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -189,32 +190,32 @@
     opacity: {{ block.settings.nav_button_opacity | divided_by: 100.0 }};
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }}:hover,
-  .ai-slideshow-nav-{{ ai_gen_id }}:focus-visible {
+  .slideshow-banner__nav-{{ banner_id }}:hover,
+  .slideshow-banner__nav-{{ banner_id }}:focus-visible {
     background-color: {{ block.settings.nav_button_hover_color }};
     opacity: 1;
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }}:focus-visible {
+  .slideshow-banner__nav-{{ banner_id }}:focus-visible {
     outline: 2px solid currentcolor;
     outline-offset: 2px;
   }
 
-  .ai-slideshow-nav-{{ ai_gen_id }} svg {
+  .slideshow-banner__nav-{{ banner_id }} svg {
     width: calc(var(--ai-nav-size) * 0.5);
     height: calc(var(--ai-nav-size) * 0.5);
     fill: {{ block.settings.nav_icon_color }};
   }
 
-  .ai-slideshow-nav-prev-{{ ai_gen_id }} {
+  .slideshow-banner__nav-prev-{{ banner_id }} {
     left: var(--ai-nav-offset);
   }
 
-  .ai-slideshow-nav-next-{{ ai_gen_id }} {
+  .slideshow-banner__nav-next-{{ banner_id }} {
     right: var(--ai-nav-offset);
   }
 
-  .ai-slideshow-dots-{{ ai_gen_id }} {
+  .slideshow-banner__dots-{{ banner_id }} {
     position: absolute;
     bottom: var(--ai-dots-offset);
     left: 50%;
@@ -225,7 +226,7 @@
   }
 
   /* Dots: visual size from settings, but the tap area is padded up to 44px */
-  .ai-slideshow-dot-{{ ai_gen_id }} {
+  .slideshow-banner__dot-{{ banner_id }} {
     position: relative;
     width: var(--ai-dot-size);
     height: var(--ai-dot-size);
@@ -238,7 +239,7 @@
     opacity: {{ block.settings.dot_opacity | divided_by: 100.0 }};
   }
 
-  .ai-slideshow-dot-{{ ai_gen_id }}::before {
+  .slideshow-banner__dot-{{ banner_id }}::before {
     content: '';
     position: absolute;
     inset: 50% auto auto 50%;
@@ -247,34 +248,34 @@
     transform: translate(-50%, -50%);
   }
 
-  .ai-slideshow-dot-{{ ai_gen_id }}.active {
+  .slideshow-banner__dot-{{ banner_id }}.active {
     background-color: {{ block.settings.dot_active_color }};
     transform: scale(1.2);
     opacity: 1;
   }
 
-  .ai-slideshow-dot-{{ ai_gen_id }}:focus-visible {
+  .slideshow-banner__dot-{{ banner_id }}:focus-visible {
     outline: 2px solid currentcolor;
     outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ai-slideshow-slide-{{ ai_gen_id }},
-    .ai-slideshow-nav-{{ ai_gen_id }},
-    .ai-slideshow-dot-{{ ai_gen_id }} {
+    .slideshow-banner__slide-{{ banner_id }},
+    .slideshow-banner__nav-{{ banner_id }},
+    .slideshow-banner__dot-{{ banner_id }} {
       transition: none;
     }
   }
 {% endstyle %}
 
-<slideshow-banner-{{ ai_gen_id }}
-  class="ai-slideshow-banner-{{ ai_gen_id }}"
+<slideshow-banner-{{ banner_id }}
+  class="slideshow-banner-{{ banner_id }}"
   data-autoplay="{{ block.settings.autoplay }}"
   data-autoplay-speed="{{ block.settings.autoplay_speed }}"
   {{ block.shopify_attributes }}
 >
-  <div class="ai-slideshow-container-{{ ai_gen_id }}">
-    <div class="ai-slideshow-slides-{{ ai_gen_id }}">
+  <div class="slideshow-banner__container-{{ banner_id }}">
+    <div class="slideshow-banner__slides-{{ banner_id }}">
       {% liquid
         assign has_slides = false
         for i in (1..5)
@@ -303,16 +304,16 @@
 
           {% if desktop_image != blank %}
             <div
-              class="ai-slideshow-slide-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+              class="slideshow-banner__slide-{{ banner_id }} {% if forloop.first %}active{% endif %}"
               data-slide-index="{{ forloop.index0 }}"
             >
               {% if link != blank %}
-                <a href="{{ link }}" class="ai-slideshow-link-{{ ai_gen_id }}">
+                <a href="{{ link }}" class="slideshow-banner__link-{{ banner_id }}">
               {% else %}
-                <div class="ai-slideshow-link-{{ ai_gen_id }}">
+                <div class="slideshow-banner__link-{{ banner_id }}">
               {% endif %}
 
-              <picture class="ai-slideshow-picture-{{ ai_gen_id }}">
+              <picture class="slideshow-banner__picture-{{ banner_id }}">
                 {% if mobile_image != blank %}
                   <source
                     media="(max-width: 749px)"
@@ -351,7 +352,7 @@
                   fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}"
                   width="{{ desktop_image.width }}"
                   height="{{ desktop_image.height }}"
-                  class="ai-slideshow-image-{{ ai_gen_id }}"
+                  class="slideshow-banner__image-{{ banner_id }}"
                 >
               </picture>
 
@@ -364,10 +365,10 @@
           {% endif %}
         {% endfor %}
       {% else %}
-        <div class="ai-slideshow-slide-{{ ai_gen_id }} active">
-          <div class="ai-slideshow-placeholder-{{ ai_gen_id }}">
+        <div class="slideshow-banner__slide-{{ banner_id }} active">
+          <div class="slideshow-banner__placeholder-{{ banner_id }}">
             {{ 'hero-apparel-1' | placeholder_svg_tag }}
-            <div class="ai-slideshow-empty-state-{{ ai_gen_id }}">
+            <div class="slideshow-banner__empty-state-{{ banner_id }}">
               Next, add images for your slideshow
             </div>
           </div>
@@ -389,7 +390,7 @@
 
       {% if slide_count > 1 %}
         <button
-          class="ai-slideshow-nav-{{ ai_gen_id }} ai-slideshow-nav-prev-{{ ai_gen_id }}"
+          class="slideshow-banner__nav-{{ banner_id }} slideshow-banner__nav-prev-{{ banner_id }}"
           aria-label="Previous slide"
           type="button"
         >
@@ -399,7 +400,7 @@
         </button>
 
         <button
-          class="ai-slideshow-nav-{{ ai_gen_id }} ai-slideshow-nav-next-{{ ai_gen_id }}"
+          class="slideshow-banner__nav-{{ banner_id }} slideshow-banner__nav-next-{{ banner_id }}"
           aria-label="Next slide"
           type="button"
         >
@@ -423,7 +424,7 @@
       {% endfor %}
 
       {% if slide_count > 1 %}
-        <div class="ai-slideshow-dots-{{ ai_gen_id }}">
+        <div class="slideshow-banner__dots-{{ banner_id }}">
           {% for i in (1..5) %}
             {% liquid
               assign desktop_image_key = 'slide_' | append: i | append: '_desktop_image'
@@ -432,7 +433,7 @@
 
             {% if desktop_image != blank %}
               <button
-                class="ai-slideshow-dot-{{ ai_gen_id }} {% if forloop.first %}active{% endif %}"
+                class="slideshow-banner__dot-{{ banner_id }} {% if forloop.first %}active{% endif %}"
                 data-slide-index="{{ forloop.index0 }}"
                 aria-label="Go to slide {{ forloop.index }}"
                 type="button"
@@ -443,11 +444,11 @@
       {% endif %}
     {% endif %}
   </div>
-</slideshow-banner-{{ ai_gen_id }}>
+</slideshow-banner-{{ banner_id }}>
 
 <script>
   (function() {
-    class SlideshowBanner{{ ai_gen_id }} extends HTMLElement {
+    class SlideshowBanner{{ banner_id }} extends HTMLElement {
       constructor() {
         super();
         this.currentSlide = 0;
@@ -455,10 +456,10 @@
       }
 
       connectedCallback() {
-        this.slides = this.querySelectorAll('.ai-slideshow-slide-{{ ai_gen_id }}');
-        this.dots = this.querySelectorAll('.ai-slideshow-dot-{{ ai_gen_id }}');
-        this.prevButton = this.querySelector('.ai-slideshow-nav-prev-{{ ai_gen_id }}');
-        this.nextButton = this.querySelector('.ai-slideshow-nav-next-{{ ai_gen_id }}');
+        this.slides = this.querySelectorAll('.slideshow-banner__slide-{{ banner_id }}');
+        this.dots = this.querySelectorAll('.slideshow-banner__dot-{{ banner_id }}');
+        this.prevButton = this.querySelector('.slideshow-banner__nav-prev-{{ banner_id }}');
+        this.nextButton = this.querySelector('.slideshow-banner__nav-next-{{ banner_id }}');
         this.autoplay = this.dataset.autoplay === 'true';
         this.autoplaySpeed = parseInt(this.dataset.autoplaySpeed, 10) * 1000;
 
@@ -530,7 +531,7 @@
       }
     }
 
-    customElements.define('slideshow-banner-{{ ai_gen_id }}', SlideshowBanner{{ ai_gen_id }});
+    customElements.define('slideshow-banner-{{ banner_id }}', SlideshowBanner{{ banner_id }});
   })();
 </script>
 

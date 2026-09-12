@@ -173,9 +173,23 @@
     --text-h2: clamp(1.5rem, 1.375rem + 1vw, 2.25rem);      /* 24 → 36px */
     --text-h1: clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem);     /* 28 → 44px */
 
-    /* Touch targets */
+    /* Touch targets / control height (fluid) */
     --touch-target: 44px;
     --touch-target-lg: 48px;
+    --control-height: clamp(44px, 4vw, 52px);
+
+    /* Motion */
+    --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+    --duration-fast: 180ms;
+    --duration-med: 280ms;
+    --duration-slow: 420ms;
+
+    /* Elevation */
+    --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.04);
+    --shadow-sm: 0 2px 8px rgb(0 0 0 / 0.06);
+    --shadow-md: 0 8px 24px rgb(0 0 0 / 0.08);
+    --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.12);
 
     /* Page Layout */
     --sidebar-width: 25rem;

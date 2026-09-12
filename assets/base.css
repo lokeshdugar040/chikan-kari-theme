@@ -5173,7 +5173,7 @@ small,
 .quick-add__button,
 .add-to-cart-button,
 .sticky-add-to-cart__button {
-  min-block-size: var(--touch-target);
+  min-block-size: var(--control-height);
   padding-block: var(--space-3);
   padding-inline: var(--space-6);
   font-size: var(--text-sm);
@@ -5215,7 +5215,7 @@ input:not([type='checkbox'], [type='radio'], [type='range'], [type='hidden']),
 textarea,
 select,
 .field__input {
-  min-block-size: var(--touch-target);
+  min-block-size: var(--control-height);
   font-size: max(1rem, var(--text-base)); /* ≥16px prevents iOS zoom-on-focus */
 }
 
@@ -5653,10 +5653,296 @@ a.header-logo {
   line-height: 1.7;
 }
 
-/* 10. Motion --------------------------------------------------------------- */
+/* 10. Motion & depth --------------------------------------------------------
+   Transform/opacity only. Every rule below is disabled for
+   prefers-reduced-motion at the end of this file. */
 
+/* Scroll reveal (assets/motion.js adds .in-view) */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(var(--space-4));
+    transition:
+      opacity var(--duration-slow) var(--ease-out),
+      transform var(--duration-slow) var(--ease-out);
+  }
+
+  [data-reveal].in-view {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Children stagger inside a revealed grid */
+  [data-reveal].in-view .product-grid__item,
+  [data-reveal].in-view .resource-list__item {
+    animation: reveal-child var(--duration-slow) var(--ease-out) both;
+  }
+
+  [data-reveal].in-view :is(.product-grid__item, .resource-list__item):nth-child(2) { animation-delay: 40ms; }
+  [data-reveal].in-view :is(.product-grid__item, .resource-list__item):nth-child(3) { animation-delay: 80ms; }
+  [data-reveal].in-view :is(.product-grid__item, .resource-list__item):nth-child(4) { animation-delay: 120ms; }
+  [data-reveal].in-view :is(.product-grid__item, .resource-list__item):nth-child(n + 5) { animation-delay: 160ms; }
+}
+
+@keyframes reveal-child {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-3));
+  }
+}
+
+/* Cards: lift + 3D tilt (custom props driven by motion.js) + image zoom */
+.product-card,
+.collection-card,
+.resource-card {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+
+  transform-style: preserve-3d;
+  transition:
+    transform var(--duration-med) var(--ease-out),
+    box-shadow var(--duration-med) var(--ease-out);
+  will-change: transform;
+}
+
+.product-card .product-media-container,
+.collection-card__image,
+.resource-card__image {
+  overflow: hidden;
+}
+
+.product-card .product-media-container img,
+.collection-card__image img {
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .product-card:hover,
+  .collection-card:hover,
+  .resource-card:hover {
+    transform:
+      perspective(900px)
+      translateY(calc(-1 * var(--space-1)))
+      rotateX(var(--tilt-x))
+      rotateY(var(--tilt-y))
+      scale(1.015);
+    box-shadow: var(--shadow-md);
+    z-index: var(--layer-raised);
+  }
+
+  .product-card:hover .product-media-container img,
+  .collection-card:hover .collection-card__image img {
+    transform: scale(1.04);
+  }
+
+  /* Soft glare that follows the pointer */
+  .product-card[data-tilt]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at var(--glare-x, 50%) var(--glare-y, 50%),
+      rgb(255 255 255 / 0.12),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity var(--duration-med) var(--ease-out);
+    z-index: var(--layer-raised);
+  }
+
+  .product-card[data-tilt]:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Touch devices: press feedback */
+@media (hover: none) {
+  .product-card:active,
+  .collection-card:active {
+    transform: scale(0.985);
+    transition-duration: var(--duration-fast);
+  }
+}
+
+/* Buttons: lift on hover, press on active */
+.button,
+.button-secondary,
+.sticky-add-to-cart__button,
+.quick-add__button {
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover,
+  .button-secondary:hover,
+  .sticky-add-to-cart__button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.button:active,
+.button-secondary:active,
+.sticky-add-to-cart__button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* Variant buttons: smooth state change */
+.variant-option__button-label {
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.variant-option__button-label:active {
+  transform: scale(0.97);
+}
+
+/* Inputs: focus glow */
+.field__input,
+input:not([type='checkbox'], [type='radio'], [type='range'], [type='hidden']),
+textarea,
+select {
+  transition:
+    box-shadow var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.field__input:focus-visible,
+textarea:focus-visible {
+  box-shadow: 0 0 0 3px rgb(110 88 65 / 0.18);
+}
+
+/* Header: compacts and gains a frosted backdrop once scrolled */
+#header-component .header__row--top {
+  transition:
+    box-shadow var(--duration-med) var(--ease-out),
+    background-color var(--duration-med) var(--ease-out);
+}
+
+#header-component .header__columns {
+  transition: padding var(--duration-med) var(--ease-out);
+}
+
+body[data-scrolled] #header-component[data-sticky-state='active'] .header__columns {
+  --header-padding: var(--space-1);
+}
+
+body[data-scrolled] #header-component[data-sticky-state='active'] .header__row--top {
+  box-shadow: var(--shadow-sm);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  body[data-scrolled] #header-component[data-sticky-state='active']:not([transparent]) .header__row--top {
+    background-color: rgb(var(--color-background-rgb) / 0.86);
+    backdrop-filter: saturate(160%) blur(12px);
+    -webkit-backdrop-filter: saturate(160%) blur(12px);
+  }
+}
+
+/* Modals & drawers: fade + scale in */
+.dialog-modal[open] {
+  animation: dialog-scale-in var(--duration-med) var(--ease-out) both;
+}
+
+.dialog-modal.dialog-closing {
+  animation: dialog-scale-out var(--duration-fast) var(--ease-in-out) both;
+}
+
+@keyframes dialog-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes dialog-scale-out {
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* USP band items */
+.premium-usp-band__item {
+  transition:
+    transform var(--duration-med) var(--ease-out),
+    box-shadow var(--duration-med) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .premium-usp-band__item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm), inset 0 0 0 1px rgb(110 88 65 / 0.12);
+  }
+}
+
+/* Smooth momentum scrolling for snap carousels */
+.resource-list__carousel,
+.video-sequence-slider__viewport,
+[class*='testimonials-carousel__track'] {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+}
+
+/* Cart bubble pop when the count changes */
+.cart-bubble {
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.cart-bubble.cart-bubble--animating {
+  animation: bubble-pop var(--duration-med) var(--ease-out);
+}
+
+@keyframes bubble-pop {
+  40% {
+    transform: scale(1.3);
+  }
+}
+
+/* Reduced motion: strip every transform/animation from this layer */
 @media (prefers-reduced-motion: reduce) {
-  .sticky-add-to-cart__button {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
     transition: none;
+  }
+
+  .product-card,
+  .collection-card,
+  .resource-card,
+  .button,
+  .button-secondary,
+  .sticky-add-to-cart__button,
+  .variant-option__button-label,
+  .premium-usp-band__item,
+  .cart-bubble,
+  .dialog-modal[open],
+  .dialog-modal.dialog-closing,
+  #header-component .header__columns {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+
+  .product-card:hover .product-media-container img,
+  .collection-card:hover .collection-card__image img {
+    transform: none;
+  }
+
+  .resource-list__carousel,
+  .video-sequence-slider__viewport,
+  [class*='testimonials-carousel__track'] {
+    scroll-behavior: auto;
   }
 }

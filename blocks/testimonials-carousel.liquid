@@ -1,15 +1,12 @@
 {% doc %}
-  @prompt
-    I want a testimonial section similar to a circular carousel. Each testimonial should be a vertical card with:
-    
-    A large circular customer image that breaks out of the top of the card.
-    The customer’s name and a short review below the image.
-    Clicking the circular image should open that customer’s specific product page in a new tab.
+  Testimonials carousel
+  Horizontal snap carousel of customer cards with a circular photo that
+  breaks out of the card top; the photo links to the reviewed product.
 {% enddoc %}
-{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign carousel_id = block.id | replace: '_', '' | downcase %}
 
 {% style %}
-  .ai-testimonial-carousel-{{ ai_gen_id }} {
+  .testimonials-carousel-{{ carousel_id }} {
     /* Mobile-first tokens: phone values here, upgraded at 750px / 990px below */
     --section-max-width: 77.5rem;
     --section-padding-x: var(--space-4, 1rem);
@@ -43,13 +40,13 @@
     overflow: clip;
   }
 
-  .ai-testimonial-carousel__header-{{ ai_gen_id }} {
+  .testimonials-carousel__header-{{ carousel_id }} {
     max-width: min(100%, 45rem);
     margin: 0 auto var(--space-fluid-md, clamp(1rem, 0.75rem + 1.25vw, 2rem));
     text-align: center;
   }
 
-  .ai-testimonial-carousel__title-{{ ai_gen_id }} {
+  .testimonials-carousel__title-{{ carousel_id }} {
     margin: 0;
     color: var(--text);
     font-size: var(--title-size);
@@ -58,13 +55,13 @@
     text-wrap: balance;
   }
 
-  .ai-testimonial-carousel__wrapper-{{ ai_gen_id }} {
+  .testimonials-carousel__wrapper-{{ carousel_id }} {
     position: relative;
     max-width: var(--section-max-width);
     margin: 0 auto;
   }
 
-  .ai-testimonial-carousel__track-{{ ai_gen_id }} {
+  .testimonials-carousel__track-{{ carousel_id }} {
     display: grid;
     grid-auto-flow: column;
     /* Phones: one card with a little peek of the next */
@@ -80,11 +77,11 @@
     align-items: stretch;
   }
 
-  .ai-testimonial-carousel__track-{{ ai_gen_id }}::-webkit-scrollbar {
+  .testimonials-carousel__track-{{ carousel_id }}::-webkit-scrollbar {
     display: none;
   }
 
-  .ai-testimonial-carousel__card-{{ ai_gen_id }} {
+  .testimonials-carousel__card-{{ carousel_id }} {
     position: relative;
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -107,7 +104,7 @@
     isolation: isolate;
   }
 
-  .ai-testimonial-carousel__card-{{ ai_gen_id }}:hover {
+  .testimonials-carousel__card-{{ carousel_id }}:hover {
     transform: translateY(-4px);
     box-shadow:
       0 2px 6px rgba(16, 24, 40, 0.06),
@@ -115,8 +112,8 @@
       0 0 0 1px rgba(255,255,255,0.42) inset;
   }
 
-  .ai-testimonial-carousel__image-link-{{ ai_gen_id }},
-  .ai-testimonial-carousel__image-static-{{ ai_gen_id }} {
+  .testimonials-carousel__image-link-{{ carousel_id }},
+  .testimonials-carousel__image-static-{{ carousel_id }} {
     position: absolute;
     top: 0;
     left: 50%;
@@ -135,31 +132,31 @@
     flex: 0 0 auto;
   }
 
-  .ai-testimonial-carousel__image-link-{{ ai_gen_id }} {
+  .testimonials-carousel__image-link-{{ carousel_id }} {
     text-decoration: none;
     transition: transform 180ms ease, box-shadow 180ms ease;
   }
 
-  .ai-testimonial-carousel__image-link-{{ ai_gen_id }}:hover {
+  .testimonials-carousel__image-link-{{ carousel_id }}:hover {
     transform: translate(-50%, -50%) scale(1.04);
     box-shadow:
       0 12px 22px rgba(16, 24, 40, 0.14),
       0 0 0 1px rgba(17, 24, 39, 0.06);
   }
 
-  .ai-testimonial-carousel__image-link-{{ ai_gen_id }}:focus-visible {
+  .testimonials-carousel__image-link-{{ carousel_id }}:focus-visible {
     outline: 2px solid var(--text);
     outline-offset: 4px;
   }
 
-  .ai-testimonial-carousel__image-{{ ai_gen_id }} {
+  .testimonials-carousel__image-{{ carousel_id }} {
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
   }
 
-  .ai-testimonial-carousel__image-placeholder-{{ ai_gen_id }} {
+  .testimonials-carousel__image-placeholder-{{ carousel_id }} {
     width: 100%;
     height: 100%;
     display: grid;
@@ -168,13 +165,13 @@
     color: rgba(17, 24, 39, 0.28);
   }
 
-  .ai-testimonial-carousel__image-placeholder-{{ ai_gen_id }} svg {
+  .testimonials-carousel__image-placeholder-{{ carousel_id }} svg {
     width: 56%;
     height: 56%;
     opacity: 0.42;
   }
 
-  .ai-testimonial-carousel__content-{{ ai_gen_id }} {
+  .testimonials-carousel__content-{{ carousel_id }} {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -182,7 +179,7 @@
     text-align: center;
   }
 
-  .ai-testimonial-carousel__quote-mark-{{ ai_gen_id }} {
+  .testimonials-carousel__quote-mark-{{ carousel_id }} {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -196,7 +193,7 @@
     line-height: 1;
   }
 
-  .ai-testimonial-carousel__name-{{ ai_gen_id }} {
+  .testimonials-carousel__name-{{ carousel_id }} {
     margin: 0 0 var(--space-2, 0.5rem);
     color: var(--text);
     font-size: var(--name-size);
@@ -206,7 +203,7 @@
     overflow-wrap: anywhere;
   }
 
-  .ai-testimonial-carousel__review-{{ ai_gen_id }} {
+  .testimonials-carousel__review-{{ carousel_id }} {
     margin: 0;
     color: var(--muted);
     font-size: var(--review-size);
@@ -220,14 +217,14 @@
     line-clamp: 6;
   }
 
-  .ai-testimonial-carousel__nav-{{ ai_gen_id }} {
+  .testimonials-carousel__nav-{{ carousel_id }} {
     display: flex;
     justify-content: center;
     gap: var(--space-3, 0.75rem);
     margin-top: var(--space-fluid-md, clamp(1rem, 0.75rem + 1.25vw, 2rem));
   }
 
-  .ai-testimonial-carousel__nav-button-{{ ai_gen_id }} {
+  .testimonials-carousel__nav-button-{{ carousel_id }} {
     width: var(--nav-size);
     height: var(--nav-size);
     border: 1px solid rgba(17, 24, 39, 0.08);
@@ -242,28 +239,28 @@
     transition: transform 180ms ease, background-color 180ms ease, opacity 180ms ease;
   }
 
-  .ai-testimonial-carousel__nav-button-{{ ai_gen_id }}:hover {
+  .testimonials-carousel__nav-button-{{ carousel_id }}:hover {
     background: var(--nav-bg-hover);
     transform: translateY(-1px);
   }
 
-  .ai-testimonial-carousel__nav-button-{{ ai_gen_id }}:focus-visible {
+  .testimonials-carousel__nav-button-{{ carousel_id }}:focus-visible {
     outline: 2px solid var(--text);
     outline-offset: 2px;
   }
 
-  .ai-testimonial-carousel__nav-button-{{ ai_gen_id }}:disabled {
+  .testimonials-carousel__nav-button-{{ carousel_id }}:disabled {
     opacity: 0.35;
     cursor: not-allowed;
     transform: none;
   }
 
-  .ai-testimonial-carousel__nav-button-{{ ai_gen_id }} svg {
+  .testimonials-carousel__nav-button-{{ carousel_id }} svg {
     width: 1.25rem;
     height: 1.25rem;
   }
 
-  .ai-testimonial-carousel__empty-state-{{ ai_gen_id }} {
+  .testimonials-carousel__empty-state-{{ carousel_id }} {
     text-align: center;
     padding: var(--space-fluid-xl, clamp(2rem, 1.25rem + 3.75vw, 4.5rem)) var(--space-5, 1.25rem);
     color: rgba(17, 24, 39, 0.65);
@@ -272,27 +269,27 @@
 
   /* Large phones: cards a bit narrower so two-ish peek */
   @media screen and (min-width: 480px) {
-    .ai-testimonial-carousel__track-{{ ai_gen_id }} {
+    .testimonials-carousel__track-{{ carousel_id }} {
       grid-auto-columns: minmax(15.625rem, 78vw);
     }
   }
 
   /* Tablet: fixed card width from settings, larger padding */
   @media screen and (min-width: 750px) {
-    .ai-testimonial-carousel-{{ ai_gen_id }} {
+    .testimonials-carousel-{{ carousel_id }} {
       --section-padding-x: var(--space-5, 1.25rem);
     }
 
-    .ai-testimonial-carousel__track-{{ ai_gen_id }} {
+    .testimonials-carousel__track-{{ carousel_id }} {
       grid-auto-columns: minmax(16.25rem, var(--card-width));
     }
 
-    .ai-testimonial-carousel__card-{{ ai_gen_id }} {
+    .testimonials-carousel__card-{{ carousel_id }} {
       padding: calc(var(--avatar-size) * 0.5 + var(--space-6, 1.5rem)) var(--space-6, 1.5rem) var(--space-6, 1.5rem);
       border-radius: var(--card-radius);
     }
 
-    .ai-testimonial-carousel__review-{{ ai_gen_id }} {
+    .testimonials-carousel__review-{{ carousel_id }} {
       -webkit-line-clamp: 5;
       line-clamp: 5;
     }
@@ -300,31 +297,31 @@
 
   /* Desktop: honour the editor's width percentage */
   @media screen and (min-width: 990px) {
-    .ai-testimonial-carousel-{{ ai_gen_id }} {
+    .testimonials-carousel-{{ carousel_id }} {
       width: min({{ block.settings.desktop_width_percent }}%, 100%);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ai-testimonial-carousel__track-{{ ai_gen_id }} {
+    .testimonials-carousel__track-{{ carousel_id }} {
       scroll-behavior: auto;
     }
 
-    .ai-testimonial-carousel__card-{{ ai_gen_id }},
-    .ai-testimonial-carousel__image-link-{{ ai_gen_id }},
-    .ai-testimonial-carousel__nav-button-{{ ai_gen_id }} {
+    .testimonials-carousel__card-{{ carousel_id }},
+    .testimonials-carousel__image-link-{{ carousel_id }},
+    .testimonials-carousel__nav-button-{{ carousel_id }} {
       transition: none;
     }
   }
 {% endstyle %}
 
-<testimonial-carousel-{{ ai_gen_id }}
-  class="ai-testimonial-carousel-{{ ai_gen_id }}"
+<testimonial-carousel-{{ carousel_id }}
+  class="testimonials-carousel-{{ carousel_id }}"
   {{ block.shopify_attributes }}
 >
   {% if block.settings.title != blank %}
-    <div class="ai-testimonial-carousel__header-{{ ai_gen_id }}">
-      <h2 class="ai-testimonial-carousel__title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+    <div class="testimonials-carousel__header-{{ carousel_id }}">
+      <h2 class="testimonials-carousel__title-{{ carousel_id }}">{{ block.settings.title }}</h2>
     </div>
   {% endif %}
 
@@ -348,8 +345,8 @@
   {% endfor %}
 
   {% if has_testimonials %}
-    <div class="ai-testimonial-carousel__wrapper-{{ ai_gen_id }}">
-      <div class="ai-testimonial-carousel__track-{{ ai_gen_id }}" data-carousel-track>
+    <div class="testimonials-carousel__wrapper-{{ carousel_id }}">
+      <div class="testimonials-carousel__track-{{ carousel_id }}" data-carousel-track>
         {% for i in (1..6) %}
           {% liquid
             assign name_key = 'testimonial_' | append: i | append: '_name'
@@ -364,11 +361,11 @@
           %}
 
           {% if name != blank or review != blank %}
-            <article class="ai-testimonial-carousel__card-{{ ai_gen_id }}">
+            <article class="testimonials-carousel__card-{{ carousel_id }}">
               {% if product != blank %}
                 <a
                   href="{{ product.url }}"
-                  class="ai-testimonial-carousel__image-link-{{ ai_gen_id }}"
+                  class="testimonials-carousel__image-link-{{ carousel_id }}"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Open product page for {{ product.title | escape }}"
@@ -377,43 +374,43 @@
                     <img
                       src="{{ image | image_url: width: 320 }}"
                       alt="{{ name | escape }}"
-                      class="ai-testimonial-carousel__image-{{ ai_gen_id }}"
+                      class="testimonials-carousel__image-{{ carousel_id }}"
                       loading="lazy"
                       width="320"
                       height="320"
                     >
                   {% else %}
-                    <div class="ai-testimonial-carousel__image-placeholder-{{ ai_gen_id }}">
+                    <div class="testimonials-carousel__image-placeholder-{{ carousel_id }}">
                       {{ 'image' | placeholder_svg_tag }}
                     </div>
                   {% endif %}
                 </a>
               {% else %}
-                <div class="ai-testimonial-carousel__image-static-{{ ai_gen_id }}" aria-hidden="true">
+                <div class="testimonials-carousel__image-static-{{ carousel_id }}" aria-hidden="true">
                   {% if image %}
                     <img
                       src="{{ image | image_url: width: 320 }}"
                       alt="{{ name | escape }}"
-                      class="ai-testimonial-carousel__image-{{ ai_gen_id }}"
+                      class="testimonials-carousel__image-{{ carousel_id }}"
                       loading="lazy"
                       width="320"
                       height="320"
                     >
                   {% else %}
-                    <div class="ai-testimonial-carousel__image-placeholder-{{ ai_gen_id }}">
+                    <div class="testimonials-carousel__image-placeholder-{{ carousel_id }}">
                       {{ 'image' | placeholder_svg_tag }}
                     </div>
                   {% endif %}
                 </div>
               {% endif %}
 
-              <div class="ai-testimonial-carousel__content-{{ ai_gen_id }}">
+              <div class="testimonials-carousel__content-{{ carousel_id }}">
               
                 {% if name != blank %}
-                  <h3 class="ai-testimonial-carousel__name-{{ ai_gen_id }}">{{ name }}</h3>
+                  <h3 class="testimonials-carousel__name-{{ carousel_id }}">{{ name }}</h3>
                 {% endif %}
                 {% if review != blank %}
-                  <p class="ai-testimonial-carousel__review-{{ ai_gen_id }}">{{ review }}</p>
+                  <p class="testimonials-carousel__review-{{ carousel_id }}">{{ review }}</p>
                 {% endif %}
               </div>
             </article>
@@ -421,9 +418,9 @@
         {% endfor %}
       </div>
 
-      <div class="ai-testimonial-carousel__nav-{{ ai_gen_id }}">
+      <div class="testimonials-carousel__nav-{{ carousel_id }}">
         <button
-          class="ai-testimonial-carousel__nav-button-{{ ai_gen_id }}"
+          class="testimonials-carousel__nav-button-{{ carousel_id }}"
           data-nav-prev
           aria-label="Previous testimonials"
         >
@@ -432,7 +429,7 @@
           </svg>
         </button>
         <button
-          class="ai-testimonial-carousel__nav-button-{{ ai_gen_id }}"
+          class="testimonials-carousel__nav-button-{{ carousel_id }}"
           data-nav-next
           aria-label="Next testimonials"
         >
@@ -443,22 +440,22 @@
       </div>
     </div>
   {% else %}
-    <div class="ai-testimonial-carousel__empty-state-{{ ai_gen_id }}">
+    <div class="testimonials-carousel__empty-state-{{ carousel_id }}">
       Add customer testimonials below to show this carousel.
     </div>
   {% endif %}
-</testimonial-carousel-{{ ai_gen_id }}>
+</testimonial-carousel-{{ carousel_id }}>
 
 <script>
   (function() {
-    class TestimonialCarousel{{ ai_gen_id }} extends HTMLElement {
+    class TestimonialCarousel{{ carousel_id }} extends HTMLElement {
       connectedCallback() {
         this.track = this.querySelector('[data-carousel-track]');
         this.prevButton = this.querySelector('[data-nav-prev]');
         this.nextButton = this.querySelector('[data-nav-next]');
         if (!this.track) return;
 
-        this.cards = Array.from(this.track.querySelectorAll('.ai-testimonial-carousel__card-{{ ai_gen_id }}'));
+        this.cards = Array.from(this.track.querySelectorAll('.testimonials-carousel__card-{{ carousel_id }}'));
         this.bindEvents();
         this.updateButtonStates();
       }
@@ -504,8 +501,8 @@
       }
     }
 
-    if (!customElements.get('testimonial-carousel-{{ ai_gen_id }}')) {
-      customElements.define('testimonial-carousel-{{ ai_gen_id }}', TestimonialCarousel{{ ai_gen_id }});
+    if (!customElements.get('testimonial-carousel-{{ carousel_id }}')) {
+      customElements.define('testimonial-carousel-{{ carousel_id }}', TestimonialCarousel{{ carousel_id }});
     }
   })();
 </script>

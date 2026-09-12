@@ -272,6 +272,13 @@
   defer="defer"
 ></script>
 
+{% comment %} Scroll reveal, card tilt and header scroll state (see assets/motion.js) {% endcomment %}
+<script
+  src="{{ 'motion.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
 <script>
   const Theme = {
     translations: {

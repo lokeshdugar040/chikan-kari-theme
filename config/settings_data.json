@@ -409,7 +409,8 @@
     "pills_border_radius": 4,
     "badge_corner_radius": 2,
     "cart_thumbnail_border_radius": 4,
-    "page_width": "narrow"
+    "page_width": "narrow",
+    "card_hover_effect": "none"
   },
   "presets": {
     "Tinker": {
