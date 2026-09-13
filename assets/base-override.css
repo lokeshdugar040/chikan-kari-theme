@@ -1,0 +1,117 @@
+/* ============================================
+   BASE.CSS OVERRIDE - Fix All Issues
+   Overrides problematic base.css rules
+   ============================================ */
+
+/* 1. RESET CONTAINER WIDTHS */
+:root {
+  --page-width: 1280px !important;
+  --page-width-narrow: 1024px !important;
+}
+
+.page-width,
+.page-width--narrow,
+.page-width--wide {
+  max-width: 1280px !important;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* 2. RESET SECTION SPACING */
+.shopify-section {
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.section--padding-top-large,
+.section--padding-bottom-large {
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+}
+
+/* 3. FIX TYPOGRAPHY SCALE */
+h1, .h1 {
+  font-size: clamp(24px, 5vw, 36px) !important;
+  line-height: 1.2 !important;
+}
+
+h2, .h2 {
+  font-size: clamp(20px, 4vw, 28px) !important;
+  line-height: 1.3 !important;
+}
+
+h3, .h3 {
+  font-size: clamp(18px, 3.5vw, 24px) !important;
+  line-height: 1.4 !important;
+}
+
+body {
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+}
+
+/* 4. FIX PRODUCT GRID */
+.product-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* 5. FIX PRODUCT CARD */
+.card.product-card {
+  max-width: 100% !important;
+}
+
+.product-card__media {
+  aspect-ratio: 1 / 1 !important;
+}
+
+/* 6. FIX HEADER */
+.header-wrapper {
+  max-width: 1280px !important;
+  margin: 0 auto;
+  padding: 20px !important;
+}
+
+/* 7. REMOVE HUGE HEIGHTS */
+.hero, .slideshow, .banner {
+  max-height: 600px !important;
+  min-height: auto !important;
+}
+
+/* 8. FIX MOBILE */
+@media (max-width: 767px) {
+  .page-width {
+    padding: 16px !important;
+  }
+  
+  .shopify-section {
+    padding: 32px !important;
+  }
+}
+
+/* 9. PREVENT OVERFLOW */
+body, html {
+  overflow-x: hidden !important;
+}
+
+/* 10. FIX IMAGES */
+img {
+  max-width: 100% !important;
+  height: auto !important;
+}
