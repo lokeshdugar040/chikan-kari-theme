@@ -47,66 +47,10 @@
     </div>
 
     {% content_for 'blocks' %}
-
-    <div id="premium-usp-band-mount-{{ section.id }}" class="premium-usp-band-mount" hidden>
-      {% render 'premium-usp-band' %}
-    </div>
   {% endcapture %}
 
   {% render 'group', children: children, settings: block_settings, shopify_attributes: block.shopify_attributes %}
 </div>
-
-<script>
-  (function() {
-    var sectionId = '{{ section.id }}';
-
-    function moveUspBand() {
-      var scope = document.getElementById('ProductInformation-' + sectionId);
-      if (!scope) return false;
-
-      var mount = document.getElementById('premium-usp-band-mount-' + sectionId);
-      if (!mount) return false;
-
-      var buyNowButton = scope.querySelector('shopify-buy-it-now-button');
-      if (!buyNowButton) return false;
-
-      if (mount.previousElementSibling === buyNowButton) {
-        mount.hidden = false;
-        return true;
-      }
-
-      buyNowButton.insertAdjacentElement('afterend', mount);
-      mount.hidden = false;
-      return true;
-    }
-
-    function initUspBandMove() {
-      if (moveUspBand()) return;
-
-      var scope = document.getElementById('ProductInformation-' + sectionId);
-      if (!scope) return;
-
-      var observer = new MutationObserver(function() {
-        if (moveUspBand()) {
-          observer.disconnect();
-        }
-      });
-
-      observer.observe(scope, { childList: true, subtree: true });
-
-      setTimeout(function() {
-        observer.disconnect();
-        moveUspBand();
-      }, 5000);
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initUspBandMove);
-    } else {
-      initUspBandMove();
-    }
-  })();
-</script>
 
 {% stylesheet %}
   @media screen and (max-width: 749px) {
@@ -173,20 +117,6 @@
 
   :scope [id^="variant-description"] p:last-child {
     margin-bottom: 0;
-  }
-
-  .premium-usp-band-mount[hidden] {
-    display: none !important;
-  }
-
-  .premium-usp-band-mount {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  /* Hide old generated coupon block permanently */
-  [class*="coupon-body-template--"] {
-    display: none !important;
   }
 
   @media screen and (min-width: 750px) {
