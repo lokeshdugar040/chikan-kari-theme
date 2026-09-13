@@ -76,8 +76,7 @@ product-swatches .variant-option__swatches-list {
 
 /* Clickable swatch container — SAME SIZE AS IMAGE */
 product-swatches label:has(.swatch),
-.variant-option__button-label--has-swatch,
-.swatch-input__label {
+swatches-variant-picker-component .variant-option__button-label--has-swatch {
   box-sizing: border-box !important;
   display: block !important;
 
@@ -144,9 +143,8 @@ product-swatches .swatch::after {
 /* Hide native input styling */
 product-swatches input[type="radio"],
 product-swatches input[type="checkbox"],
-.variant-option__swatch input,
-.variant-option__button-label--has-swatch input,
-.swatch-input__input {
+swatches-variant-picker-component .variant-option__swatch input,
+swatches-variant-picker-component .variant-option__button-label--has-swatch input {
   appearance: none !important;
   -webkit-appearance: none !important;
 
@@ -189,8 +187,7 @@ product-swatches label:has(input:focus-visible) .swatch--color {
 /* Mobile — slightly smaller, same proportions */
 @media screen and (max-width: 749px) {
   product-swatches label:has(.swatch),
-  .variant-option__button-label--has-swatch,
-  .swatch-input__label {
+  swatches-variant-picker-component .variant-option__button-label--has-swatch {
     width: 36px !important;
     min-width: 36px !important;
     height: 46px !important;
@@ -202,8 +199,7 @@ product-swatches label:has(input:focus-visible) .swatch--color {
 /* Desktop / tablet — slightly larger */
 @media screen and (min-width: 750px) {
   product-swatches label:has(.swatch),
-  .variant-option__button-label--has-swatch,
-  .swatch-input__label {
+  swatches-variant-picker-component .variant-option__button-label--has-swatch {
     width: 42px !important;
     min-width: 42px !important;
     height: 52px !important;
