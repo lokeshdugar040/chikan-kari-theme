@@ -1,8 +1,60 @@
 {
   "sections": {
-    "header": { "type": "header", "settings": { "logo": null, "menu": "main-menu" } },
-    "hero": { "type": "hero", "settings": { "eyebrow": "Handcrafted in Lucknow", "heading": "Thread by Thread, Legacy Woven", "subheading": "Authentic Chikankari from the ateliers of Lucknow — where every stitch carries 400 years of grace.", "button_text": "Explore Collection", "button_url": "/collections/all", "image": null } },
-    "footer": { "type": "footer", "settings": { "menu_shop": "footer", "menu_about": "", "menu_support": "" } }
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo": null,
+        "menu": "main-menu"
+      }
+    },
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Handcrafted in Lucknow",
+        "heading": "Thread by Thread, Legacy Woven",
+        "subheading": "Authentic Chikankari from the ateliers of Lucknow — where every stitch carries 400 years of grace.",
+        "button_text": "Explore Collection",
+        "button_url": "/collections/all",
+        "image": null
+      }
+    },
+    "collections": {
+      "type": "collection-list",
+      "settings": {
+        "heading": "Shop by Category"
+      },
+      "blocks": {
+        "new-arrivals": { "type": "collection", "settings": { "collection": "all", "subtitle": "Fresh from our ateliers" } },
+        "bridal": { "type": "collection", "settings": { "collection": "all", "subtitle": "Heirloom pieces" } },
+        "daily-wear": { "type": "collection", "settings": { "collection": "all", "subtitle": "Everyday elegance" } },
+        "accessories": { "type": "collection", "settings": { "collection": "all", "subtitle": "Complete your look" } }
+      },
+      "block_order": ["new-arrivals", "bridal", "daily-wear", "accessories"]
+    },
+    "featured-products": {
+      "type": "featured-products",
+      "settings": {
+        "heading": "Best Sellers",
+        "collection": "all",
+        "products_to_show": 4
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Join Our Community",
+        "subheading": "Get 10% off your first order + exclusive access to new collections.",
+        "button_text": "Subscribe"
+      }
+    },
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "menu_shop": "footer",
+        "menu_about": "",
+        "menu_support": ""
+      }
+    }
   },
-  "order": ["header", "hero", "footer"]
+  "order": ["header", "hero", "collections", "featured-products", "newsletter", "footer"]
 }
