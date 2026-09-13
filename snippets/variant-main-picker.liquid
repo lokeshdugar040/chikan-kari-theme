@@ -404,6 +404,16 @@ background-position: top center !important;
 }
 
 
+/* Product-page image swatches: portrait cover crop, focal-point aware.
+Geometry stays editor-driven via settings (variant_swatch_width/height);
+no !important, so card rules keep precedence where they apply. */
+variant-picker .variant-option--swatches .swatch--variant-image,
+variant-picker .variant-option--swatches .swatch--image {
+background-size: cover;
+background-position: var(--swatch-focal-point, top center);
+}
+
+
 /* Dropdown styles */
 .variant-option__select-wrapper {
 display: flex;
