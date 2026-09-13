@@ -1074,6 +1074,26 @@ body:has(.header[transparent]) #header-group > *:not(.header-section) {
   --padding-inline-end: 0px;
 }
 
+/* The grid <ul> carries BOTH `.product-grid` and `[product-grid-view='default']`,
+   and the two selectors have identical specificity (0,1,0) — so the winner is
+   decided purely by source order. Upstream keeps both declarations in one file
+   with `.product-grid` last, letting the theme-editor gap (emitted as
+   --product-grid-gap-mobile/-desktop in an inline style on the wrapper) beat the
+   hard-coded 16px fallback above. Here the two rules were split across
+   base.css and snippets/product-grid.liquid, making the outcome depend on which
+   stylesheet the platform emits last: if base.css won, the editor's mobile gap
+   (capped at 12px) was silently replaced by 16px. Re-declaring it here, after
+   the fallback, restores upstream's order and makes the result deterministic. */
+.product-grid {
+  --product-grid-gap: var(--product-grid-gap-mobile);
+}
+
+@media screen and (min-width: 750px) {
+  .product-grid {
+    --product-grid-gap: var(--product-grid-gap-desktop);
+  }
+}
+
 [product-grid-view='default'] .product-grid__item {
   padding-block: 0;
 }
@@ -4466,7 +4486,11 @@ slideshow-arrows .slideshow-control.slideshow-control--style-none {
     grid-template-columns: var(--resource-list-columns-mobile);
   }
 
-  @container resource-list(min-width: 450px) and (max-width: 749px) {
+  /* The space after the container name is required: without it the CSS
+     tokenizer reads `resource-list(` as a function token, the prelude becomes
+     an unknown feature, and the whole block is invalid and dropped — which
+     silently removed the 3-column tablet layout for resource lists. */
+  @container resource-list (min-width: 450px) and (max-width: 749px) {
     --resource-list-columns-per-row: 3;
 
     grid-template-columns: repeat(var(--resource-list-columns-per-row), 1fr);
