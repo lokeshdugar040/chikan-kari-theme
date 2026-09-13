@@ -181,13 +181,13 @@
     position: fixed;
     bottom: 12px;
     left: 50%;
-    transform: translateX(-50%) translateY(120%);
+    transform: translateX(-50%) translateY(calc(100% + 12px));
     opacity: 0;
-    z-index: calc(var(--layer-sticky) - 1);
+    z-index: calc(var(--layer-sticky) - 1); /* Below sticky header */
     width: 100%;
     max-width: 480px;
     border-radius: var(--style-border-radius-buttons-primary);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    box-shadow: var(--shadow-popover);
     padding: var(--padding-sm);
     display: flex;
     align-items: center;
@@ -210,7 +210,7 @@
 
   sticky-add-to-cart:not([data-variant-available='true']) .sticky-add-to-cart__bar {
     opacity: 0;
-    transform: translateX(-50%) translateY(120%);
+    transform: translateX(-50%) translateY(calc(100% + 12px));
   }
 
   .sticky-add-to-cart__info[data-has-image='false'] {
