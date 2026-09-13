@@ -87,13 +87,13 @@
       "settings": {
         "content_direction": "column",
         "section_width": "page-width",
-        "section_height": "small",
+        "section_height": "",
         "horizontal_alignment_flex_direction_column": "center",
         "vertical_alignment_flex_direction_column": "center",
         "gap": 20,
         "color_scheme": "",
-        "padding-block-start": 100,
-        "padding-block-end": 100
+        "padding-block-start": 64,
+        "padding-block-end": 64
       }
     },
     "product_list_ed3c8h": {
