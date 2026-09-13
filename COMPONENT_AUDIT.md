@@ -2,7 +2,18 @@
 
 Repo: `lokeshdugar040/chikan-kari-theme` · Theme ID `148327137395` · Branch `arena/01a09c28-chikan-kari-theme`
 
-Status: **A, B, C fixed and pushed. D audited — no defect found, design-fork decision open.**
+Status: **All four components done. A, B, C fixed; D hardened (no defect existed).
+Plus cusvid id and CDN script. Six commits on `arena/01a09c28-chikan-kari-theme`.**
+
+```
+db75e00  fix(sticky-add-to-cart): robust hidden geometry + elevation token;
+         harden cusvid id and CDN script
+e4a4d72  docs(audit): record A/B/C fixes, correct three claims
+c61ce96  fix(product): remove duplicate offer band and its CSS/JS workarounds
+d180ee5  fix(product-card): give swatch styling a single owner; drop cascade war
+1e916d4  chore(collection-card): remove unreferenced override-CSS layer
+328843c  (base) Merge pull request #7
+```
 
 ---
 
@@ -49,7 +60,7 @@ against `main` yields ~60 phantom "deleted file" findings.
 | `blocks/premium-usp-band.liquid` | "Buy more, save more" offer | yes (`templates/product.json:171`) | kept |
 | `blocks/slideshow-banner.liquid` | banner slideshow | yes (`templates/index.json:15,530`) | — |
 | `blocks/testimonials-carousel.liquid` | testimonials | yes (`templates/index.json:1079`) | — |
-| `sections/cusvid.liquid` | custom video-sequence slider (1459 lines) | yes | open (duplicate section id) |
+| `sections/cusvid.liquid` | custom video-sequence slider (1459 lines) | yes | duplicate section id fixed (`db75e00`) |
 | `sections/product-extra-content.liquid` | — | **NO** | unused |
 | `snippets/pagefly-main-js.liquid` | PageFly stub | **NO** | unused |
 | `blocks/_delivery-checker.liquid` | — | **NO** | unused |
@@ -193,7 +204,7 @@ The variant-metafield box (`variant-info-box`, plus `snippets/variant-swatches`-
 `assets/variant-picker.js updateVariantInfo()`) is also left intact: its `:scope`-prefixed selectors are
 correct, the matching JS is consistent, and it is a coherent feature rather than duplication.
 
-### D. `sticky-add-to-cart` — no defect found
+### D. `sticky-add-to-cart` — no defect found. HARDENED (commit `db75e00`)
 
 **JS wiring verified correct end to end:**
 
@@ -243,9 +254,26 @@ I checked the two candidate defects and **both turned out not to be real**:
    that the bar drops below 60px, a sliver of the `opacity: 0` bar would remain hit-testable at the
    viewport edge.
 
-**Conclusion:** the only defensible changes are non-visual robustness/token fixes — restore the
-unconditional off-screen geometry and use `var(--shadow-popover)`. These are a judgement call, so they
-are left pending rather than bundled in silently.
+**Conclusion:** no defect exists in D. The JS contract is correct and the CSS is a coherent,
+self-consistent restyle rather than a hack. Two non-visual hardening changes were applied under
+`db75e00`, and two things I initially judged to be bugs were **not** changed because they are not bugs:
+
+1. **Hidden geometry** — `translateY(120%)` made clearing the viewport depend on the bar's height
+   (`height ≥ 5 × bottom`). It happened to work (76px bar vs the 60px threshold) with only 3.2px to
+   spare. Replaced with Horizon's unconditional `translateY(calc(100% + 12px))` in the base and
+   unavailable-variant rules. **Fixed.** The mobile rule (`bottom: 0` + `translateY(100%)`) is exactly
+   flush by construction and was deliberately left alone.
+2. **Elevation token** — hard-coded `0 8px 24px rgba(0,0,0,.18)` → `var(--shadow-popover)`, the token
+   Horizon itself uses on this element. **Fixed** (live: `popover_drop_shadow` defaults to true and the
+   bar carries `color-{{ settings.popover_color_scheme }}`, which is where
+   `snippets/color-schemes.liquid:90` emits the token). The mobile rule keeps its hard-coded *upward*
+   shadow, because `--shadow-popover` points down and substituting it would remove a bottom sheet's
+   edge definition.
+3. **`display: none` / tab order** — not changed, because Horizon hides the bar the same way
+   (`opacity: 0` + translate), using `display: none` only for the unavailable-variant state.
+4. **The `::before` glass layer, `@starting-style`, 480px width, labelled mobile button** — not changed;
+   they are the merchant's design decisions, not correctness problems. See the D table above.
+
 
 ---
 
@@ -256,13 +284,30 @@ are left pending rather than bundled in silently.
 | 1 | A | Delete the 4 orphan override-CSS assets | **done** `1e916d4` |
 | 2 | B | Single owner for swatch styling; drop cascade war | **done** `d180ee5` |
 | 3 | C | Remove duplicate offer band + JS relocation + dead rule; delete orphan snippet | **done** `c61ce96` |
-| 4 | D | Restore unconditional off-screen geometry; `var(--shadow-popover)` | **pending your call** |
-| 5 | D | (alt) Restore Horizon's full stock sticky stylesheet | pending your call |
-| 6 | C3 | Point related-products `collection` at a curated collection, not `all-products` | **open** — merchant content |
-| 7 | — | `sections/cusvid.liquid:2,6` sets `id="shopify-section-{{ section.id }}"` on its own element while Shopify already wraps the section in a div with that id → duplicate DOM id; its `#id` CSS (`:224-352`) becomes ambiguous | open |
-| 8 | — | Homepage heading duplicated in JSON: `"<h3>Watch Then खरीदें</h3>"` on both `cusvid_ETYbzp.text_block_pEePdD` and `section_9kGeWd.text_tkj3Ep` | open |
-| 9 | — | `layout/theme.liquid:39` loads unpinned, no-SRI `https://unpkg.com/spf-analytics@1.0.0/index.js` | open |
-| 10 | — | 4 unused added files | open |
+| 4 | D | Unconditional off-screen geometry; `var(--shadow-popover)` | **done** `db75e00` |
+| 5 | — | `sections/cusvid.liquid` duplicate DOM id → unique `video-sequence-slider-` prefix | **done** `db75e00` |
+| 6 | — | `layout/theme.liquid:39` unpkg script → SRI + `crossorigin` + `referrerpolicy` | **done** `db75e00` |
+| 7 | C3 | Point related-products `collection` at a curated collection, not `all-products` | **open** — merchant content |
+| 8 | — | Duplicated homepage heading in `templates/index.json` | **not a defect** — see below |
+| 9 | — | 4 unused added files (`sections/product-extra-content.liquid`, `snippets/pagefly-main-js.liquid`, `blocks/_delivery-checker.liquid`, `blocks/testimonial-card.liquid`) | open |
+| 10 | — | `assets/motion.js` card tilt + `base.css` reveal layer (non-Horizon, but self-contained and opt-out-able via `prefers-reduced-motion`) | open |
+
+### Item 8 reclassified — nothing to fix
+
+The heading `"<h3>Watch Then खरीदें</h3>"` is set on both `cusvid_ETYbzp.text_block_pEePdD` and
+`section_9kGeWd.text_tkj3Ep`, but `section_9kGeWd` carries **`"disabled": true`**, so it never renders.
+The duplication exists only in the JSON, not on the storefront. Removing a merchant's disabled section
+config is a content change with no benefit, so it was intentionally left alone rather than "fixed".
+
+### Item 6 note — why not vendored
+
+`spf-analytics@1.0.0` is published as **`"license": "UNLICENSED"`**. Self-hosting it in `assets/` would
+mean redistributing a package with no licence to do so, so SRI + `crossorigin` was used instead. The URL
+also already pinned `@1.0.0` — it was never an unpinned "latest" reference, so this only adds tamper
+protection. The hash is not guessed: it is the sha384 of `index.js` as published in the npm artifact
+(19,939 bytes), fetched from `registry.npmjs.org`. `unpkg.com` is unreachable from the sandbox, so the
+served bytes could not be re-verified here; if analytics stops reporting, re-verify the hash against the
+served file before assuming the script broke.
 
 ---
 
@@ -277,15 +322,31 @@ are left pending rather than bundled in silently.
 | Logic relying on CSS to hide duplicates | **found and fixed** — `.premium-usp-band-mount[hidden] { display:none !important }` + JS relocation; dead `coupon-body-template` rule; 4 orphan "fix" CSS files |
 | No new global override CSS files added | correct — none added; 4 pre-existing orphans removed |
 | Duplicates fixed in Liquid/JSON, not hidden with CSS | yes — C1 removed the elements in Liquid and only then dropped the compensating CSS |
-| `sticky-add-to-cart` | **no defect found** — JS wiring verified correct; the CSS is a self-consistent design fork, pending a decision |
+| `sticky-add-to-cart` | **no defect found** — JS contract verified correct end to end; the CSS is a coherent design fork, hardened with two non-visual fixes |
+
+### Evidence discipline
+
+Each of the four components had at least one finding that looked like a defect but collapsed under
+closer inspection, and every one was checked against the Horizon v3.4.0 baseline before acting:
+
+| Looked like | Actually | Action |
+|---|---|---|
+| `.view-product-title` hidden with `display: none` = duplicate title | stock Horizon, load-bearing for `quick-add.js:307-309` | left alone |
+| sticky bar's `z-index: calc(var(--layer-sticky) - 1)` = local band-aid | identical in Horizon v3.4.0 | left alone |
+| sticky bar kept focusable while hidden = a11y regression | Horizon hides it the same way | left alone |
+| `translateY(120%)` = geometry bug | worked, with 3.2px margin | hardened for robustness, not called a bug |
+| homepage heading duplicated in JSON = rendered twice | section is `"disabled": true` | left alone |
+| `unpkg` script "unpinned" | URL already pinned `@1.0.0` | corrected; added SRI only |
+| `swatches` block = product-page component | product-card-only | corrected mid-audit |
 
 ### Corrections to earlier statements in this session
 
-- I initially described `blocks/swatches.liquid` as affecting the product page. It does not — the
-  `swatches` block is product-card-only (the product page uses `variant-picker`).
-- I initially listed the hidden `.view-product-title` as a duplicate-title defect. It is stock Horizon
-  and is load-bearing for the quick-add modal. It was **not** changed.
-- I initially described the sticky bar's `z-index: calc(var(--layer-sticky) - 1)` as a band-aid caused
-  by the restyle. Horizon v3.4.0 has the identical declaration. It is stock.
-- I initially called the sticky CSS model replacement an accessibility regression. It is not —
-  Horizon hides the bar the same way.
+- I said `blocks/swatches.liquid` affects the product page. It does not — the `swatches` block is
+  product-card-only; the product page renders `variant-picker` instead.
+- I listed the hidden `.view-product-title` as a duplicate-title defect. It is stock Horizon and is
+  load-bearing for the quick-add modal. **Not** changed.
+- I described the sticky bar's `z-index: calc(var(--layer-sticky) - 1)` as a band-aid introduced by the
+  restyle. Horizon v3.4.0 has the identical declaration.
+- I called the sticky CSS model replacement an accessibility regression. It is not.
+- I said the unpkg script was "unpinned". The version was already pinned; the real gap was the missing
+  integrity check, and the package is `UNLICENSED` (so it cannot be vendored).
