@@ -49,6 +49,9 @@
     "card_corner_radius": 4,
     "variant_button_radius": 4,
     "variant_button_width": "default-width-buttons",
+    "variant_swatch_width": 52,
+    "variant_swatch_height": 65,
+    "variant_swatch_radius": 6,
     "content_for_index": [],
     "blocks": {
       "1232542678405107163": {
