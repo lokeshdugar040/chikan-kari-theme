@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "sections": {
     "cart-section": {
       "type": "main-cart",
@@ -153,7 +152,7 @@
           "settings": {
             "product_card_gap": 0,
             "inherit_color_scheme": false,
-            "color_scheme": "scheme-e1e09ff5-6396-47cd-ad7a-c05470cf2a2e",
+            "color_scheme": "scheme-1",
             "border": "none",
             "border_width": 0,
             "border_opacity": 100,

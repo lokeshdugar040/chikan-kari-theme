@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "sections": {
     "main": {
       "type": "product-information",
@@ -170,14 +169,27 @@
             },
             "premium_usp_band_xce9HH": {
               "type": "premium-usp-band",
-              "name": "Premium USP band",
+              "name": "Buy more note",
               "settings": {
-                "offer_label": "",
-                "offer_title": "Buy 2",
-                "offer_text": "Save Extra ₹200 OFF",
-                "shipping_label": "",
-                "shipping_title": "Buy 3",
-                "shipping_text": "Save Extra  ₹500"
+                "shipping_text": "Free shipping on prepaid orders",
+                "title_font": "var(--font-heading--family)",
+                "body_font": "var(--font-body--family)",
+                "saving_font": "var(--font-heading--family)",
+                "title_size": "1rem",
+                "body_size": "0.75rem",
+                "saving_size": "1.125rem",
+                "background_color": "#FCF8F3",
+                "title_color": "#3B2B25",
+                "body_color": "#786761",
+                "saving_color": "#784729",
+                "featured_saving_color": "#784729",
+                "border_color": "#DFD2C8",
+                "padding-block-start": 17,
+                "padding-block-end": 17,
+                "padding-inline-start": 18,
+                "padding-inline-end": 18,
+                "gap": 9,
+                "corner_radius": 12
               },
               "blocks": {}
             },
@@ -255,7 +267,7 @@
                 "max_width": "normal",
                 "alignment": "left",
                 "type_preset": "paragraph",
-                "font": "var(--font-primary--family)",
+                "font": "var(--font-body--family)",
                 "font_size": "",
                 "line_height": "normal",
                 "letter_spacing": "normal",
@@ -346,13 +358,13 @@
                         "max_width": "normal",
                         "alignment": "left",
                         "type_preset": "rte",
-                        "font": "var(--font-primary--family)",
+                        "font": "var(--font-body--family)",
                         "font_size": "",
                         "line_height": "normal",
                         "letter_spacing": "normal",
                         "case": "none",
                         "wrap": "pretty",
-                        "color": "",
+                        "color": "var(--color-foreground)",
                         "background": false,
                         "background_color": "#00000026",
                         "corner_radius": 0,
@@ -385,13 +397,13 @@
                         "max_width": "normal",
                         "alignment": "left",
                         "type_preset": "rte",
-                        "font": "var(--font-primary--family)",
+                        "font": "var(--font-body--family)",
                         "font_size": "",
                         "line_height": "normal",
                         "letter_spacing": "normal",
                         "case": "none",
                         "wrap": "pretty",
-                        "color": "",
+                        "color": "var(--color-foreground)",
                         "background": false,
                         "background_color": "#00000026",
                         "corner_radius": 0,
@@ -487,7 +499,7 @@
                 "max_width": "normal",
                 "alignment": "center",
                 "type_preset": "h3",
-                "font": "var(--font-primary--family)",
+                "font": "var(--font-heading--family)",
                 "font_size": "",
                 "line_height": "normal",
                 "letter_spacing": "normal",

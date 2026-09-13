@@ -10,6 +10,11 @@ body {
   margin: 0;
   min-height: 100svh;
   font-variation-settings: 'slnt' 0;
+
+  /* Merged up from the design-system layer so <body> is declared once */
+  font-size: var(--text-base);
+  line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
 :root {
@@ -30,6 +35,11 @@ html {
   scrollbar-width: thin;
   scrollbar-color: rgb(var(--color-foreground-rgb) / var(--opacity-40)) var(--color-background);
   scroll-behavior: smooth;
+
+  /* Merged up from the design-system layer so <html> is declared once */
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html[scroll-lock] {
@@ -622,11 +632,6 @@ p:empty {
       )
       1fr;
   }
-}
-
-.flex {
-  display: flex;
-  gap: var(--gap-md);
 }
 
 .flip-x {
@@ -1276,7 +1281,10 @@ results-list[initialized] {
 }
 
 .dialog-modal[open] {
-  animation: elementSlideInTop var(--animation-speed) var(--animation-easing) forwards;
+  /* The `animation` this rule used to declare (elementSlideInTop) was dead:
+     the design-system layer re-declares `animation` on an identical selector
+     later in this file, so dialog-scale-in always won. The nested ::backdrop
+     rule below is unaffected and still applies. */
 
   &::backdrop {
     animation: backdropFilter var(--animation-speed) var(--animation-easing) forwards;
@@ -1285,7 +1293,8 @@ results-list[initialized] {
 }
 
 .dialog-modal.dialog-closing {
-  animation: elementSlideOutTop var(--animation-speed) var(--animation-easing) forwards;
+  /* `animation` (elementSlideOutTop) removed for the same reason: the
+     design-system layer's dialog-scale-out on the identical selector won. */
 
   &::backdrop {
     opacity: 0;
@@ -1743,8 +1752,11 @@ zoom-dialog dialog {
 /* Animate the UI elements in only after the view transition is complete */
 .close-button {
   position: fixed;
-  top: var(--margin-lg);
-  right: var(--margin-lg);
+
+  /* Keep the control clear of the notch / rounded corners now that the
+     viewport uses viewport-fit=cover. env() is 0 on devices without one. */
+  top: calc(var(--margin-lg) + env(safe-area-inset-top, 0px));
+  right: calc(var(--margin-lg) + env(safe-area-inset-right, 0px));
   width: var(--minimum-touch-target);
   height: var(--minimum-touch-target);
   z-index: var(--layer-flat);
@@ -1790,6 +1802,9 @@ zoom-dialog dialog {
   bottom: 0;
   display: flex;
   z-index: var(--layer-raised);
+
+  /* Lifts the mobile thumbnail rail above the iOS home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .dialog-thumbnails-list {
@@ -2283,14 +2298,21 @@ deferred-media[class] :is(.deferred-media__poster-button img, .deferred-media__p
   flex: 0 0 3.25em;
   align-items: center;
   position: relative;
-  padding-block: var(--padding-sm);
-  padding-inline: var(--padding-lg);
+
+  /* padding-block/padding-inline are declared once, in the design-system
+     layer's .variant-option__button-label rule (var(--space-2)/var(--space-4)).
+     The values that used to sit here (--padding-sm/--padding-lg = 12px/16px)
+     were always overridden by it, so the swatches rendered 8px/16px. */
   border: var(--options-border-width) solid var(--color-variant-border);
   border-radius: var(--options-border-radius);
   overflow: clip;
   justify-content: center;
-  min-height: 3.25em;
-  min-width: fit-content;
+
+  /* min-height: 3.25em and min-width: fit-content removed. They are different
+     physical properties from the design-system layer's min-block-size (2.5rem)
+     and min-inline-size (2.75rem), so both sets applied and the larger stock
+     values always won — which silently defeated that layer's attempt to compact
+     the swatch buttons. Sizing now comes from one place. */
   white-space: nowrap;
   background-color: var(--color-variant-background);
   color: var(--color-variant-text);
@@ -2691,11 +2713,11 @@ product-price.text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) > *:not(.tax-note) {
 
 /* Spacing style */
 .spacing-style {
-  --spacing-scale: var(--spacing-scale-md);
-
-  @media screen and (min-width: 990px) {
-    --spacing-scale: var(--spacing-scale-default);
-  }
+  /* --spacing-scale is declared once, in the design-system layer, which adds a
+     0.5 tier for phones below the stock 0.7 / 1.0 ladder. The two declarations
+     that used to sit here (0.7 at all widths, 1.0 from 990px) were always
+     overridden by that layer at equal specificity, so they were dead. Note that
+     --gap-scale below is a separate ladder and is still governed by this rule. */
 
   /* Must disable this, when you use these with calc and another unit type, things break — see logo.liquid */
   /* stylelint-disable length-zero-no-unit */
@@ -3014,10 +3036,13 @@ product-price.text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) > *:not(.tax-note) {
 
 .checkbox__label {
   position: relative;
-  display: inline-flex;
+
+  /* `display` and the touch-target sizing live in the design-system layer's
+     .checkbox__label rule. The display: inline-flex here was always overridden
+     by its display: flex, and min-width: var(--minimum-touch-target) said the
+     same thing as its min-block-size: var(--touch-target) — both are 44px. */
   cursor: var(--checkbox-cursor);
   line-height: var(--checkbox-size);
-  min-width: var(--minimum-touch-target);
 }
 
 .checkbox .icon-checkmark {
@@ -3248,7 +3273,15 @@ header-actions,
   color: var(--color-primary-button-text);
 
   font-size: 12px;
-  font-weight: 700;
+
+  /* Was 700; the design-system layer asked for 600 but re-declared this whole
+     rule to get it, and in doing so dropped width: max-content, text-align,
+     overflow: visible !important, clip-path: none !important and downgraded
+     z-index from 999 to var(--layer-raised) (2). Those declarations matter —
+     the !important pair exists to stop the badge being cropped by the header's
+     overflow/clip-path — so the duplicate rule was removed and only this
+     weight change was kept. */
+  font-weight: 600;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
@@ -3434,6 +3467,12 @@ header-actions,
   margin: 0;
   text-align: center;
   border: none;
+
+  /* Was declared twice on this identical selector: `none` here and then
+     `textfield` again in a separate "Firefox" rule further down. The later
+     `textfield` won, and it does not hide the spinner buttons in Firefox, so
+     that rule both duplicated this one and undid it. `none` is supported in
+     Firefox 103+, so a single declaration now covers every browser. */
   appearance: none;
   max-width: calc(var(--quantity-selector-width) - var(--minimum-touch-target) * 2);
   border-radius: var(--style-border-radius-buttons);
@@ -3445,11 +3484,6 @@ header-actions,
 .quantity-selector input[type='number']::-webkit-inner-spin-button,
 .quantity-selector input[type='number']::-webkit-outer-spin-button {
   appearance: none;
-}
-
-/* Firefox */
-.quantity-selector input[type='number'] {
-  appearance: textfield;
 }
 
 /* Pills (used in facets and predictive search) */
@@ -5035,8 +5069,16 @@ product-recommendations:has([data-has-recommendations='false']) {
    Everything above this line is the stock Tinker/Horizon stylesheet.
    Everything below is the store layer – mobile-first, clean D2C look.
 
-   Breakpoints (custom layer):   640px tablet · 1024px desktop · 1280px wide
-   (Stock Tinker components switch at 750px; that is left untouched.)
+   This layer sits ON TOP of the stock layer at equal specificity, so a
+   property declared in both is won by whichever comes later — usually this
+   one. Declare each property exactly once: when a value here must replace a
+   stock one, the stock declaration is removed rather than left to lose.
+
+   Breakpoints — three, matching the stock layer so that components and the
+   spacing around them change at the same widths:
+     640px  spacing tier only (phones -> large phones / small tablets)
+     750px  component layouts, same switch the stock layer uses
+     990px  desktop spacing tier and page-level layout
 
    Tokens (snippets/theme-styles-variables.liquid):
      --space-1 … --space-12   4px grid (4 → 48px)
@@ -5046,25 +5088,11 @@ product-recommendations:has([data-has-recommendations='false']) {
      --touch-target           44px
    ========================================================================== */
 
-/* 1. Foundation ---------------------------------------------------------- */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  font-size: 100%;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
-
-body {
-  font-size: var(--text-base);
-  line-height: 1.5;
-  overflow-wrap: break-word;
-}
+/* 1. Foundation ----------------------------------------------------------
+   The universal border-box reset and the <html>/<body> font, line-height and
+   text-size-adjust declarations live at the top of this file. They were
+   duplicated here; `* { box-sizing }` at the head of the stock layer already
+   covers ::before and ::after, so nothing was lost by removing the repeat. */
 
 .content-for-layout {
   min-width: 0;
@@ -5147,8 +5175,10 @@ small,
 
 /* 3. Layout & rhythm ------------------------------------------------------- */
 
-/* Stock sections read editor padding through --spacing-scale (0.7 on <990px).
-   Tighten phones further so 60–80px desktop values land at ~30–40px. */
+/* Three-tier ladder, and now the only place --spacing-scale is declared:
+   0.5 below 640px so a 60-80px editor value lands at ~30-40px on a phone,
+   stock's 0.7 from 640px, and 1.0 from 990px. The stock layer's own two
+   declarations were removed because these always overrode them. */
 .spacing-style {
   --spacing-scale: var(--spacing-scale-sm);
 }
@@ -5159,7 +5189,12 @@ small,
   }
 }
 
-@media screen and (min-width: 1024px) {
+/* Must be 990px, not 1024px. The stock layer restores --spacing-scale-default
+   at min-width: 990px from inside its own .spacing-style rule; because these
+   tier rules come later at the same specificity, a 1024px breakpoint here left
+   the 640px tier winning across 990–1024px and pushed desktop sections back to
+   tablet spacing (0.7 instead of 1.0). */
+@media screen and (min-width: 990px) {
   .spacing-style {
     --spacing-scale: var(--spacing-scale-default);
   }
@@ -5196,13 +5231,15 @@ small,
   min-inline-size: var(--touch-target);
 }
 
+/* Single source of truth for the swatch button's box: the physical
+   min-height/min-width and the --padding-* values that the stock layer used to
+   declare were removed from it, so these logical properties govern. */
 .variant-option__button-label {
   min-block-size: 2.5rem;
   min-inline-size: 2.75rem;
   padding-block: var(--space-2);
   padding-inline: var(--space-4);
   font-size: var(--text-sm);
-  justify-content: center;
 }
 
 .product-form-buttons .button,
@@ -5224,14 +5261,15 @@ textarea {
 }
 
 .checkbox__label {
-  min-block-size: var(--touch-target);
   display: flex;
   align-items: center;
+  min-inline-size: var(--touch-target);
+  min-block-size: var(--touch-target);
 }
 
 .quantity-selector {
-  --quantity-selector-width: 7.5rem;
-
+  /* --quantity-selector-width is declared once, in the stock layer (124px).
+     This rule used to repeat it as 7.5rem — the identical value. */
   min-block-size: var(--touch-target);
 }
 
@@ -5337,34 +5375,19 @@ a.header-logo {
   white-space: normal;
 }
 
-.cart-bubble {
-  position: absolute;
-  inset-block-start: -0.25rem;
-  inset-inline-end: -0.375rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-inline-size: 1.125rem;
-  block-size: 1.125rem;
-  padding-inline: var(--space-1);
-  border: 2px solid var(--color-background);
-  border-radius: 999px;
-  background: var(--color-primary-button-background);
-  color: var(--color-primary-button-text);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  line-height: 1;
-  white-space: nowrap;
-  z-index: var(--layer-raised);
-}
-
 /* 6. Product cards & grids ------------------------------------------------- */
 
+/* Fallbacks only: snippets/product-grid.liquid emits both of these custom
+   properties in an inline style attribute on the grid's wrapper, and an inline
+   declaration always beats a stylesheet one, so wherever that snippet renders
+   the theme editor's gap values win. These exist for any .product-grid that is
+   rendered without it. The breakpoint matches the snippet's own 750px switch
+   between --product-grid-gap-mobile and --product-grid-gap-desktop. */
 .product-grid {
   --product-grid-gap-mobile: var(--space-3);
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 750px) {
   .product-grid {
     --product-grid-gap-desktop: var(--space-6) var(--space-5);
   }
@@ -5472,7 +5495,7 @@ a.header-logo {
   margin-block-start: var(--space-4);
 }
 
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 990px) {
   .product-information__text,
   .product-information__content {
     padding-inline-start: var(--space-8);
@@ -5618,7 +5641,7 @@ a.header-logo {
   color: var(--color-primary-button-hover-text);
 }
 
-@media screen and (min-width: 640px) {
+@media screen and (min-width: 750px) {
   .sticky-add-to-cart {
     inset-block-end: var(--space-4);
     padding-inline: var(--page-gutter);

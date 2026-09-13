@@ -129,43 +129,49 @@
     width: 100%;
   }
 
-  #variant-info-box-{{ section.id }} {
+  /* The stylesheet tag in a theme block is extracted into one shared, static
+     asset: Liquid is not interpolated per instance, so the section-id based
+     selectors that used to live here only ever matched the first product-details
+     block on the page. These rules are now scoped with :scope plus an id-prefix
+     match, so every instance styles itself while the section-id suffixes that
+     assets/variant-picker.js queries stay intact in the markup. */
+  :scope [id^="variant-info-box"] {
     margin-top: 8px;
     width: 100%;
   }
 
-  #variant-display-name-{{ section.id }} {
+  :scope [id^="variant-display-name"] {
     margin: 6px 0 0 0;
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
   }
 
-  #variant-short-title-{{ section.id }} {
+  :scope [id^="variant-short-title"] {
     margin: 4px 0 0 0;
     font-size: 15px;
     font-weight: 500;
     line-height: 1.4;
   }
 
-  #variant-subtitle-{{ section.id }} {
+  :scope [id^="variant-subtitle"] {
     margin: 4px 0 0 0;
     font-size: 14px;
     line-height: 1.5;
     opacity: 0.8;
   }
 
-  #variant-description-{{ section.id }} {
+  :scope [id^="variant-description"] {
     margin-top: 10px;
     font-size: 14px;
     line-height: 1.6;
   }
 
-  #variant-description-{{ section.id }} p {
+  :scope [id^="variant-description"] p {
     margin: 0 0 10px 0;
   }
 
-  #variant-description-{{ section.id }} p:last-child {
+  :scope [id^="variant-description"] p:last-child {
     margin-bottom: 0;
   }
 

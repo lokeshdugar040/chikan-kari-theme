@@ -11,27 +11,34 @@
     --bmn-body-size: {{ block.settings.body_size }};
     --bmn-saving-size: {{ block.settings.saving_size }};
     --bmn-title-color: {{ block.settings.title_color }};
-    --bmn-text-color: {{ block.settings.body_color }};
+    --bmn-body-color: {{ block.settings.body_color }};
     --bmn-saving-color: {{ block.settings.saving_color }};
-    --bmn-featured-color: {{ block.settings.featured_saving_color }};
+    --bmn-featured-saving-color: {{ block.settings.featured_saving_color }};
     --bmn-border-color: {{ block.settings.border_color }};
     --bmn-background: {{ block.settings.background_color }};
-    --bmn-radius: {{ block.settings.corner_radius }}px;
+    --bmn-corner-radius: {{ block.settings.corner_radius }}px;
     --bmn-padding-block-start: {{ block.settings.padding-block-start }}px;
-    --bmn-padding-inline-end: {{ block.settings.padding-inline-end }}px;
     --bmn-padding-block-end: {{ block.settings.padding-block-end }}px;
     --bmn-padding-inline-start: {{ block.settings.padding-inline-start }}px;
+    --bmn-padding-inline-end: {{ block.settings.padding-inline-end }}px;
     --bmn-gap: {{ block.settings.gap }}px;
   "
 >
   <div class="buy-more-note__inner">
+    <div class="buy-more-note__topline" aria-hidden="true">
+      <span class="buy-more-note__ornament">&#10022;</span>
+      <span class="buy-more-note__rule"></span>
+      <span class="buy-more-note__eyebrow">Special offer</span>
+      <span class="buy-more-note__rule"></span>
+      <span class="buy-more-note__ornament">&#10022;</span>
+    </div>
+
     <div class="buy-more-note__intro">
       <h3 id="buy-more-note-title-{{ block.id }}" class="buy-more-note__title">
         Buy more, save more
       </h3>
-
       <p class="buy-more-note__subtitle">
-        Add 2 or 3 pieces to unlock your discount.
+        Curate your look and enjoy an instant saving.
       </p>
     </div>
 
@@ -41,38 +48,66 @@
       aria-label="Available multi-buy discounts"
     >
       <div class="buy-more-note__offer" role="listitem">
-        <span class="buy-more-note__label">2 pieces</span>
-        <strong class="buy-more-note__saving">Save ₹200</strong>
+        <span class="buy-more-note__quantity">2</span>
+        <span class="buy-more-note__offer-content">
+          <span class="buy-more-note__label">Pieces</span>
+          <strong class="buy-more-note__amount">&#8377;200 Off</strong>
+        </span>
       </div>
 
       <div class="buy-more-note__offer buy-more-note__offer--preferred" role="listitem">
-        <div class="buy-more-note__offer-topline">
-          <span class="buy-more-note__label">3 pieces</span>
-          <span class="buy-more-note__recommended">Best value</span>
-        </div>
-
-        <strong class="buy-more-note__saving">Save ₹500</strong>
+        <span class="buy-more-note__quantity">3</span>
+        <span class="buy-more-note__offer-content">
+          <span class="buy-more-note__label">Pieces</span>
+          <strong class="buy-more-note__amount">&#8377;500 Off</strong>
+        </span>
+        <span class="buy-more-note__recommended">Best value</span>
       </div>
     </div>
+
+    {%- if block.settings.shipping_text != blank -%}
+      <p class="buy-more-note__shipping">
+        <span class="buy-more-note__shipping-mark" aria-hidden="true">&#10003;</span>
+        <span>{{ block.settings.shipping_text }}</span>
+      </p>
+    {%- endif -%}
   </div>
 </div>
 
 {% stylesheet %}
-.buy-more-note,
-.buy-more-note *,
-.buy-more-note *::before,
-.buy-more-note *::after {
+/* Buy more note -------------------------------------------------------------
+   Every visual value comes from a block setting via a custom property, and each
+   property is declared exactly once: the container queries below re-scope
+   variables instead of re-declaring rules, so nothing overrides anything else.
+   The fallbacks are the design defaults, which also protects existing block
+   instances whose settings were saved under the previous schema.            */
+
+:where(.buy-more-note, .buy-more-note *) {
   box-sizing: border-box;
 }
 
 .buy-more-note {
-  --bmn-ink: #40362d;
-  --bmn-muted: #766e66;
-  --bmn-line: #ded7cf;
-  --bmn-soft: #f8f5f1;
-  --bmn-featured-bg: #f3ece3;
-  --bmn-accent: #8a6847;
-  --bmn-shadow: rgb(82 60 40 / 8%);
+  /* Internal palette — derived values with no setting of their own */
+  --bmn-accent: #9a6841;
+  --bmn-deep-accent: #784729;
+  --bmn-featured-surface: #f3e5d8;
+  --bmn-card: rgb(255 253 249 / 82%);
+  --bmn-card-hover: #fffefa;
+  --bmn-quantity-ring: #d6b89b;
+  --bmn-shadow-soft: rgb(85 52 33 / 5%);
+  --bmn-shadow-lift: rgb(85 52 33 / 8%);
+  --bmn-highlight: rgb(255 255 255 / 75%);
+  --bmn-wash: rgb(224 175 130 / 14%);
+
+  /* Internal spacing scale, narrowed by container queries below */
+  --bmn-content-gap: 14px;
+  --bmn-offer-inner-gap: 11px;
+  --bmn-offer-padding-block: 11px;
+  --bmn-offer-padding-inline: 13px;
+  --bmn-bracket-size: 42px;
+  --bmn-bracket-inset: 8px;
+  --bmn-bracket-radius: 8px;
+  --bmn-quantity-size: 38px;
 
   display: block;
   width: 100%;
@@ -82,184 +117,276 @@
 }
 
 .buy-more-note__inner {
+  position: relative;
   display: grid;
-  gap: 17px;
+  gap: var(--bmn-content-gap);
   width: 100%;
-  padding-block: var(--bmn-padding-block-start) var(--bmn-padding-block-end);
-  padding-inline: var(--bmn-padding-inline-start) var(--bmn-padding-inline-end);
-  border: 1px solid var(--bmn-line);
-  border-radius: var(--bmn-radius);
-  background: var(--bmn-soft);
-  box-shadow: 0 4px 14px rgb(82 60 40 / 4%);
+  padding-block: var(--bmn-padding-block-start, 17px) var(--bmn-padding-block-end, 17px);
+  padding-inline: var(--bmn-padding-inline-start, 18px) var(--bmn-padding-inline-end, 18px);
+  border: 1px solid var(--bmn-border-color, #dfd2c8);
+  border-radius: var(--bmn-corner-radius, 12px);
+  background:
+    radial-gradient(circle at 100% 0%, var(--bmn-wash), transparent 34%),
+    var(--bmn-background, #fcf8f3);
+  box-shadow:
+    0 5px 18px var(--bmn-shadow-soft),
+    inset 0 1px 0 var(--bmn-highlight);
+  overflow: hidden;
+}
+
+/* Chikankari corner brackets */
+.buy-more-note__inner::before,
+.buy-more-note__inner::after {
+  position: absolute;
+  width: var(--bmn-bracket-size);
+  height: var(--bmn-bracket-size);
+  border: 1px solid var(--bmn-accent);
+  opacity: 0.28;
+  content: "";
+  pointer-events: none;
+}
+
+.buy-more-note__inner::before {
+  inset-block-start: var(--bmn-bracket-inset);
+  inset-inline-start: var(--bmn-bracket-inset);
+  border-inline-end: 0;
+  border-block-end: 0;
+  border-start-start-radius: var(--bmn-bracket-radius);
+}
+
+.buy-more-note__inner::after {
+  inset-block-end: var(--bmn-bracket-inset);
+  inset-inline-end: var(--bmn-bracket-inset);
+  border-inline-start: 0;
+  border-block-start: 0;
+  border-end-end-radius: var(--bmn-bracket-radius);
+}
+
+.buy-more-note__topline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 280px);
+  margin-inline: auto;
+  color: var(--bmn-accent);
+}
+
+.buy-more-note__rule {
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--bmn-border-color, #dfd2c8);
+}
+
+.buy-more-note__ornament {
+  flex: 0 0 auto;
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.buy-more-note__eyebrow {
+  flex: 0 0 auto;
+  font-family: var(--bmn-body-font, var(--font-body--family));
+  font-size: calc(var(--bmn-body-size, 0.75rem) * 0.75);
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .buy-more-note__intro {
   display: grid;
-  gap: 5px;
-  min-width: 0;
+  gap: 4px;
+  text-align: center;
 }
 
 .buy-more-note__title {
   margin: 0;
-  color: var(--bmn-ink);
-  font-family: var(--bmn-title-font);
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  color: var(--bmn-title-color, #3b2b25);
+  font-family: var(--bmn-title-font, var(--font-heading--family));
+
+  /* Fluid up to the merchant's chosen cap. cqw, not vw: this block sets
+     container-type, so it must scale with its own width in a sidebar. */
+  font-size: clamp(1.05rem, 4.5cqw, var(--bmn-title-size, 1rem));
   font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  text-transform: none;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
 }
 
 .buy-more-note__subtitle {
   margin: 0;
-  color: var(--bmn-muted);
-  font-family: var(--bmn-body-font);
-  font-size: max(0.75rem, var(--bmn-body-size));
-  font-weight: 400;
+  color: var(--bmn-body-color, #786761);
+  font-family: var(--bmn-body-font, var(--font-body--family));
+  font-size: var(--bmn-body-size, 0.75rem);
   line-height: 1.4;
 }
 
 .buy-more-note__offers {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--bmn-gap);
+  gap: var(--bmn-gap, 9px);
   min-width: 0;
 }
 
 .buy-more-note__offer {
   position: relative;
-  display: grid;
-  align-content: center;
-  gap: 7px;
+  display: flex;
+  align-items: center;
+  gap: var(--bmn-offer-inner-gap);
   min-width: 0;
-  min-height: 82px;
-  padding: 14px 15px;
-  border: 1px solid var(--bmn-line);
-  border-radius: 9px;
-  background: #fffdfa;
-  text-align: left;
-  overflow: hidden;
+  min-height: 72px;
+  padding: var(--bmn-offer-padding-block) var(--bmn-offer-padding-inline);
+  border: 1px solid var(--bmn-border-color, #dfd2c8);
+  border-radius: var(--bmn-bracket-radius);
+  background: var(--bmn-card);
+  box-shadow: inset 0 1px 0 var(--bmn-highlight);
   transition:
-    border-color 180ms ease,
-    background-color 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.buy-more-note__offer::after {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  width: 3px;
-  background: transparent;
-  content: "";
-  transition: background-color 180ms ease;
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .buy-more-note__offer:hover {
-  border-color: #c4a27d;
-  background: #fffefa;
-  box-shadow:
-    0 6px 16px var(--bmn-shadow),
-    inset 0 1px 0 rgb(255 255 255 / 80%);
-}
-
-.buy-more-note__offer:hover::after {
-  background: #c4a27d;
+  border-color: var(--bmn-accent);
+  background: var(--bmn-card-hover);
+  box-shadow: 0 5px 14px var(--bmn-shadow-lift);
 }
 
 .buy-more-note__offer--preferred {
-  border-color: #c6a37d;
-  background: var(--bmn-featured-bg);
-  box-shadow:
-    0 3px 10px rgb(82 60 40 / 5%),
-    inset 0 1px 0 rgb(255 255 255 / 70%);
-}
-
-.buy-more-note__offer--preferred::after {
-  background: var(--bmn-accent);
+  border-color: var(--bmn-accent);
+  background: var(--bmn-featured-surface);
 }
 
 .buy-more-note__offer--preferred:hover {
-  border-color: var(--bmn-accent);
-  background: #f5eadd;
-  box-shadow:
-    0 7px 18px rgb(82 60 40 / 9%),
-    inset 0 1px 0 rgb(255 255 255 / 80%);
+  background: color-mix(in srgb, var(--bmn-featured-surface) 88%, var(--bmn-accent));
 }
 
-.buy-more-note__offer-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+.buy-more-note__quantity {
+  display: grid;
+  flex: 0 0 auto;
+  width: var(--bmn-quantity-size);
+  height: var(--bmn-quantity-size);
+  place-items: center;
+  border: 1px solid var(--bmn-quantity-ring);
+  border-radius: 50%;
+  color: var(--bmn-saving-color, var(--bmn-deep-accent));
+  font-family: var(--bmn-title-font, var(--font-heading--family));
+  font-size: calc(var(--bmn-saving-size, 1.125rem) * 1.02);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.buy-more-note__offer--preferred .buy-more-note__quantity {
+  border-color: var(--bmn-accent);
+  background: rgb(255 255 255 / 35%);
+  color: var(--bmn-featured-saving-color, var(--bmn-deep-accent));
+}
+
+.buy-more-note__offer-content {
+  display: grid;
+  gap: 3px;
   min-width: 0;
 }
 
 .buy-more-note__label {
-  color: var(--bmn-ink);
-  font-family: var(--bmn-body-font);
-  font-size: 0.875rem;
+  color: var(--bmn-body-color, #786761);
+  font-family: var(--bmn-body-font, var(--font-body--family));
+  font-size: calc(var(--bmn-body-size, 0.75rem) - 0.0625rem);
   font-weight: 650;
-  line-height: 1.25;
-}
-
-.buy-more-note__saving {
-  color: var(--bmn-accent);
-  font-family: var(--bmn-saving-font);
-  font-size: clamp(1rem, 2vw, var(--bmn-saving-size));
-  font-weight: 700;
   line-height: 1.2;
-}
-
-.buy-more-note__offer--preferred .buy-more-note__saving {
-  color: var(--bmn-featured-color);
-}
-
-.buy-more-note__recommended {
-  flex: 0 0 auto;
-  color: var(--bmn-accent);
-  font-family: var(--bmn-body-font);
-  font-size: 0.5625rem;
-  font-weight: 750;
-  line-height: 1.2;
-  letter-spacing: 0.07em;
-  text-align: right;
   text-transform: uppercase;
 }
 
+.buy-more-note__amount {
+  color: var(--bmn-saving-color, var(--bmn-deep-accent));
+  font-family: var(--bmn-saving-font, var(--font-heading--family));
+  font-size: clamp(0.95rem, 4cqw, var(--bmn-saving-size, 1.125rem));
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.buy-more-note__offer--preferred .buy-more-note__amount {
+  color: var(--bmn-featured-saving-color, var(--bmn-deep-accent));
+}
+
+.buy-more-note__recommended {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-end: 10px;
+  color: var(--bmn-accent);
+  font-family: var(--bmn-body-font, var(--font-body--family));
+  font-size: calc(var(--bmn-body-size, 0.75rem) * 0.667);
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.buy-more-note__shipping {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--bmn-body-color, #786761);
+  font-family: var(--bmn-body-font, var(--font-body--family));
+  font-size: calc(var(--bmn-body-size, 0.75rem) - 0.0625rem);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.buy-more-note__shipping-mark {
+  display: grid;
+  width: 15px;
+  height: 15px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bmn-accent);
+  color: #fffaf5;
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Narrow layouts only re-scope variables — no declaration is repeated */
 @container (max-width: 520px) {
+  .buy-more-note {
+    --bmn-content-gap: 12px;
+  }
+
   .buy-more-note__inner {
-    gap: 15px;
+    padding-block: max(0px, calc(var(--bmn-padding-block-start, 17px) - 2px))
+      max(0px, calc(var(--bmn-padding-block-end, 17px) - 2px));
+    padding-inline: max(0px, calc(var(--bmn-padding-inline-start, 18px) - 3px))
+      max(0px, calc(var(--bmn-padding-inline-end, 18px) - 3px));
   }
 
   .buy-more-note__offers {
     grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .buy-more-note__offer {
-    min-height: 70px;
+    gap: max(4px, calc(var(--bmn-gap, 9px) - 1px));
   }
 }
 
 @container (max-width: 330px) {
+  .buy-more-note {
+    --bmn-offer-inner-gap: 9px;
+    --bmn-offer-padding-inline: 11px;
+    --bmn-quantity-size: 34px;
+  }
+
   .buy-more-note__inner {
-    padding-inline: 14px;
+    padding-inline: max(0px, calc(var(--bmn-padding-inline-start, 18px) - 5px))
+      max(0px, calc(var(--bmn-padding-inline-end, 18px) - 5px));
   }
 
-  .buy-more-note__offer {
-    padding: 13px 14px;
-  }
-
-  .buy-more-note__offer-topline {
-    align-items: flex-start;
+  .buy-more-note__recommended {
+    inset-inline-end: 8px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .buy-more-note__offer,
-  .buy-more-note__offer::after {
-    transition: none;
+  .buy-more-note__offer {
+    transition-duration: 1ms;
   }
 }
 {% endstylesheet %}
@@ -269,6 +396,12 @@
   "name": "Buy more note",
   "tag": null,
   "settings": [
+    {
+      "type": "text",
+      "id": "shipping_text",
+      "label": "Shipping message",
+      "default": "Free shipping included"
+    },
     {
       "type": "header",
       "content": "Typography"
@@ -353,37 +486,37 @@
       "type": "color",
       "id": "background_color",
       "label": "Background",
-      "default": "#F8F5F1"
+      "default": "#FCF8F3"
     },
     {
       "type": "color",
       "id": "title_color",
       "label": "Title colour",
-      "default": "#40362D"
+      "default": "#3B2B25"
     },
     {
       "type": "color",
       "id": "body_color",
       "label": "Body text colour",
-      "default": "#766E66"
+      "default": "#786761"
     },
     {
       "type": "color",
       "id": "saving_color",
       "label": "First saving colour",
-      "default": "#8A6847"
+      "default": "#784729"
     },
     {
       "type": "color",
       "id": "featured_saving_color",
       "label": "Featured saving colour",
-      "default": "#704721"
+      "default": "#784729"
     },
     {
       "type": "color",
       "id": "border_color",
       "label": "Border colour",
-      "default": "#DED7CF"
+      "default": "#DFD2C8"
     },
     {
       "type": "header",
@@ -397,7 +530,7 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "default": 18
+      "default": 17
     },
     {
       "type": "range",
@@ -407,7 +540,7 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "default": 18
+      "default": 17
     },
     {
       "type": "range",
@@ -437,7 +570,7 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "default": 10
+      "default": 9
     },
     {
       "type": "range",
