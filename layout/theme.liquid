@@ -36,7 +36,22 @@
     {% endif %}
 
     {{ content_for_header }}
-    <script src="https://unpkg.com/spf-analytics@1.0.0/index.js" defer></script>
+    {% comment %}
+      Third-party storefront analytics loader. The version is pinned in the URL, and the
+      integrity hash below is derived from the published npm artifact
+      (registry.npmjs.org/spf-analytics -> 1.0.0 -> package/index.js, 19939 bytes,
+      sha384-zI9lQyBlLCAkQh0mtKtIidE1st4qJ/U56oqABdnEAjLch2Z+BVjTV5URpPCWu50z).
+      The package is UNLICENSED, so it is loaded from the CDN rather than vendored into
+      assets/. If analytics reporting stops, re-verify the hash against the served file
+      before assuming the script itself is broken.
+    {% endcomment %}
+    <script
+      src="https://unpkg.com/spf-analytics@1.0.0/index.js"
+      integrity="sha384-zI9lQyBlLCAkQh0mtKtIidE1st4qJ/U56oqABdnEAjLch2Z+BVjTV5URpPCWu50z"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      defer
+    ></script>
     <script>
       window.ThemeLoader = {
         loadModule(src) {

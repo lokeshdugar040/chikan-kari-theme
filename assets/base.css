@@ -5914,20 +5914,6 @@ body[data-scrolled] #header-component[data-sticky-state='active'] .header__row--
   }
 }
 
-/* USP band items */
-.premium-usp-band__item {
-  transition:
-    transform var(--duration-med) var(--ease-out),
-    box-shadow var(--duration-med) var(--ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .premium-usp-band__item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm), inset 0 0 0 1px rgb(110 88 65 / 0.12);
-  }
-}
-
 /* Smooth momentum scrolling for snap carousels */
 .resource-list__carousel,
 .video-sequence-slider__viewport,
@@ -5967,7 +5953,6 @@ body[data-scrolled] #header-component[data-sticky-state='active'] .header__row--
   .button-secondary,
   .sticky-add-to-cart__button,
   .variant-option__button-label,
-  .premium-usp-band__item,
   .cart-bubble,
   .dialog-modal[open],
   .dialog-modal.dialog-closing,

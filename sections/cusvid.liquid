@@ -1,5 +1,9 @@
 {% liquid
-  assign section_dom_id = 'shopify-section-' | append: section.id
+  # Deliberately NOT 'shopify-section-<id>': Shopify already wraps every section in
+  # <div id="shopify-section-<id>">, so reusing that id here produced two elements with
+  # the same id. Invalid HTML, and document.getElementById() at the bottom of this file
+  # returned the wrapper rather than this <section>.
+  assign section_dom_id = 'video-sequence-slider-' | append: section.id
 %}
 
 <section
