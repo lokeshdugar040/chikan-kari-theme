@@ -391,8 +391,10 @@ p:empty {
 }
 
 /* Set up page widths & margins.
-   The gutter is fluid (see --page-gutter in theme-styles-variables.liquid):
-   16px on a 360px phone, scaling smoothly to 40px by ~1000px. */
+   The gutter is fluid: --page-gutter (theme-styles-variables.liquid) is
+   clamp(0.75rem, 0.4rem + 1.75vw, 2rem), i.e. ~13px on a 360px phone scaling
+   smoothly to a 32px cap at ~1465px and above. The clamp() below is only the
+   fallback for a body with no --page-gutter and is never used in practice. */
 .page-width-wide,
 .page-width-normal,
 .page-width-narrow,
@@ -5296,8 +5298,14 @@ textarea {
   --header-padding: clamp(var(--space-2), 1vw, var(--space-3));
 }
 
+/* Horizontal gutter for the header rows on phones. The row content spans all
+   three tracks of the `.section` grid at this width (see the `grid-column:
+   span 3` rule in sections/header.liquid), so the gutter has to come from
+   padding. Use the same fluid `--page-margin` every other section uses
+   instead of a fixed 8px, otherwise the logo and icons sit 4px outside the
+   container the page content below them is aligned to. */
 #header-component .header__row > .header__columns {
-  padding-inline: var(--space-2);
+  padding-inline: var(--page-margin, var(--space-2));
 }
 
 @media screen and (min-width: 750px) {

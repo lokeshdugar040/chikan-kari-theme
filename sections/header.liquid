@@ -669,6 +669,23 @@
     }
   }
 
+  /* Keep logo, nav and icons inside the page container on desktop, even when
+     the section's "Width" setting is Full. `.section--full-width > *` puts the
+     row content on `grid-column: 1 / -1`, which runs the header right up to
+     both viewport edges; column 2 is the container column (capped at
+     --page-content-width and centred behind the fluid --page-margin gutters).
+     Only the content is constrained — the row's colour band and any divider
+     still span the full width, because `.section` itself is untouched.
+     Mobile keeps the stock three-column bookend layout (`grid-column: span 3`
+     in the max-width: 749px block below), which needs the outer tracks to
+     seat the 44px touch targets. `divider--page-width` rows already inset
+     themselves via the rule above, so they are left out of this one. */
+  .header__row.section--full-width:not(.divider--page-width) > .header__columns {
+    @media screen and (min-width: 750px) {
+      grid-column: 2;
+    }
+  }
+
   .header__column {
     display: flex;
     align-items: center;

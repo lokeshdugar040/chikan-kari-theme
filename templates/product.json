@@ -443,7 +443,7 @@
       },
       "custom_css": [],
       "settings": {
-        "content_width": "content-full-width",
+        "content_width": "content-center-aligned",
         "desktop_media_position": "left",
         "equal_columns": false,
         "limit_details_width": true,
@@ -718,17 +718,17 @@
         "max_products": 6,
         "columns": 4,
         "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
+        "mobile_card_size": "44cqw",
         "columns_gap": 12,
         "rows_gap": 12,
         "icons_style": "arrow",
         "icons_shape": "circle",
-        "section_width": "full-width",
+        "section_width": "page-width",
         "horizontal_alignment": "center",
-        "gap": 28,
+        "gap": 24,
         "color_scheme": "scheme-1",
-        "padding-block-start": 60,
-        "padding-block-end": 60
+        "padding-block-start": 48,
+        "padding-block-end": 48
       }
     },
     "17723966628df34025": {
