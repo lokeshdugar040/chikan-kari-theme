@@ -1,0 +1,49 @@
+/* ============================================
+   FIX DUPLICATES - Multiple Headers, Cards
+   ============================================ */
+
+/* 1. PREVENT MULTIPLE HEADERS */
+header.header ~ header.header,
+.header-wrapper ~ .header-wrapper {
+  display: none !important;
+}
+
+/* 2. LIMIT PRODUCT CARDS TO 12 */
+.product-grid .card.product-card:nth-child(n+13) {
+  display: none;
+}
+
+/* 3. FIX HEADER GROUP DUPLICATES */
+.header-group ~ .header-group {
+  display: none !important;
+}
+
+/* 4. FIX PREDICTIVE SEARCH DUPLICATES */
+predictive-search ~ predictive-search {
+  display: none !important;
+}
+
+/* 5. FIX CART ICON DUPLICATES */
+.header__icon--cart ~ .header__icon--cart {
+  display: none !important;
+}
+
+/* 6. FIX LOGO DUPLICATES */
+.header__heading-logo ~ .header__heading-logo {
+  display: none !important;
+}
+
+/* 7. FIX NAVIGATION DUPLICATES */
+.nav-menu ~ .nav-menu {
+  display: none !important;
+}
+
+/* 8. FIX MOBILE MENU DUPLICATES */
+.mobile-menu ~ .mobile-menu {
+  display: none !important;
+}
+
+/* 9. PREVENT BLOCK OVERFLOW */
+.blocks-container > * {
+  max-width: 100%;
+}
