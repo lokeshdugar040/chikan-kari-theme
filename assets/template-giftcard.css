@@ -87,9 +87,9 @@
   line-height: 0.25;
   padding: var(--padding-md);
   text-align: center;
-  background-color: rgb(var(--color-background));
-  border-color: rgb(var(--color-foreground), var(--opacity-5));
-  color: rgb(var(--color-foreground));
+  background-color: var(--color-background);
+  border-color: rgb(var(--color-foreground-rgb) / var(--opacity-5));
+  color: var(--color-foreground);
   margin-block: 0;
 }
 
