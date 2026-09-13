@@ -1,0 +1,31 @@
+:root {
+  --color-bg: #FFFFFF;
+  --color-bg-secondary: #F9F7F5;
+  --color-text: #1A1A1A;
+  --color-text-muted: #6B6B6B;
+  --color-border: #E5E5E5;
+  --color-primary: #6e5841;
+  --color-primary-hover: #5a4632;
+  --color-accent: #C9A86C;
+  --space-xs: clamp(4px, 0.5vw, 8px);
+  --space-sm: clamp(8px, 1vw, 12px);
+  --space-md: clamp(16px, 2vw, 24px);
+  --space-lg: clamp(32px, 4vw, 48px);
+  --space-xl: clamp(48px, 6vw, 80px);
+  --space-2xl: clamp(64px, 8vw, 120px);
+  --text-xs: clamp(12px, 1.2vw, 14px);
+  --text-sm: clamp(14px, 1.4vw, 16px);
+  --text-base: clamp(16px, 1.6vw, 18px);
+  --text-lg: clamp(18px, 2vw, 22px);
+  --text-xl: clamp(24px, 2.5vw, 30px);
+  --text-2xl: clamp(30px, 3.5vw, 42px);
+  --text-3xl: clamp(36px, 4.5vw, 56px);
+  --container-max: min(100% - calc(var(--space-md) * 2), 1400px);
+  --btn-height: 48px;
+  --btn-radius: 2px;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+*:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
