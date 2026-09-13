@@ -24,6 +24,32 @@
 
     {% assign current_variant = closest.product.selected_or_first_available_variant %}
 
+    {% liquid
+      # Only render the variant-info wrapper when at least one variant carries
+      # display info. An always-rendered empty wrapper still occupies a flex
+      # gap row plus the info box's top margin above the title. Checking every
+      # variant (not just the current one) keeps the #variant-info-box morph
+      # target in assets/variant-picker.js working when shoppers switch to a
+      # variant that has info.
+      assign has_variant_info = false
+      for variant_item in closest.product.variants
+        if variant_item.metafields.custom.variant_display_name.value != blank
+          assign has_variant_info = true
+          break
+        elsif variant_item.metafields.custom.variant_short_title.value != blank
+          assign has_variant_info = true
+          break
+        elsif variant_item.metafields.custom.variant_subtitle.value != blank
+          assign has_variant_info = true
+          break
+        elsif variant_item.metafields.custom.variant_description.value != blank
+          assign has_variant_info = true
+          break
+        endif
+      endfor
+    %}
+
+    {% if has_variant_info %}
     <div class="variant-info-wrapper">
       <div id="variant-info-box-{{ section.id }}">
         {% if current_variant.metafields.custom.variant_display_name.value != blank %}
@@ -45,6 +71,7 @@
         {% endif %}
       </div>
     </div>
+    {% endif %}
 
     {% content_for 'blocks' %}
   {% endcapture %}
