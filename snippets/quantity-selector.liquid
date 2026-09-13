@@ -179,37 +179,4 @@
     font-size: var(--font-size--sm);
     font-weight: normal;
   }
-  /* Quantity selector: white text and icons */
-.quantity-selector input[type="number"] {
-  color: #ffffff;                       /* quantity number white */
-}
-
-/* Plus/minus buttons: white icon (they use currentColor) */
-.quantity-selector .button {
-  color: #ffffff;                       /* icon and any text white */
-}
-/* Quantity selector: high-contrast dark text and icons */
-.quantity-selector {
-  color: #000000; /* base text color inside the component */
-}
-
-/* Number input text: dark against light background */
-.quantity-selector input[type="number"] {
-  color: #000000;
-}
-
-/* Plus/minus buttons: dark icon (they use currentColor) */
-.quantity-selector .button {
-  color: #000000;
-}
-
-/* Optional: on hover, keep background subtle but text/icons dark */
-.quantity-selector:hover {
-  background-color: var(--color-input-hover-background);
-}
-
-.quantity-selector .button:hover,
-.quantity-selector .button:focus {
-  color: #000000;
-}
 {% endstylesheet %}
