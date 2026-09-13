@@ -16,23 +16,24 @@
     data-product-id="{{ closest.product.id }}"
     data-product-url="{{ closest.product.url }}"
     style="
+      --overflow-list-alignment: {{ block_settings.product_swatches_alignment }};
+      --overflow-list-alignment-mobile: {{ block_settings.product_swatches_alignment_mobile }};
       --product-swatches-alignment:
-        {% if block_settings.product_swatches_alignment == 'flex-start' %}
-          flex-start
-        {% elsif block_settings.product_swatches_alignment == 'flex-end' %}
-          flex-end
-        {% else %}
+        {%- if block_settings.product_swatches_alignment == 'flex-start' -%}
+          start
+        {%- elsif block_settings.product_swatches_alignment == 'flex-end' -%}
+          end
+        {%- else -%}
           center
-        {% endif %};
-
+        {%- endif -%};
       --product-swatches-alignment-mobile:
-        {% if block_settings.product_swatches_alignment_mobile == 'flex-start' %}
-          flex-start
-        {% elsif block_settings.product_swatches_alignment_mobile == 'flex-end' %}
-          flex-end
-        {% else %}
+        {%- if block_settings.product_swatches_alignment_mobile == 'flex-start' -%}
+          start
+        {%- elsif block_settings.product_swatches_alignment_mobile == 'flex-end' -%}
+          end
+        {%- else -%}
           center
-        {% endif %};
+        {%- endif -%};
 
       --product-swatches-padding-block-start: {{ block_settings.product_swatches_padding_top }}px;
       --product-swatches-padding-block-end: {{ block_settings.product_swatches_padding_bottom }}px;
@@ -46,193 +47,28 @@
 {% endif %}
 
 {% stylesheet %}
-  /* ============================================================
-     PRODUCT SWATCHES
-     Larger, responsive, aligned, and not cropped
-     ============================================================ */
+  /* This block owns the swatch container, its padding settings, and the
+     --overflow-list-alignment custom properties that overflow-list consumes
+     inside its shadow DOM (assets/overflow-list.css).
 
+     Swatch geometry - size, 4:5 aspect, radius, borders and the selected/focus
+     states - is owned solely by snippets/swatch.liquid. The sizing rules that
+     used to live here duplicated that file with conflicting values
+     (overflow: visible vs hidden, --swatch-size vs hard-coded 4:5 boxes), so
+     which one applied depended on !important source order in the compiled
+     stylesheet bundle. */
   product-swatches {
-    --swatch-size: 34px;
-    --swatch-gap: 8px;
-
-    display: block;
-    position: relative;
-
     width: 100%;
-    min-width: 0;
-    max-width: 100%;
-
-    padding-block-start: var(
-      --product-swatches-padding-block-start,
-      0px
-    );
-
-    padding-block-end: var(
-      --product-swatches-padding-block-end,
-      0px
-    );
-
-    padding-inline-start: var(
-      --product-swatches-padding-inline-start,
-      0px
-    );
-
-    padding-inline-end: var(
-      --product-swatches-padding-inline-end,
-      0px
-    );
-
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Allow the custom overflow list to expand */
-  product-swatches overflow-list {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Swatch list layout */
-  product-swatches overflow-list::part(list) {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: var(
-      --product-swatches-alignment,
-      flex-start
-    );
-
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-
-    gap: var(--swatch-gap);
-    padding: 0;
-    margin: 0;
-
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Variant swatch group */
-  product-swatches .variant-option--swatches {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  product-swatches .variant-option--swatches > overflow-list {
-    width: 100%;
-    overflow: visible !important;
-  }
-
-  /* Swatch label wrapper */
-  product-swatches .variant-option__button-label,
-  product-swatches .variant-option__button-label--has-swatch {
     position: relative;
+    overflow: hidden;
+    gap: 0;
+    flex-shrink: 0;
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex: 0 0 var(--swatch-size);
-
-    width: var(--swatch-size);
-    min-width: var(--swatch-size);
-    max-width: var(--swatch-size);
-
-    height: var(--swatch-size);
-    min-height: var(--swatch-size);
-    max-height: var(--swatch-size);
-
-    margin: 0;
-    padding: 0 !important;
-
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Actual swatch */
-  product-swatches .swatch,
-  product-swatches .swatch.swatch--unscaled,
-  product-swatches .swatch.swatch--variant-image {
-    --swatch-width: var(--swatch-size) !important;
-    --swatch-height: var(--swatch-size) !important;
-
-    display: block;
-    flex: 0 0 var(--swatch-size);
-
-    width: var(--swatch-size) !important;
-    min-width: var(--swatch-size) !important;
-    max-width: var(--swatch-size) !important;
-
-    height: var(--swatch-size) !important;
-    min-height: var(--swatch-size) !important;
-    max-height: var(--swatch-size) !important;
-
-    box-sizing: border-box;
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Keep the input clickable across the full swatch */
-  product-swatches .variant-option__button-label input {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    margin: 0;
-    padding: 0;
-  }
-
-  /* Do not crop selected or focused outlines */
-  product-swatches .variant-option__button-label:has(:checked),
-  product-swatches .variant-option__button-label:has(:focus-visible),
-  product-swatches
-    .variant-option__button-label--has-swatch:has(:checked) {
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Desktop */
-  @media screen and (min-width: 750px) {
-    product-swatches {
-      --swatch-size: 36px;
-      --swatch-gap: 9px;
-    }
-
-    product-swatches overflow-list::part(list) {
-      justify-content: var(
-        --product-swatches-alignment,
-        flex-start
-      );
-    }
-  }
-
-  /* Mobile */
-  @media screen and (max-width: 749px) {
-    product-swatches {
-      --swatch-size: 32px;
-      --swatch-gap: 8px;
-    }
-
-    product-swatches overflow-list::part(list) {
-      justify-content: var(
-        --product-swatches-alignment-mobile,
-        flex-start
-      );
-    }
+    padding-block-start: var(--product-swatches-padding-block-start, 0px);
+    padding-block-end: var(--product-swatches-padding-block-end, 0px);
+    padding-inline-start: var(--product-swatches-padding-inline-start, 0px);
+    padding-inline-end: var(--product-swatches-padding-inline-end, 0px);
   }
 {% endstylesheet %}
 
