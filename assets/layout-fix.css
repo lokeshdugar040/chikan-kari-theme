@@ -1,0 +1,90 @@
+/* ============================================
+   LAYOUT FIX - Container, Spacing, Grid
+   ============================================ */
+
+/* 1. GLOBAL CONTAINER - Constrain everything to 1280px */
+.page-width,
+.shopify-section .page-width,
+.shopify-section .page-width--narrow {
+  max-width: 1280px !important;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Header container */
+.header-wrapper .page-width {
+  max-width: 1280px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* 2. SECTION SPACING - Normalize to 48px */
+.shopify-section {
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+}
+
+/* Remove huge min-heights */
+.shopify-section {
+  min-height: auto !important;
+}
+
+/* 3. PRODUCT GRID - Responsive columns */
+.product-grid,
+.card-wrapper .grid,
+.grid.product-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 16px !important;
+}
+
+@media (min-width: 768px) {
+  .product-grid,
+  .card-wrapper .grid,
+  .grid.product-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid,
+  .card-wrapper .grid,
+  .grid.product-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* 4. PRODUCT CARDS - Reasonable sizing */
+.card.product-card,
+.product-card .card__inner {
+  max-width: 100%;
+}
+
+.product-card img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* 5. HEADER - Constrain and balance */
+.header-wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.header-wrapper .header {
+  max-width: 100%;
+}
+
+/* 6. FIX OVERSIZED ELEMENTS */
+.hero, .banner, .slideshow {
+  max-height: 600px !important;
+}
+
+/* Remove any 80vh+ heights */
+.section--height-auto,
+.section--height-full {
+  min-height: auto !important;
+}
