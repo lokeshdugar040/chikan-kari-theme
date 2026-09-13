@@ -5138,13 +5138,22 @@ h3,
 /* 2. Typography ------------------------------------------------------------
    Theme-editor sizes are ceilings; the fluid scale governs phones.
    Set on <body> so it wins over the :root values that the inline
-   theme-styles-variables block emits. */
+   theme-styles-variables block emits.
+
+   `--font-size--h1`…`--font-size--h6` are generated in Liquid
+   (snippets/theme-styles-variables.liquid loops over "paragraph, h1 … h6" and
+   emits one `--font-size--<preset>` per `settings.type_size_<preset>`). They are
+   real, but they are the only thing standing between this `min()` and an invalid
+   declaration: if one is ever missing, `min()` fails, `--font-h1--size` becomes
+   guaranteed-invalid, and every h1 silently falls back to the inherited body
+   size. The sentinel fallbacks make that impossible — 999rem just means "no
+   editor ceiling", so the fluid token wins. */
 
 body {
-  --font-h1--size: min(var(--font-size--h1), var(--text-h1));
-  --font-h2--size: min(var(--font-size--h2), var(--text-h2));
-  --font-h3--size: min(var(--font-size--h3), var(--text-h3));
-  --font-h4--size: min(var(--font-size--h4), var(--text-xl));
+  --font-h1--size: min(var(--font-size--h1, 999rem), var(--text-h1));
+  --font-h2--size: min(var(--font-size--h2, 999rem), var(--text-h2));
+  --font-h3--size: min(var(--font-size--h3, 999rem), var(--text-h3));
+  --font-h4--size: min(var(--font-size--h4, 999rem), var(--text-xl));
   --font-h5--size: var(--text-sm);
   --font-h6--size: var(--text-xs);
   --font-paragraph--size: var(--text-base);
@@ -5416,8 +5425,15 @@ a.header-logo {
   gap: var(--space-1);
 }
 
-.product-grid__card [class*='product_title'] p,
-.product-card [class*='product_title'] p {
+/* Card titles. A `product-title` theme block renders through snippets/text.liquid,
+   which writes the block's JSON key into the class list
+   (`text-block--product_title_x7Kp2Q`), so the attribute match does hit — but
+   Shopify documents block.id as "dynamically generated … subject to change", so
+   blocks/product-title.liquid now also passes a stable `product-title-block`
+   class. Keep both hooks. `> *` rather than `p` so the clamp still works when the
+   merchant's preset renders the title as a heading instead of a paragraph. */
+.product-card :is(.product-title-block, [class*='product_title']) > *,
+.product-grid__card :is(.product-title-block, [class*='product_title']) > * {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -5492,8 +5508,17 @@ a.header-logo {
   object-fit: cover;
 }
 
-.product-information__text,
-.product-information__content,
+/* The details column is `.product-details` (blocks/_product-details.liquid) inside
+   `.product-information__grid` (snippets/product-information-content.liquid).
+   There is no `.product-information__text` / `__content` in the markup — those two
+   selectors used to sit here and never matched, so the rules below this point that
+   depended on them (a 990px padding-inline-start, and a `.product-title h1` size
+   override) never applied either. They were removed rather than retargeted, because
+   both would change the live layout: the column gutter already comes from the grid's
+   `--gap`, and the PDP title size already comes from `--font-h1--size` in section 2.
+   `min-inline-size: 0` is the one declaration that matters — without it a long
+   unbreakable title blows out the grid track. */
+.product-information__grid,
 .product-details {
   min-inline-size: 0;
   max-inline-size: 100%;
@@ -5501,20 +5526,6 @@ a.header-logo {
 
 .product-details > * + * {
   margin-block-start: var(--space-4);
-}
-
-@media screen and (min-width: 990px) {
-  .product-information__text,
-  .product-information__content {
-    padding-inline-start: var(--space-8);
-  }
-}
-
-.product-details .product-title h1,
-.product-information .product-title h1 {
-  font-size: var(--text-h3);
-  font-weight: 500;
-  line-height: 1.3;
 }
 
 .product-details product-price .price {
