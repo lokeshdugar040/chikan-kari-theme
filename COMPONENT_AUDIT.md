@@ -2,13 +2,16 @@
 
 Repo: `lokeshdugar040/chikan-kari-theme` · Theme ID `148327137395` · Branch `arena/01a09c28-chikan-kari-theme`
 
+Status: **A, B, C fixed and pushed. D audited — no defect found, design-fork decision open.**
+
 ---
 
 ## 1. Method
 
 Code-level audit only (no visual checks), as specified.
 
-The single most useful thing I did was **establish an exact upstream baseline** instead of guessing what "Horizon-consistent" means:
+The single most useful thing I did was **establish an exact upstream baseline** instead of guessing what
+"Horizon-consistent" means:
 
 - `config/settings_schema.json` → `"theme_version": "3.4.0"`
 - Upstream `Shopify/horizon` → commit **`d534fca` ("Horizon v3.4.0")**
@@ -21,258 +24,245 @@ diff -w -B <a> <b>                            # 92 differ ignoring whitespace/bl
 ```
 
 This matters: 120 of the 212 "differing" files differ **only by blank lines and stripped locale
-comments** — those are export artefacts, not edits. Without the baseline they look like changes.
+comments** — export artefacts, not edits. Without the baseline they look like changes.
 
 ### Baseline caveat
 
-Upstream `main` today has drifted a long way past v3.4.0 (it no longer has `snippets/color-schemes.liquid`,
-`assets/product-title-truncation.js`, etc.). **Only v3.4.0 is a valid comparison point.** Diffing against
-`main` produces ~60 phantom "deleted file" findings.
+Upstream `main` today has drifted far past v3.4.0 (no `snippets/color-schemes.liquid`,
+no `assets/product-title-truncation.js`, etc.). **Only v3.4.0 is a valid comparison point.** Diffing
+against `main` yields ~60 phantom "deleted file" findings.
 
 ---
 
-## 2. What actually deviates from Horizon v3.4.0
+## 2. What deviates from Horizon v3.4.0
 
-### 2.1 Added files (not in Horizon at all)
+### 2.1 Added files (not in Horizon)
 
-| File | Purpose | Loaded? |
-|---|---|---|
-| `assets/fix-duplicates.css` | duplicate-suppression via `display:none !important` | **NO — orphan** |
-| `assets/layout-fix.css` | container/grid/section `!important` overrides | **NO — orphan** |
-| `assets/section-render-fix.css` | duplicate-section suppression | **NO — orphan** |
-| `assets/base-override.css` | blanket overrides of `base.css` | **NO — orphan** |
-| `assets/motion.js` | scroll reveal + card tilt + header state | yes (`snippets/scripts.liquid:277`) |
-| `blocks/premium-usp-band.liquid` | "Buy more, save more" offer | yes (`templates/product.json:171`) |
-| `snippets/premium-usp-band.liquid` | *second, different* offer (raw `<style>`) | yes (`blocks/_product-details.liquid:52`) |
-| `blocks/slideshow-banner.liquid` | banner slideshow | yes (`templates/index.json:15,530`) |
-| `blocks/testimonials-carousel.liquid` | testimonials | yes (`templates/index.json:1079`) |
-| `sections/cusvid.liquid` | custom video-sequence slider (1459 lines) | yes (`templates/index.json`) |
-| `sections/product-extra-content.liquid` | — | **NO — unused** |
-| `snippets/pagefly-main-js.liquid` | PageFly app stub | **NO — unused** |
-| `blocks/_delivery-checker.liquid` | — | **NO — unused** |
-| `blocks/testimonial-card.liquid` | — | **NO — unused** |
+| File | Purpose | Loaded? | Status |
+|---|---|---|---|
+| `assets/fix-duplicates.css` | duplicate suppression via `display:none !important` | **NO** | **deleted (A)** |
+| `assets/layout-fix.css` | container/grid/section `!important` overrides | **NO** | **deleted (A)** |
+| `assets/section-render-fix.css` | duplicate-section suppression | **NO** | **deleted (A)** |
+| `assets/base-override.css` | blanket overrides of `base.css` | **NO** | **deleted (A)** |
+| `snippets/premium-usp-band.liquid` | second, conflicting offer band | was yes | **deleted (C)** |
+| `assets/motion.js` | scroll reveal + card tilt + header state | yes (`snippets/scripts.liquid:277`) | open |
+| `blocks/premium-usp-band.liquid` | "Buy more, save more" offer | yes (`templates/product.json:171`) | kept |
+| `blocks/slideshow-banner.liquid` | banner slideshow | yes (`templates/index.json:15,530`) | — |
+| `blocks/testimonials-carousel.liquid` | testimonials | yes (`templates/index.json:1079`) | — |
+| `sections/cusvid.liquid` | custom video-sequence slider (1459 lines) | yes | open (duplicate section id) |
+| `sections/product-extra-content.liquid` | — | **NO** | unused |
+| `snippets/pagefly-main-js.liquid` | PageFly stub | **NO** | unused |
+| `blocks/_delivery-checker.liquid` | — | **NO** | unused |
+| `blocks/testimonial-card.liquid` | — | **NO** | unused |
 
-**The four "fix" CSS assets are referenced from nowhere.** Confirmed by grepping the entire repo
-(all extensions, excluding `.git`) — the only hits are inside `BASE_CSS_AUDIT.md`, which describes them.
-`theme.liquid` loads CSS exclusively via `{%- render 'stylesheets' -%}`, and `snippets/stylesheets.liquid`
-loads only `overflow-list.css` + `base.css`. There is no `custom_css` setting in `config/settings_data.json`.
-
-**Consequence:** `fix-duplicates.css` — the file whose entire job is to hide duplicate headers, duplicate
-logos, duplicate nav, duplicate cart icons and card #13+ — **has never executed**. If the store still shows
-duplicate headers/cards, this file is not hiding them, and no amount of editing it will help.
-
-### 2.2 Modified files relevant to the four target components
-
-| File | Nature of change |
-|---|---|
-| `blocks/_product-details.liquid` | + variant-metafield block, + premium-usp-band mount & JS relocation, + dead coupon-hiding rule |
-| `sections/product-information.liquid` | sticky-ATC stylesheet rewritten (Horizon's layout model replaced) |
-| `assets/variant-picker.js` | + `updateVariantInfo()` to morph the new metafield box |
-| `blocks/swatches.liquid` | Horizon's `<product-swatches>` stylesheet **deleted**, replaced by appended `!important` layer |
-| `snippets/product-media-gallery-content.liquid` | + appended thumbnail "SAFE … FIX" `!important` layer |
-| `snippets/variant-main-picker.liquid`, `snippets/variant-swatches.liquid`, `snippets/swatch.liquid` | swatch markup/CSS |
-| `assets/base.css` | design-system edits + appended reveal/tilt/reduced-motion layer |
-| `snippets/scripts.liquid` | + `motion.js` |
-| `layout/theme.liquid` | + `spf-analytics@1.0.0` from unpkg + `window.ThemeLoader` |
-| `snippets/theme-styles-variables.liquid` | fluid `--page-gutter` |
-| `sections/header.liquid` | header changes |
+The four "fix" CSS assets were referenced from nowhere. `theme.liquid` loads CSS only via
+`{%- render 'stylesheets' -%}`, which loads `overflow-list.css` + `base.css`; there is no `custom_css`
+setting in `config/settings_data.json`. **`fix-duplicates.css` — the file whose entire job was
+`display:none !important`-ing duplicate headers, logos, nav, cart icons and card #13+ — has never
+executed.** If the store shows duplicates, that file is not the reason they are hidden, and editing it
+does nothing.
 
 ---
 
 ## 3. Per-component findings
 
-### A. `collection-card` — **no duplication in code**
+### A. `collection-card` — no duplication. FIXED (commit `1e916d4`)
 
-Verified byte-identical to Horizon v3.4.0 (ignoring whitespace):
+Byte-identical to Horizon v3.4.0 (ignoring whitespace): `snippets/collection-card.liquid`,
+`blocks/{collection,-}_collection-card.liquid`, `blocks/_collection-card-image.liquid`,
+`sections/{collection-list,main-collection-list}.liquid`, `snippets/resource-list.liquid`.
 
-```
-snippets/collection-card.liquid            STOCK
-blocks/collection-card.liquid              STOCK
-blocks/_collection-card.liquid             STOCK
-blocks/_collection-card-image.liquid       STOCK
-sections/collection-list.liquid            STOCK
-sections/main-collection-list.liquid       STOCK
-snippets/resource-list.liquid              STOCK
-```
-
-- `snippets/resource-list.liquid` selects **one** layout branch (`grid` / `bento` / `carousel` /
-  `editorial`) and emits `list_items` exactly once (line 116 for grid, 119–137 for the others).
-- `sections/collection-list.liquid:46-59` and `sections/main-collection-list.liquid:36-60` each capture
+- `snippets/resource-list.liquid` selects **one** layout branch (`grid`/`bento`/`carousel`/`editorial`)
+  and emits `list_items` exactly once (line 116 for grid, 119-137 otherwise).
+- `sections/collection-list.liquid:46-59` and `main-collection-list.liquid:36-60` each capture
   `list_items` once and pass it to `resource-list` once. `content_for 'blocks'` renders only the
-  *section header* blocks — the card comes from the `static-collection-card` block. This is the stock
-  Horizon pattern and is correct; it is not double rendering.
-- `templates/index.json` has exactly **one** `collection-list` section. No duplicate section.
+  *section header* blocks; the card comes from the `static-collection-card` block. Stock Horizon
+  pattern, not double rendering.
+- `templates/index.json` has exactly one `collection-list` section.
 
-**Verdict:** no duplicate collection-card rendering, no extra wrappers, no non-Horizon markup, no
-CSS-hidden duplicates. There is nothing to fix in Liquid or JSON here.
+**Fix applied:** deleted the four orphan CSS assets (zero references → no runtime effect, no visual
+change; removes the forbidden global-override layer).
 
-**Only defects touching this component:**
+**Remaining (open):** `assets/motion.js` injects `--tilt-x/--tilt-y/--glare-x/--glare-y` inline style on
+every `.collection-card` and drives `transform` on pointer move (`assets/motion.js:60-99`); `base.css`
+carries a matching hover/reveal layer and a `prefers-reduced-motion` block that blanket-nulls
+`transition/animation/transform` on cards.
 
-| # | Defect | Evidence |
+### B. `product-card` — no duplication; duplicated CSS. FIXED (commit `d180ee5`)
+
+Structural files byte-identical to Horizon v3.4.0: `snippets/product-card.liquid`,
+`blocks/{product,-}_product-card.liquid`, `_product-card-group`, `_product-card-gallery`,
+`sections/{main-collection,product-list}.liquid`, `snippets/product-grid.liquid`,
+`blocks/featured-collection.liquid`, `snippets/quick-add.liquid`.
+
+- One `content_for 'block' … '_product-card'` per `<li>` (`main-collection.liquid:62`,
+  `product-list.liquid:35`/`:50`). No second render path.
+- Grid is Horizon's own container (`snippets/product-grid.liquid:76-93` +
+  `--product-grid-columns-desktop` set per-section in `{% style %}` at 18-74). No `!important`.
+- No extra wrappers.
+
+Note: the `swatches` block is used **only inside product cards** — `collection.json`, `index.json`,
+`search.json`, `cart.json`, `404.json`, and product.json's related-products carousel. The product page
+uses `variant-picker` instead.
+
+**Defect found:** `blocks/swatches.liquid` and `snippets/swatch.liquid` styled the *same* elements with
+*opposite* values:
+
+| | `blocks/swatches.liquid` | `snippets/swatch.liquid` |
 |---|---|---|
-| A1 | Four orphan "fix" CSS files — pure CSS hacks, zero effect | 0 references repo-wide |
-| A2 | `assets/motion.js` injects `--tilt-x/--tilt-y/--glare-x/--glare-y` inline style on every `.collection-card` and drives `transform` on pointer move | `assets/motion.js:60-99` |
-| A3 | `assets/base.css` appended layer applies hover/reveal transforms to `.collection-card`, then a `prefers-reduced-motion` block blanket-nulls `transition/animation/transform` | `assets/base.css` (tail) |
+| Selector | `product-swatches .variant-option__button-label` | `product-swatches label:has(.swatch)`, `.variant-option__button-label--has-swatch` |
+| Size | `--swatch-size` 32/34/36px square | hard-coded 36×46 / 40×50 / 42×52 (4:5) |
+| `overflow` | `visible !important` | `hidden !important` |
+| `.swatch` box | `--swatch-width/height: var(--swatch-size) !important` | `width/height: 100% !important` |
 
----
+Which won was decided by `!important` source order in the compiled bundle — a knock-on of
+`swatch.liquid` being rendered inside `swatches.liquid`. Layout by cascade accident.
 
-### B. `product-card` — **no duplication in code**
+`blocks/swatches.liquid:27-31` had also **dropped Horizon's `--overflow-list-alignment` /
+`--overflow-list-alignment-mobile`**, which `assets/overflow-list.css:5,12` consumes — and which lives
+in `overflow-list`'s **shadow DOM** (`snippets/overflow-list.liquid` uses
+`<template shadowrootmode="open">`), so it can only be driven by inherited custom properties. The file
+compensated with its own `overflow-list::part(list)` overrides.
 
-Verified byte-identical to Horizon v3.4.0:
+**Fix applied:** ownership split along Horizon's own boundaries — `snippets/swatch.liquid` is sole owner
+of swatch geometry (size, 4:5 aspect, radius, borders, selected/focus states); `blocks/swatches.liquid`
+keeps only container layout and the padding settings it owns, and restores Horizon's stock
+custom-property wiring. 352 → 188 lines, zero `!important` declarations, one owner per property.
 
-```
-snippets/product-card.liquid               STOCK
-blocks/product-card.liquid                 STOCK
-blocks/_product-card.liquid                STOCK
-blocks/_product-card-group.liquid          STOCK
-blocks/_product-card-gallery.liquid        STOCK
-sections/main-collection.liquid            STOCK
-sections/product-list.liquid               STOCK
-snippets/product-grid.liquid               STOCK
-snippets/quick-add.liquid                  STOCK
-blocks/featured-collection.liquid          STOCK
-```
+Two honest caveats recorded in the commit:
+- The restored `--overflow-list-alignment` vars are **inert with the current forked snippet**, which
+  renders a plain `<ul>` rather than `<overflow-list>`. They are restored because they are Horizon's
+  documented wiring and alignment silently breaks if `variant-swatches` is ever resynced to stock. (The
+  `overflow-list` selectors they replace were themselves dead selectors.)
+- The rendered result is unchanged: `snippets/swatch.liquid`'s hard-coded sizes already won the cascade
+  before this commit, so they are the sizes the merchant already sees.
 
-- One `content_for 'block' … '_product-card'` call per `<li>` — `sections/main-collection.liquid:62`,
-  `sections/product-list.liquid:35` / `:50`. No second render path.
-- Grid is Horizon's own container, not a CSS hack: `snippets/product-grid.liquid:76-93` +
-  `--product-grid-columns-desktop` set per-section in `{% style %}` at lines 18-74. No `!important`.
-- No extra wrappers: `snippets/product-card.liquid:84-110` is Horizon's `product-card__content` /
-  `layout-panel-flex` / `spacing-style` stack, unmodified.
+The deliberate 3-swatches-plus-N product-card feature is preserved (`variant-swatches.liquid` `limit: 3`
++ `+N` `<li>`; `variant-main-picker.liquid` mirrors it via `picker_context: 'product-card'`).
 
-**Verdict:** no duplicate product cards, no extra wrappers, grid via proper containers. Nothing to fix
-in Liquid or JSON.
-
-**Only defect inside the product-card subtree:**
-
-| # | Defect | Evidence |
-|---|---|---|
-| B1 | `blocks/swatches.liquid` — Horizon's `<product-swatches>` stylesheet was deleted and replaced with an appended ~200-line `!important` layer; alignment custom properties were also changed from Horizon's `start`/`end`/`center` tokens to raw `flex-start`/`flex-end` | `blocks/swatches.liquid:48-238` |
-| B2 | Same `motion.js` tilt as A2 applied to `.product-card` | `assets/motion.js:60` |
-
-B1 is the only genuine non-Horizon rewrite in the product-card subtree. Note it is a **visual** rewrite
-(the merchant wanted larger swatches), so restoring stock will change swatch appearance.
-
----
-
-### C. Product page — **real duplicates found**
+### C. Product page — real duplicate rendering. FIXED (commit `c61ce96`)
 
 `templates/product.json` order: `main` (product-information) → `product_list_zR9Cym` (product-list,
-related-products carousel) → `17723966628df34025` (`_blocks`, Judge.me review widget).
+related carousel) → `17723966628df34025` (`_blocks`, Judge.me review widget).
 
 The Judge.me `preview_badge` (in `product-details`) and `review_widget` (own section) are **not**
-duplicates — badge vs. full widget is intended.
+duplicates — inline badge vs full widget is intended.
 
-Two real defects, both in `blocks/_product-details.liquid` (a file added to/modified from Horizon):
+#### C1 — offer band rendered twice, with contradictory terms
 
-#### C1 — Premium-USP band rendered twice, one copy hidden then relocated by JS
+| | `blocks/premium-usp-band.liquid` (block, in `product.json`) | `snippets/premium-usp-band.liquid` (snippet) |
+|---|---|---|
+| Offer | 2 pieces → ₹200 off; 3 pieces → ₹500 off ("Best value") | "Extra ₹200 off on 2+ pieces" |
+| Shipping | "Free shipping on prepaid orders" | "Free shipping on prepaid orders" |
 
-`blocks/_product-details.liquid:51-53` renders a **second** offer component into a hidden mount:
+"Free shipping on prepaid orders" printed twice, and the two discount promises did not agree. The
+snippet was rendered into a `hidden` div (`_product-details.liquid:51-53`) and then relocated after
+`shopify-buy-it-now-button` by a 50-line `MutationObserver` (`:59-109`), propped up by
+`.premium-usp-band-mount[hidden] { display: none !important; }`.
 
-```liquid
-<div id="premium-usp-band-mount-{{ section.id }}" class="premium-usp-band-mount" hidden>
-  {% render 'premium-usp-band' %}
-</div>
-```
+**Fix applied:** removed the mount + `{% render %}`, the `MutationObserver`, the
+`.premium-usp-band-mount*` CSS, and the dead `[class*="coupon-body-template--"]` rule; deleted the now
+unreferenced snippet. Kept the block — it is the richer editor-managed component (full
+colour/padding/radius settings), is already positioned directly after the buy-buttons block in
+`block_order`, and carries the more current offer terms. Net −178 lines.
 
-…while `templates/product.json:170-171` *also* configures a real `premium-usp-band` **block**
-(`blocks/premium-usp-band.liquid`). So two different, independently-authored offer chunks render on the
-same product page:
+#### C2 — dead legacy-element hiding
 
-- `snippets/premium-usp-band.liquid` — "Extra ₹200 off on 2+ pieces", raw `<style>` tag (non-Horizon)
-- `blocks/premium-usp-band.liquid` — "Buy more, save more", proper `{% stylesheet %}`
+`[class*="coupon-body-template--"] { display: none !important; }` — an attribute-substring selector
+hiding an element with **zero remaining references** anywhere in the theme. Removed with C1.
 
-And a 50-line `MutationObserver` (`:59-109`) watches the whole `#ProductInformation-*` subtree to
-`insertAdjacentElement('afterend', mount)` and flip `hidden` off — a DOM-relocation hack with a 5s
-give-up timeout. It is propped up by `.premium-usp-band-mount[hidden] { display: none !important; }`
-(`:178-180`), exactly the "hide it with CSS, fix it in JS" pattern the brief forbids.
+#### C3 — related-products carousel can re-render the current product (OPEN)
 
-#### C2 — Dead legacy-element hiding rule
+`templates/product.json` sets the related carousel to `collection: "all-products"` with
+`max_products: 6`. `sections/product-list.liquid` is stock Horizon and contains **no exclusion logic**
+for the current product (verified: no `closest.product` / `exclude` / `current_product` handling). So the
+current product appears again in its own "you may also like" carousel whenever it falls in the first 6
+products of the store.
 
-`blocks/_product-details.liquid:187-190`:
+This is a **content/config** decision, not a code bug — fixing it in Liquid would mean adding
+non-Horizon filtering logic. Recommendation: point `collection` at a curated related collection.
 
-```css
-/* Hide old generated coupon block permanently */
-[class*="coupon-body-template--"] { display: none !important; }
-```
-
-An attribute-substring selector used site-wide to hide an element that **no longer exists in the
-codebase** — grep for `coupon-body-template` across every `.liquid`/`.js`/`.css`/`.json` returns this
-stylesheet rule and nothing else. It is a leftover from a removed section.
-
-#### Explicitly NOT a defect (checked, so it isn't "fixed" by mistake)
+#### Explicitly NOT a defect
 
 `blocks/_product-details.liquid:16-23` renders a product-title link inside `.view-product-title`,
-hidden by `:118-120 { display: none; }`. This looks exactly like a CSS-hidden duplicate title — **but it
-is stock Horizon v3.4.0** (`hz340/blocks/_product-details.liquid:16,38`). It exists to be revealed inside
-the quick-add modal, and `assets/quick-add.js:307-309` depends on it. **Leave it alone.**
+hidden by `:118-120 { display: none; }`. This looks exactly like a CSS-hidden duplicate title — but it is
+**stock Horizon v3.4.0** (`hz340/blocks/_product-details.liquid:16,38`). It exists to be revealed inside
+the quick-add modal, and `assets/quick-add.js:307-309` depends on it. Left intact.
 
----
+The variant-metafield box (`variant-info-box`, plus `snippets/variant-swatches`-adjacent
+`assets/variant-picker.js updateVariantInfo()`) is also left intact: its `:scope`-prefixed selectors are
+correct, the matching JS is consistent, and it is a coherent feature rather than duplication.
 
-### D. `sticky-add-to-cart` — **wiring correct, styling model replaced**
+### D. `sticky-add-to-cart` — no defect found
 
-Good news first — everything the JS depends on is intact:
+**JS wiring verified correct end to end:**
 
 - `sections/product-information.liquid:43-47` emits `ref="stickyBar"`, `role="region"`, `data-stuck="false"`
-- `ref="addToCartButton"` (`:122`), `ref="quantityDisplay"` (`:147`), `ref="quantityNumber"` (`:155`), `ref="productImage"` (`:67`)
+- `ref="addToCartButton"` (`:122`), `ref="quantityDisplay"` (`:147`), `ref="quantityNumber"` (`:155`),
+  `ref="productImage"` (`:67`) — all four mandatory refs in `requiredRefs` are present
 - `assets/sticky-add-to-cart.js:316-327` resolves the form via
-  `#shopify-section-<id> product-form-component[data-product-id="…"]` — and `blocks/buy-buttons.liquid:44`
-  really does render `<product-form-component>`. Selector matches.
-- The `data-puppet` handshake is complete: JS sets it (`:167`), `assets/product-form.js:84` reads it, and
-  it is reset on `cartUpdate`/`cartError` (`:274-279`).
-- Events listened to (`variantUpdate`, `variantSelected`, `cartUpdate`, `cartError`,
-  `quantitySelectorUpdate`) all exist in `assets/events.js`.
+  `#shopify-section-<id> product-form-component[data-product-id="…"]`; `blocks/buy-buttons.liquid:44`
+  really renders `<product-form-component>`. Selector matches.
+- `data-puppet` handshake complete: set at `sticky-add-to-cart.js:167`, read at
+  `assets/product-form.js:84`, reset on `cartUpdate`/`cartError` (`:274-279`)
+- All five listened events (`variantUpdate`, `variantSelected`, `cartUpdate`, `cartError`,
+  `quantitySelectorUpdate`) exist in `assets/events.js`
+- The JS is CSS-model-agnostic: `#showStickyBar`/`#hideStickyBar` only toggle `data-stuck`, which both
+  Horizon's and this theme's stylesheet respond to
 
-**Defect:** `sections/product-information.liquid:180-345` replaces Horizon's sticky-bar styling model
-wholesale. Horizon v3.4.0 uses the `display`/`@starting-style`/`transition-behavior: allow-discrete`
-pattern with a `::before` blurred-border layer for its glass look. This theme instead:
+**`sections/product-information.liquid:180-345` is a deliberate restyle of Horizon's sticky bar**, not
+a hack, and it is self-consistent:
 
-- moves the bar with `transform: translateX(-50%) translateY(120%)` + `opacity: 0` (`:184-185`)
-- un-does it with `[data-stuck='true'] { translateY(0); opacity: 1 }` (`:206-208`)
-- re-hides it for unavailable variants (`:211-214`)
-- drops `@starting-style`, `transition-behavior: allow-discrete`, and the `::before` layer entirely
-- swaps `width: 600px` → `width: 100%; max-width: 480px`, and `box-shadow: var(--shadow-popover)` →
-  a hard-coded `0 8px 24px rgba(0,0,0,.18)`
-- re-implements mobile as a bottom sheet (`:268-284`) with hard-coded `border-radius: 16px 16px 0 0`
-- changes Horizon's small-mobile rules from `display: none` on `.add-to-cart-text__content` to
-  `display: inline-flex` + `white-space: normal` (`:288-304`)
+| Property | Horizon v3.4.0 | This theme |
+|---|---|---|
+| `bottom` | `20px` | `12px` |
+| `width` | `600px` | `100%`, `max-width: 480px` |
+| `border-radius` | `calc(var(--style-border-radius-buttons-primary) + min(var(--padding-sm), …))` | `var(--style-border-radius-buttons-primary)` |
+| `box-shadow` | `var(--shadow-popover)` | hard-coded `0 8px 24px rgba(0,0,0,.18)` |
+| `::before` glass layer | present (`backdrop-filter` blur/saturate) | removed |
+| `@starting-style` | present | removed |
+| transition | `transform, opacity, display` + `allow-discrete`, `0.3s` | `transform, opacity`, `0.26s` |
+| mobile radius | `0` | `16px 16px 0 0` |
+| mobile button | icon-only (`text__content { display: none }`) | text shown, `white-space: normal` |
+| hidden geometry | `translateY(calc(100% + 40px))` | `translateY(120%)` |
+| unavailable variant | `display: none` | `opacity: 0` + `translateY(120%)` |
 
-Functionally it can work, but it is a parallel CSS implementation of a component Horizon already ships,
-it hard-codes values that Horizon exposes as tokens (`--shadow-popover`, border-radius tokens), and it
-achieves show/hide by translating an always-present fixed element off-screen rather than by Horizon's
-display transition — which is why the `z-index: calc(var(--layer-sticky) - 1)` band-aid is needed.
+I checked the two candidate defects and **both turned out not to be real**:
+
+1. *"Dropping `display: none` leaves an invisible but focusable button in the tab order."* **False.**
+   Horizon's stock bar also keeps the element in flow with `opacity: 0` and a translate; it uses
+   `display: none` only for the unavailable-variant state. No accessibility regression.
+2. *"`translateY(120%)` does not guarantee the bar is fully off-screen."* **Currently safe.** With
+   `--padding-lg: 1rem` and `--icon-size-sm: 1.25rem`, `--height-buy-buttons` = 52px; plus the bar's
+   `--padding-sm` (12px top+bottom) the bar is ≈76px tall. `1.2 × 76 = 91.2px` vs the 88px needed
+   (`76 + 12`), so it clears the viewport by 3.2px. The mobile rule (`bottom: 0` + `translateY(100%)`)
+   is exactly flush by construction.
+
+   It is, however, *fragile by construction*: full hiding requires `height ≥ 5 × bottom`, whereas
+   Horizon's `calc(100% + 40px)` is unconditionally safe. If `--icon-size-sm` is ever reduced enough
+   that the bar drops below 60px, a sliver of the `opacity: 0` bar would remain hit-testable at the
+   viewport edge.
+
+**Conclusion:** the only defensible changes are non-visual robustness/token fixes — restore the
+unconditional off-screen geometry and use `var(--shadow-popover)`. These are a judgement call, so they
+are left pending rather than bundled in silently.
 
 ---
 
-### 3bis. Adjacent issues found (outside the four components)
+## 4. Fix list
 
-| Issue | Evidence |
-|---|---|
-| `sections/cusvid.liquid:2,6` sets `id="shopify-section-{{ section.id }}"` on its own `<section>`, while Shopify already wraps the section in `<div id="shopify-section-{{ section.id }}">` → **duplicate DOM id**, invalid HTML, and its own `#id` CSS (`:224-352`) and any `getElementById` become ambiguous | `sections/cusvid.liquid:2-6` |
-| Homepage heading duplicated in JSON: `"<h3>Watch Then खरीदें</h3>"` is set on both `cusvid_ETYbzp.text_block_pEePdD` and `section_9kGeWd.text_tkj3Ep` | `templates/index.json` |
-| 4 unused added files (`sections/product-extra-content.liquid`, `snippets/pagefly-main-js.liquid`, `blocks/_delivery-checker.liquid`, `blocks/testimonial-card.liquid`) | 0 references each |
-| `layout/theme.liquid:39` loads `https://unpkg.com/spf-analytics@1.0.0/index.js` — third-party CDN, unpinned to a hash, no SRI | `layout/theme.liquid:39` |
-| `sections/product-extra-content.liquid` and `snippets/pagefly-main-js.liquid` are dead weight | — |
-
----
-
-## 4. Prioritised fix list
-
-Ordered by (real duplication / rule violation) × (risk).
-
-| Pri | Component | Fix | Risk | Visual impact |
-|---|---|---|---|---|
-| 1 | C | Remove the hidden `premium-usp-band` mount + the `MutationObserver` block + the dead `coupon-body-template` rule from `blocks/_product-details.liquid`; decide which single offer component stays | low | one of two competing offer bands disappears |
-| 2 | A | Delete the 4 orphan CSS assets | **none** — unreferenced | none |
-| 3 | D | Restore Horizon's sticky-bar stylesheet in `sections/product-information.liquid` | medium | bar styling changes |
-| 4 | B | Restore Horizon's `<product-swatches>` stylesheet in `blocks/swatches.liquid` | medium | swatch size changes |
-| 5 | C | Collapse `snippets/premium-usp-band.liquid` (raw `<style>`) into a `{% stylesheet %}` block, or retire it in favour of the block | low | none |
-| 6 | — | Fix `sections/cusvid.liquid` duplicate section id | low | none |
-| 7 | — | Remove duplicated homepage heading from `templates/index.json` | low | heading disappears once |
-| 8 | — | Delete the 4 unused added files; pin or self-host `spf-analytics` | low | none |
-
-**Not recommended:** touching `blocks/swatches.liquid` or the sticky-bar CSS without a visual pass,
-since both are deliberate merchant design decisions. Recommend doing #3/#4 only with a preview.
+| Pri | Component | Fix | Status |
+|---|---|---|---|
+| 1 | A | Delete the 4 orphan override-CSS assets | **done** `1e916d4` |
+| 2 | B | Single owner for swatch styling; drop cascade war | **done** `d180ee5` |
+| 3 | C | Remove duplicate offer band + JS relocation + dead rule; delete orphan snippet | **done** `c61ce96` |
+| 4 | D | Restore unconditional off-screen geometry; `var(--shadow-popover)` | **pending your call** |
+| 5 | D | (alt) Restore Horizon's full stock sticky stylesheet | pending your call |
+| 6 | C3 | Point related-products `collection` at a curated collection, not `all-products` | **open** — merchant content |
+| 7 | — | `sections/cusvid.liquid:2,6` sets `id="shopify-section-{{ section.id }}"` on its own element while Shopify already wraps the section in a div with that id → duplicate DOM id; its `#id` CSS (`:224-352`) becomes ambiguous | open |
+| 8 | — | Homepage heading duplicated in JSON: `"<h3>Watch Then खरीदें</h3>"` on both `cusvid_ETYbzp.text_block_pEePdD` and `section_9kGeWd.text_tkj3Ep` | open |
+| 9 | — | `layout/theme.liquid:39` loads unpinned, no-SRI `https://unpkg.com/spf-analytics@1.0.0/index.js` | open |
+| 10 | — | 4 unused added files | open |
 
 ---
 
@@ -280,9 +270,22 @@ since both are deliberate merchant design decisions. Recommend doing #3/#4 only 
 
 | Brief requirement | Result |
 |---|---|
-| Duplicate rendering of collection cards | **none found** — stock Horizon |
-| Duplicate rendering of product cards | **none found** — stock Horizon |
-| Duplicate product-page sections/blocks | **found**: premium-usp-band rendered twice (C1) |
-| Non-Horizon markup / extra wrappers in cards | none in cards; found in `snippets/premium-usp-band.liquid` (raw `<style>`) |
-| Logic depending on CSS to hide duplicates | **found**: `.premium-usp-band-mount[hidden] { display:none !important }` + JS relocation (C1); dead `coupon-body-template` rule (C2); 4 orphan "fix" CSS files (A1) |
-| New global override CSS files | none added by this audit; 4 pre-existing orphans identified for deletion |
+| Duplicate rendering of collection cards | **none exists** — code is stock Horizon |
+| Duplicate rendering of product cards | **none exists** — code is stock Horizon |
+| Duplicate product-page sections/blocks | **found and fixed** — premium-usp-band rendered twice with contradictory offer terms |
+| Non-Horizon markup / extra wrappers in cards | none in the card paths; raw `<style>` snippet found on the product page and removed |
+| Logic relying on CSS to hide duplicates | **found and fixed** — `.premium-usp-band-mount[hidden] { display:none !important }` + JS relocation; dead `coupon-body-template` rule; 4 orphan "fix" CSS files |
+| No new global override CSS files added | correct — none added; 4 pre-existing orphans removed |
+| Duplicates fixed in Liquid/JSON, not hidden with CSS | yes — C1 removed the elements in Liquid and only then dropped the compensating CSS |
+| `sticky-add-to-cart` | **no defect found** — JS wiring verified correct; the CSS is a self-consistent design fork, pending a decision |
+
+### Corrections to earlier statements in this session
+
+- I initially described `blocks/swatches.liquid` as affecting the product page. It does not — the
+  `swatches` block is product-card-only (the product page uses `variant-picker`).
+- I initially listed the hidden `.view-product-title` as a duplicate-title defect. It is stock Horizon
+  and is load-bearing for the quick-add modal. It was **not** changed.
+- I initially described the sticky bar's `z-index: calc(var(--layer-sticky) - 1)` as a band-aid caused
+  by the restyle. Horizon v3.4.0 has the identical declaration. It is stock.
+- I initially called the sticky CSS model replacement an accessibility regression. It is not —
+  Horizon hides the bar the same way.
