@@ -1743,8 +1743,11 @@ zoom-dialog dialog {
 /* Animate the UI elements in only after the view transition is complete */
 .close-button {
   position: fixed;
-  top: var(--margin-lg);
-  right: var(--margin-lg);
+
+  /* Keep the control clear of the notch / rounded corners now that the
+     viewport uses viewport-fit=cover. env() is 0 on devices without one. */
+  top: calc(var(--margin-lg) + env(safe-area-inset-top, 0px));
+  right: calc(var(--margin-lg) + env(safe-area-inset-right, 0px));
   width: var(--minimum-touch-target);
   height: var(--minimum-touch-target);
   z-index: var(--layer-flat);
@@ -1790,6 +1793,9 @@ zoom-dialog dialog {
   bottom: 0;
   display: flex;
   z-index: var(--layer-raised);
+
+  /* Lifts the mobile thumbnail rail above the iOS home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .dialog-thumbnails-list {
