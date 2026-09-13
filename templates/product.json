@@ -718,7 +718,7 @@
         "max_products": 6,
         "columns": 4,
         "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
+        "mobile_card_size": "44cqw",
         "columns_gap": 12,
         "rows_gap": 12,
         "icons_style": "arrow",

@@ -382,10 +382,10 @@
                 "gradient_direction": "to top",
                 "link": "",
                 "open_in_new_tab": false,
-                "padding-block-start": 24,
-                "padding-block-end": 24,
-                "padding-inline-start": 24,
-                "padding-inline-end": 24
+                "padding-block-start": 16,
+                "padding-block-end": 16,
+                "padding-inline-start": 12,
+                "padding-inline-end": 12
               },
               "blocks": {
                 "product_title_gH3cpy": {
@@ -508,11 +508,11 @@
         "layout_type": "carousel",
         "carousel_on_mobile": false,
         "max_products": 6,
-        "columns": 3,
+        "columns": 4,
         "mobile_columns": "2",
-        "mobile_card_size": "60cqw",
-        "columns_gap": 24,
-        "rows_gap": 24,
+        "mobile_card_size": "44cqw",
+        "columns_gap": 16,
+        "rows_gap": 16,
         "icons_style": "arrow",
         "icons_shape": "circle",
         "section_width": "page-width",
