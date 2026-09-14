@@ -109,7 +109,14 @@
     {% endfor %}
   </div>
 
-  {{ additional_blocks }}
+  {% if additional_blocks != blank %}
+    <div
+      class="product-information__below"
+      data-product-below-region
+    >
+      {{ additional_blocks }}
+    </div>
+  {% endif %}
 </div>
 
 {% stylesheet %}
@@ -308,6 +315,32 @@
     .product-information__grid--limit-details .product-details > .group-block {
       --details-max-width: 32rem;
     }
+  }
+
+  /* Below region: full-content-width blocks placed outside the
+     media/purchase grid (product description, USP band, accordions).
+     It is a direct child of the .section grid, so it inherits
+     grid-column: 2 (central content column) and spans the full width. */
+  .product-information__below {
+    display: grid;
+    gap: clamp(24px, 4vw, 48px);
+    align-content: start;
+    margin-block-start: clamp(40px, 6vw, 72px);
+  }
+
+  /* The region's grid gap provides separation — block-level top margins
+     (e.g. the buy-more note's 18px) would double up on the first child */
+  .product-information__below > :first-child {
+    margin-block-start: 0;
+  }
+
+  /* Reading measure for long-form content in the below region */
+  .product-information__below .rte :is(p, li, blockquote) {
+    max-inline-size: 75ch;
+  }
+
+  .product-information__below .rte :is(h1, h2, h3) {
+    text-wrap: balance;
   }
 
   /* If the header is sticky, make product details content stick underneath the header */

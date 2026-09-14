@@ -67,32 +67,6 @@
             "padding-inline-end": 0
           },
           "blocks": {
-            "text_GnyQiN": {
-              "type": "text",
-              "name": "t:names.title",
-              "settings": {
-                "text": "<h1>{{ closest.product.title }}</h1>",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "custom",
-                "font": "var(--font-heading--family)",
-                "font_size": "",
-                "line_height": "loose",
-                "letter_spacing": "loose",
-                "case": "none",
-                "wrap": "balance",
-                "color": "var(--color-foreground-heading)",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
             "judge_me_reviews_preview_badge_kinrjn": {
               "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
               "settings": {}
@@ -167,32 +141,6 @@
               },
               "block_order": []
             },
-            "premium_usp_band_xce9HH": {
-              "type": "premium-usp-band",
-              "name": "Buy more note",
-              "settings": {
-                "shipping_text": "Free shipping on prepaid orders",
-                "title_font": "var(--font-heading--family)",
-                "body_font": "var(--font-body--family)",
-                "saving_font": "var(--font-heading--family)",
-                "title_size": "1rem",
-                "body_size": "0.75rem",
-                "saving_size": "1.125rem",
-                "background_color": "#FCF8F3",
-                "title_color": "#3B2B25",
-                "body_color": "#786761",
-                "saving_color": "#784729",
-                "featured_saving_color": "#784729",
-                "border_color": "#DFD2C8",
-                "padding-block-start": 17,
-                "padding-block-end": 17,
-                "padding-inline-start": 18,
-                "padding-inline-end": 18,
-                "gap": 9,
-                "corner_radius": 12
-              },
-              "blocks": {}
-            },
             "image_izfadH": {
               "type": "image",
               "name": "t:names.image",
@@ -258,22 +206,22 @@
               },
               "blocks": {}
             },
-            "product_description_LfDYCg": {
-              "type": "product-description",
-              "name": "t:names.product_description",
+            "product_title": {
+              "type": "text",
+              "name": "t:names.title",
               "settings": {
-                "text": "{{ closest.product.description }}",
+                "text": "<h1>{{ closest.product.title }}</h1>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "paragraph",
-                "font": "var(--font-body--family)",
+                "type_preset": "custom",
+                "font": "var(--font-heading--family)",
                 "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
+                "line_height": "loose",
+                "letter_spacing": "loose",
                 "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
+                "wrap": "balance",
+                "color": "var(--color-foreground-heading)",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -283,161 +231,210 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
-            },
-            "accordion_g8EVVp": {
-              "type": "accordion",
-              "name": "Accordion",
-              "settings": {
-                "icon": "plus",
-                "dividers": true,
-                "type_preset": "h4",
-                "inherit_color_scheme": true,
-                "color_scheme": "",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {
-                "accordion_row_VLT7qN": {
-                  "type": "_accordion-row",
-                  "name": "t:names.accordion_row",
-                  "settings": {
-                    "heading": "Size Chart",
-                    "open_by_default": false,
-                    "icon": "none",
-                    "width": 20
-                  },
-                  "blocks": {
-                    "image_pDwFMm": {
-                      "type": "image",
-                      "name": "t:names.image",
-                      "settings": {
-                        "image": "shopify://shop_images/WhatsApp_Image_2025-11-11_at_5.54.33_PM_15d85a0f-0a0f-4dd9-b997-1a5e7c4c2a06.jpg",
-                        "link": "",
-                        "image_ratio": "adapt",
-                        "width": "fill",
-                        "custom_width": 100,
-                        "width_mobile": "custom",
-                        "custom_width_mobile": 100,
-                        "height": "fill",
-                        "border": "none",
-                        "border_width": 1,
-                        "border_opacity": 100,
-                        "border_radius": 0,
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": [
-                    "image_pDwFMm"
-                  ]
-                },
-                "accordion_row_VyFryh": {
-                  "type": "_accordion-row",
-                  "settings": {
-                    "heading": "Details",
-                    "open_by_default": false,
-                    "icon": "none",
-                    "width": 20
-                  },
-                  "blocks": {
-                    "text_McjMWz": {
-                      "type": "text",
-                      "settings": {
-                        "text": "<p>{{ closest.product.metafields.custom.product_details | metafield_tag }}</p>",
-                        "width": "100%",
-                        "max_width": "normal",
-                        "alignment": "left",
-                        "type_preset": "rte",
-                        "font": "var(--font-body--family)",
-                        "font_size": "",
-                        "line_height": "normal",
-                        "letter_spacing": "normal",
-                        "case": "none",
-                        "wrap": "pretty",
-                        "color": "var(--color-foreground)",
-                        "background": false,
-                        "background_color": "#00000026",
-                        "corner_radius": 0,
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": [
-                    "text_McjMWz"
-                  ]
-                },
-                "accordion_row_aaFerA": {
-                  "type": "_accordion-row",
-                  "settings": {
-                    "heading": "Disclaimer",
-                    "open_by_default": false,
-                    "icon": "none",
-                    "width": 20
-                  },
-                  "blocks": {
-                    "text_DNPAct": {
-                      "type": "text",
-                      "settings": {
-                        "text": "<p>Please note that the colors of the product may vary slightly due to individual screen calibrations and lighting conditions. Each piece is thoughtfully hand-embroidered by skilled artisans, and subtle variations in stitches or motifs are a natural reflection of its handcrafted essence. These nuances celebrate the artistry and authenticity of traditional craftsmanship, making every creation uniquely yours.</p>",
-                        "width": "100%",
-                        "max_width": "normal",
-                        "alignment": "left",
-                        "type_preset": "rte",
-                        "font": "var(--font-body--family)",
-                        "font_size": "",
-                        "line_height": "normal",
-                        "letter_spacing": "normal",
-                        "case": "none",
-                        "wrap": "pretty",
-                        "color": "var(--color-foreground)",
-                        "background": false,
-                        "background_color": "#00000026",
-                        "corner_radius": 0,
-                        "padding-block-start": 0,
-                        "padding-block-end": 0,
-                        "padding-inline-start": 0,
-                        "padding-inline-end": 0
-                      },
-                      "blocks": {}
-                    }
-                  },
-                  "block_order": [
-                    "text_DNPAct"
-                  ]
-                }
-              },
-              "block_order": [
-                "accordion_row_VLT7qN",
-                "accordion_row_VyFryh",
-                "accordion_row_aaFerA"
-              ]
             }
           },
           "block_order": [
-            "text_GnyQiN",
+            "product_title",
             "judge_me_reviews_preview_badge_kinrjn",
             "price_a7krng",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
-            "premium_usp_band_xce9HH",
             "image_izfadH",
-            "group_X39hBc",
-            "product_description_LfDYCg",
-            "accordion_g8EVVp"
+            "group_X39hBc"
+          ]
+        },
+        "product_description_LfDYCg": {
+          "type": "product-description",
+          "name": "t:names.product_description",
+          "settings": {
+            "text": "{{ closest.product.description }}",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "paragraph",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "premium_usp_band_xce9HH": {
+          "type": "premium-usp-band",
+          "name": "Buy more note",
+          "settings": {
+            "shipping_text": "Free shipping on prepaid orders",
+            "title_font": "var(--font-heading--family)",
+            "body_font": "var(--font-body--family)",
+            "saving_font": "var(--font-heading--family)",
+            "title_size": "1rem",
+            "body_size": "0.75rem",
+            "saving_size": "1.125rem",
+            "background_color": "#FCF8F3",
+            "title_color": "#3B2B25",
+            "body_color": "#786761",
+            "saving_color": "#784729",
+            "featured_saving_color": "#784729",
+            "border_color": "#DFD2C8",
+            "padding-block-start": 17,
+            "padding-block-end": 17,
+            "padding-inline-start": 18,
+            "padding-inline-end": 18,
+            "gap": 9,
+            "corner_radius": 12
+          },
+          "blocks": {}
+        },
+        "accordion_g8EVVp": {
+          "type": "accordion",
+          "name": "Accordion",
+          "settings": {
+            "icon": "plus",
+            "dividers": true,
+            "type_preset": "h4",
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "accordion_row_VLT7qN": {
+              "type": "_accordion-row",
+              "name": "t:names.accordion_row",
+              "settings": {
+                "heading": "Size Chart",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "image_pDwFMm": {
+                  "type": "image",
+                  "name": "t:names.image",
+                  "settings": {
+                    "image": "shopify://shop_images/WhatsApp_Image_2025-11-11_at_5.54.33_PM_15d85a0f-0a0f-4dd9-b997-1a5e7c4c2a06.jpg",
+                    "link": "",
+                    "image_ratio": "adapt",
+                    "width": "fill",
+                    "custom_width": 100,
+                    "width_mobile": "custom",
+                    "custom_width_mobile": 100,
+                    "height": "fill",
+                    "border": "none",
+                    "border_width": 1,
+                    "border_opacity": 100,
+                    "border_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "image_pDwFMm"
+              ]
+            },
+            "accordion_row_VyFryh": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Details",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_McjMWz": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>{{ closest.product.metafields.custom.product_details | metafield_tag }}</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_McjMWz"
+              ]
+            },
+            "accordion_row_aaFerA": {
+              "type": "_accordion-row",
+              "settings": {
+                "heading": "Disclaimer",
+                "open_by_default": false,
+                "icon": "none",
+                "width": 20
+              },
+              "blocks": {
+                "text_DNPAct": {
+                  "type": "text",
+                  "settings": {
+                    "text": "<p>Please note that the colors of the product may vary slightly due to individual screen calibrations and lighting conditions. Each piece is thoughtfully hand-embroidered by skilled artisans, and subtle variations in stitches or motifs are a natural reflection of its handcrafted essence. These nuances celebrate the artistry and authenticity of traditional craftsmanship, making every creation uniquely yours.</p>",
+                    "width": "100%",
+                    "max_width": "normal",
+                    "alignment": "left",
+                    "type_preset": "rte",
+                    "font": "var(--font-body--family)",
+                    "font_size": "",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "wrap": "pretty",
+                    "color": "var(--color-foreground)",
+                    "background": false,
+                    "background_color": "#00000026",
+                    "corner_radius": 0,
+                    "padding-block-start": 0,
+                    "padding-block-end": 0,
+                    "padding-inline-start": 0,
+                    "padding-inline-end": 0
+                  },
+                  "blocks": {}
+                }
+              },
+              "block_order": [
+                "text_DNPAct"
+              ]
+            }
+          },
+          "block_order": [
+            "accordion_row_VLT7qN",
+            "accordion_row_VyFryh",
+            "accordion_row_aaFerA"
           ]
         }
       },
@@ -452,7 +449,14 @@
         "color_scheme": "",
         "padding-block-start": 20,
         "padding-block-end": 20
-      }
+      },
+      "block_order": [
+        "media-gallery",
+        "product-details",
+        "product_description_LfDYCg",
+        "premium_usp_band_xce9HH",
+        "accordion_g8EVVp"
+      ]
     },
     "product_list_zR9Cym": {
       "type": "product-list",

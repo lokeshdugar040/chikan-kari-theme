@@ -163,33 +163,37 @@ class StickyAddToCartComponent extends Component {
    * Handles the add to cart button click in the sticky bar
    */
   handleAddToCartClick = async () => {
-    if (!this.#targetAddToCartButton) return;
-    this.#targetAddToCartButton.dataset.puppet = 'true';
-    this.#targetAddToCartButton.click();
-    const cartIcon = document.querySelector('.header-actions__cart-icon');
+    const target = this.#targetAddToCartButton;
+    if (!target) return;
+    target.dataset.puppet = 'true';
+    target.click();
 
-    if (this.refs.addToCartButton.dataset.added !== 'true') {
-      this.refs.addToCartButton.dataset.added = 'true';
-    }
+    const barButton = this.refs.addToCartButton;
+    barButton.dataset.added = 'true';
 
-    if (!cartIcon || !this.refs.addToCartButton || !this.refs.productImage) return;
+    // Always schedule the reset, even when fly-to-cart cannot run
+    // (no product image or no header cart icon) — otherwise the
+    // added-state burst would stay visible indefinitely.
     if (this.#resetTimeout) clearTimeout(this.#resetTimeout);
+    this.#resetTimeout = setTimeout(() => {
+      barButton.removeAttribute('data-added');
+    }, 800);
+
+    const cartIcon = document.querySelector('.header-actions__cart-icon');
+    const productImage = this.refs.productImage;
+    if (!cartIcon || !productImage) return;
 
     const flyToCartElement = /** @type {FlyToCart} */ (document.createElement('fly-to-cart'));
-    const sourceStyles = getComputedStyle(this.refs.productImage);
 
     flyToCartElement.classList.add('fly-to-cart--sticky');
-    flyToCartElement.style.setProperty('background-image', `url(${this.refs.productImage.src})`);
+    flyToCartElement.style.setProperty('background-image', `url(${productImage.src})`);
     flyToCartElement.useSourceSize = 'true';
-    flyToCartElement.source = this.refs.productImage;
+    flyToCartElement.source = productImage;
     flyToCartElement.destination = cartIcon;
 
     document.body.appendChild(flyToCartElement);
 
-    await onAnimationEnd([this.refs.addToCartButton, flyToCartElement]);
-    this.#resetTimeout = setTimeout(() => {
-      this.refs.addToCartButton.removeAttribute('data-added');
-    }, 800);
+    await onAnimationEnd([barButton, flyToCartElement]);
   };
 
   /**
