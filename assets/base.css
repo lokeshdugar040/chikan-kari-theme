@@ -5217,8 +5217,7 @@ small,
 .button-secondary,
 .shopify-payment-button__button,
 .quick-add__button,
-.add-to-cart-button,
-.sticky-add-to-cart__button {
+.add-to-cart-button {
   min-block-size: var(--control-height);
   padding-block: var(--space-3);
   padding-inline: var(--space-6);
@@ -5578,103 +5577,12 @@ a.header-logo {
   color: var(--color-primary-button-text);
 }
 
-/* 8. Sticky add-to-cart ---------------------------------------------------- */
-
-.sticky-add-to-cart {
-  position: fixed;
-  inset-inline: 0;
-  inset-block-end: 0;
-  z-index: var(--layer-sticky, 8);
-  pointer-events: none;
-}
-
-.sticky-add-to-cart__bar {
-  pointer-events: auto;
-  display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-4) calc(var(--space-2) + env(safe-area-inset-bottom));
-  border-top: 1px solid var(--color-border);
-  background: var(--color-background);
-  box-shadow: 0 -4px 16px rgb(0 0 0 / 0.06);
-}
-
-.sticky-add-to-cart__image {
-  inline-size: 100%;
-  aspect-ratio: 1;
-}
-
-.sticky-add-to-cart__image-img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  border-radius: var(--style-border-radius-xs, 4px);
-  border: 1px solid var(--color-border);
-}
-
-.sticky-add-to-cart__info {
-  min-inline-size: 0;
-  display: flex;
-  align-items: center;
-}
-
-.sticky-add-to-cart__title,
-.sticky-add-to-cart__variant,
-.sticky-add-to-cart__added,
-.sticky-add-to-cart__button .add-to-cart-icon {
-  display: none;
-}
-
-.sticky-add-to-cart__price [ref='priceContainer'] {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-
-.sticky-add-to-cart__price .price {
-  font-size: var(--text-base);
-  font-weight: 600;
-  line-height: 1;
-}
-
-.sticky-add-to-cart__price .compare-at-price {
-  font-size: var(--text-xs);
-  opacity: 0.6;
-  text-decoration: line-through;
-  line-height: 1;
-}
-
-.sticky-add-to-cart__button {
-  min-inline-size: 8rem;
-  border: 0;
-  border-radius: var(--style-border-radius-buttons-primary, 4px);
-  background: var(--color-primary-button-background);
-  color: var(--color-primary-button-text);
-  text-transform: uppercase;
-  transition: background 0.2s ease;
-}
-
-.sticky-add-to-cart__button:hover {
-  background: var(--color-primary-button-hover-background);
-  color: var(--color-primary-button-hover-text);
-}
-
-@media screen and (min-width: 750px) {
-  .sticky-add-to-cart {
-    inset-block-end: var(--space-4);
-    padding-inline: var(--page-gutter);
-  }
-
-  .sticky-add-to-cart__bar {
-    inline-size: min(40rem, 100%);
-    margin-inline: auto;
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--style-border-radius-sm, 8px);
-    box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
-  }
-}
+/* 8. Sticky add-to-cart ----------------------------------------------------
+   Component-owned: sections/product-information.liquid renders the bar and
+   its {% stylesheet %} styles it (fixed pill / mobile bottom sheet, native
+   [data-stuck] mechanism, native button grammar). base.css must not position
+   or restyle the bar — two sources of truth caused a layout conflict
+   (removed 2026-09-14, see AUDIT.md §16). */
 
 /* 9. Footer ---------------------------------------------------------------- */
 
@@ -5811,7 +5719,6 @@ a.header-logo {
 /* Buttons: lift on hover, press on active */
 .button,
 .button-secondary,
-.sticky-add-to-cart__button,
 .quick-add__button {
   transition:
     transform var(--duration-fast) var(--ease-out),
@@ -5822,16 +5729,14 @@ a.header-logo {
 
 @media (hover: hover) and (pointer: fine) {
   .button:hover,
-  .button-secondary:hover,
-  .sticky-add-to-cart__button:hover {
+  .button-secondary:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-sm);
   }
 }
 
 .button:active,
-.button-secondary:active,
-.sticky-add-to-cart__button:active {
+.button-secondary:active {
   transform: translateY(1px);
   box-shadow: none;
 }
@@ -5951,7 +5856,6 @@ body[data-scrolled] #header-component[data-sticky-state='active'] .header__row--
   .resource-card,
   .button,
   .button-secondary,
-  .sticky-add-to-cart__button,
   .variant-option__button-label,
   .cart-bubble,
   .dialog-modal[open],

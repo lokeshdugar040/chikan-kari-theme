@@ -260,6 +260,14 @@
     font-size: var(--font-paragraph-small--size);
   }
 
+  /* Price spans sit side by side in the bar (layout helper that used to
+     live in base.css — component-scoped now) */
+  .sticky-add-to-cart__price [ref='priceContainer'] {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2, 8px);
+  }
+
   .sticky-add-to-cart__button {
     height: var(--height-buy-buttons);
     min-width: 10.5rem;
